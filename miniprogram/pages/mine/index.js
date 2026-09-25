@@ -2,6 +2,7 @@ import { preferenceService } from '../../services/preferenceService.js';
 import { historyService } from '../../services/historyService.js';
 Page({
     data: {
+        version: '2.03',
         preferences: {},
         dislikedMap: {},
         spicyLevels: [

@@ -24,7 +24,8 @@ global.wx = {
 
 const appInstance = {
   globalData: {
-    currentMenu: null
+    currentMenu: null,
+    version: '2.03'
   }
 };
 global.getApp = () => appInstance;
@@ -119,6 +120,7 @@ const minePage = instantiatePage('pages/mine/index');
 minePage.onShow();
 console.log(`✅ Tab 4 [我的] (pages/mine) 渲染成功: 当前模式=${minePage.data.preferences.defaultMode}, 辣度=${minePage.data.preferences.spicyLevel}`);
 assert(minePage.data.availableModes.length === 4, '可用模式应为 4 种');
+assert.equal(minePage.data.version, '2.03', '“我的”页面必须展示 V2.03 版本号');
 
 // 5. 子页面 1: pages/menu/result/index (菜单结果)
 currentPageName = 'pages/menu/result/index';

@@ -143,3 +143,28 @@
   font-size: 36rpx;
   color: #C0C4C1;
 }
+
+/* 版本与页脚声明 */
+.version-footer {
+  margin-top: 48rpx;
+  margin-bottom: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.version-text {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #8C918D;
+  letter-spacing: 1rpx;
+}
+
+.version-sub {
+  font-size: 20rpx;
+  color: #B5B9B6;
+  letter-spacing: 0.5rpx;
+}
+

@@ -1,5 +1,5 @@
 {
-  "description": "《四季三餐·好好吃饭》微信小程序",
+  "description": "《四季三餐·好好吃饭》微信小程序 V2.03",
   "setting": {
     "urlCheck": false,
     "es6": true,
@@ -46,7 +46,8 @@
   "compileType": "miniprogram",
   "libVersion": "3.3.4",
   "appid": "wx9c6a049ca34de9fe",
-  "projectname": "four-seasons-three-meals",
+  "projectname": "four-seasons-three-meals-v2.03",
+  "version": "2.03",
   "miniprogramRoot": "miniprogram/",
   "condition": {},
   "srcMiniprogramRoot": "miniprogram/",

@@ -67,4 +67,10 @@
       <text class="row-arrow">›</text>
     </view>
   </view>
+
+  <!-- 版本信息与版权声明 -->
+  <view class="version-footer">
+    <text class="version-text">四季三餐 · 好好吃饭 v{{ version }}</text>
+    <text class="version-sub">精选 125 道家常料理 · 时令生鲜智能搭配</text>
+  </view>
 </view>
