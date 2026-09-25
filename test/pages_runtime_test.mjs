@@ -81,8 +81,8 @@ await import('../miniprogram/pages/dishes/index.js');
 const dishesPage = instantiatePage('pages/dishes/index');
 dishesPage.onShow();
 console.log(`✅ Tab 2 [菜库] (pages/dishes) 渲染成功: 总菜品数=${dishesPage.data.allDishes.length}, 过滤菜品数=${dishesPage.data.filteredDishes.length}`);
-assert(dishesPage.data.allDishes.length >= 50, '菜品库应至少有 50 道菜');
-assert(dishesPage.data.filteredDishes.length >= 50, '默认全部分类展示菜品应不少于 50 道');
+assert.equal(dishesPage.data.allDishes.length, 125, '菜品库应为 125 道菜');
+assert.equal(dishesPage.data.filteredDishes.length, 125, '默认全部分类展示菜品应为 125 道');
 
 // V2.0 缩略图与生活美学资产完整性质检
 import fs from 'fs';
@@ -93,7 +93,7 @@ for (const dish of dishesPage.data.allDishes) {
   const localFile = path.resolve('miniprogram', dish.thumbUrl.replace(/^\//, ''));
   assert(fs.existsSync(localFile), `菜品 [${dish.name}] 的缩略图文件必须真实存在: ${localFile}`);
 }
-console.log('✅ V2.0 菜库全部 55 道菜品缩略图本地文件与 Emoji 徽标 100% 校验通过！');
+console.log(`✅ V2.0 菜库全部 ${dishesPage.data.allDishes.length} 道菜品缩略图本地文件与 Emoji 徽标 100% 校验通过！`);
 
 // 3. Tab 3: pages/history/index (历史)
 currentPageName = 'pages/history/index';

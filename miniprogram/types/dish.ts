@@ -13,7 +13,8 @@ export type DishCategory =
   | 'egg'
   | 'tofu'
   | 'vegetable'
-  | 'soup';
+  | 'soup'
+  | 'staple_sauce';
 
 /**
  * 烹饪方式

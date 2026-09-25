@@ -9,7 +9,8 @@ export type IngredientCategory =
   | 'bean'      // 豆类及豆制品
   | 'meat'      // 肉禽
   | 'aquatic'   // 水产
-  | 'seasoning';// 调味辅料
+  | 'seasoning' // 调味辅料
+  | 'staple';   // 主食粮谷
 
 /**
  * 时令食材定义

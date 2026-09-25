@@ -15,7 +15,7 @@ allDishes.forEach(d => {
   catCounts[d.category] = (catCounts[d.category] || 0) + 1;
 });
 console.log('菜品分类统计分布：', catCounts);
-assert(allDishes.length >= 50, '菜品库数量应不少于 50 道');
+assert.equal(allDishes.length, 125, '菜品库数量应为 125 道');
 assert(catCounts['main_meat'] >= 10, '主荤菜品应充足');
 assert(catCounts['vegetable'] >= 10, '素菜菜品应充足');
 assert(catCounts['soup'] >= 8, '靓汤菜品应充足');

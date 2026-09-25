@@ -7,7 +7,8 @@ Page({
             { key: 'main_meat', label: '主荤' },
             { key: 'secondary_meat', label: '副荤' },
             { key: 'vegetable', label: '素菜' },
-            { key: 'soup', label: '靓汤' }
+            { key: 'soup', label: '靓汤' },
+            { key: 'staple_sauce', label: '主食' }
         ],
         currentCategory: 'all',
         searchKeyword: '',
