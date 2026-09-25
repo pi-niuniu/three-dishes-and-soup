@@ -5,7 +5,7 @@
   "description": "《四季三餐 · 好好吃饭》微信小程序",
   "scripts": {
     "build": "tsc",
-    "upload": "/Applications/wechatwebdevtools.app/Contents/MacOS/cli upload --project . -v 2.03 -d '发布 V2.03 版本，集成125道精选食谱库与高清出锅视觉资产'",
+    "upload": "node scripts/upload.mjs",
     "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs",
     "test:algo": "node test/recommendation_test.mjs",
     "test:e2e": "node test/e2e_full_lifecycle_test.mjs",

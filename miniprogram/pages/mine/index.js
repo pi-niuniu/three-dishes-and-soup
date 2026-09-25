@@ -20,6 +20,10 @@ Page({
         ]
     },
     onShow() {
+        const app = getApp();
+        if (app?.globalData?.version) {
+            this.setData({ version: app.globalData.version });
+        }
         this.loadPreferences();
     },
     loadPreferences() {

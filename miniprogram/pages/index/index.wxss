@@ -1,3 +1,8 @@
+/* =========================================================
+   《四季三餐·好好吃饭》点菜首页 UI 视觉精美美学样式表
+   风格体系：日式轻奢日杂风 · 东方温暖生活美学 (Warm Dining Aesthetic)
+   ========================================================= */
+
 /* 顶部精美生活美学品牌导航栏 */
 .custom-nav-bar {
   position: sticky;
@@ -5,33 +10,39 @@
   left: 0;
   right: 0;
   z-index: 999;
-  background: rgba(255, 253, 247, 0.96);
-  backdrop-filter: blur(20rpx);
-  -webkit-backdrop-filter: blur(20rpx);
-  border-bottom: 1rpx solid rgba(244, 239, 230, 0.6);
+  background: rgba(255, 253, 248, 0.96);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  border-bottom: 1rpx solid rgba(243, 236, 225, 0.8);
 }
 
 .custom-nav-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 32rpx;
   box-sizing: border-box;
+}
+
+.nav-brand-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .brand-capsule {
   display: inline-flex;
   align-items: center;
   background: linear-gradient(135deg, #FFFFFF 0%, #FDFBF7 100%);
-  border: 2rpx solid #F0EAE1;
-  border-radius: 44rpx;
-  padding: 10rpx 24rpx 10rpx 20rpx;
+  border: 1.5rpx solid #EFE6D8;
+  border-radius: 40rpx;
+  padding: 6rpx 20rpx 6rpx 16rpx;
   box-shadow: 0 4rpx 14rpx rgba(215, 185, 145, 0.16);
-  transition: transform 0.2s ease;
 }
 
 .brand-pot-icon {
-  font-size: 34rpx;
-  margin-right: 12rpx;
+  font-size: 32rpx;
+  margin-right: 10rpx;
   filter: drop-shadow(0 2rpx 4rpx rgba(230, 104, 59, 0.25));
 }
 
@@ -41,82 +52,162 @@
 }
 
 .brand-part-one {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 700;
   color: #1E2320;
-  letter-spacing: 2rpx;
+  letter-spacing: 1.5rpx;
 }
 
 .brand-part-dot {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 900;
   color: #E6683B;
-  margin: 0 8rpx;
+  margin: 0 6rpx;
 }
 
 .brand-part-two {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 700;
   color: #E6683B;
-  letter-spacing: 2rpx;
+  letter-spacing: 1.5rpx;
   text-shadow: 0 2rpx 8rpx rgba(230, 104, 59, 0.15);
 }
 
 .brand-sparkle {
-  font-size: 26rpx;
-  margin-left: 10rpx;
+  font-size: 24rpx;
+  margin-left: 8rpx;
+}
+
+.nav-greeting-sub {
+  font-size: 20rpx;
+  color: #8C8477;
+  margin-top: 4rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.season-pill-badge {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  background: #FFF8EE;
+  border: 1.5rpx solid #F0DFCA;
+  border-radius: 30rpx;
+  padding: 6rpx 18rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #8C5E2D;
+}
+
+.pill-dot {
+  color: #D4B38C;
+  font-weight: 900;
+}
+
+.pill-term {
+  color: #E6683B;
 }
 
 .custom-nav-container {
-  padding-top: 20rpx !important;
+  padding-top: 16rpx !important;
 }
 
+/* =========================================================
+   1. 节气美学看板卡片
+   ========================================================= */
 .season-hero {
-  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
-  border: 2rpx solid #F4EFE6;
+  position: relative;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFF9F0 50%, #FAF3E6 100%);
+  border: 2rpx solid #F3ECE1;
+  overflow: hidden;
+}
+
+.season-watermark-seal {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 104, 59, 0.08) 0%, rgba(230, 104, 59, 0) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.seal-char {
+  font-size: 72rpx;
+  font-weight: 900;
+  color: rgba(230, 104, 59, 0.12);
+  transform: rotate(15deg);
 }
 
 .season-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16rpx;
+  margin-bottom: 14rpx;
 }
 
 .season-badge {
-  background-color: #E6683B;
+  background: linear-gradient(135deg, #FF7B50 0%, #E6683B 100%);
   color: #FFFFFF;
   font-size: 24rpx;
-  font-weight: 600;
-  padding: 6rpx 20rpx;
-  border-radius: 24rpx;
+  font-weight: 700;
+  padding: 6rpx 22rpx;
+  border-radius: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.28);
 }
 
-.region-text {
+.solar-term-tag {
   font-size: 24rpx;
-  color: #8C918D;
+  font-weight: 600;
+  color: #7D5A38;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid #EBDCC8;
 }
 
 .season-slogan {
-  font-size: 34rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: 700;
   color: #1E2320;
-  margin-bottom: 24rpx;
+  margin-bottom: 8rpx;
   line-height: 1.45;
   letter-spacing: 1.2rpx;
 }
 
+.season-sub-desc {
+  font-size: 22rpx;
+  color: #757B77;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+}
+
 .seasonal-box {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 20rpx;
+  background-color: rgba(255, 255, 255, 0.88);
+  border-radius: 22rpx;
   padding: 20rpx;
+  border: 1.5rpx solid #F0E6D8;
+}
+
+.seasonal-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14rpx;
 }
 
 .seasonal-title {
   font-size: 24rpx;
   color: #2C5E43;
-  font-weight: 600;
-  margin-bottom: 12rpx;
+  font-weight: 700;
+}
+
+.seasonal-tip {
+  font-size: 20rpx;
+  color: #9E988D;
 }
 
 .ingredient-tags {
@@ -126,138 +217,464 @@
 }
 
 .ing-tag {
-  background-color: #EAF3EC;
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  background-color: #EBF4EE;
+  border: 1.5rpx solid #D5E8DB;
   color: #2C5E43;
   font-size: 24rpx;
   padding: 8rpx 20rpx;
-  border-radius: 20rpx;
-  font-weight: 500;
-}
-
-/* 日期切换 */
-.date-section {
-  margin-top: 8rpx;
-}
-
-.date-tabs {
-  display: flex;
-  gap: 16rpx;
-}
-
-.date-tab {
-  flex: 1;
-  background-color: #FAF8F5;
-  border: 2rpx solid #F4EFE6;
   border-radius: 24rpx;
-  padding: 20rpx 16rpx;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+.ing-emoji {
+  font-size: 24rpx;
+}
+
+.ing-name {
+  font-size: 24rpx;
+}
+
+/* =========================================================
+   2. 今日主厨灵感尝鲜 (高清实拍横滑流)
+   ========================================================= */
+.inspiration-section {
+  padding: 24rpx 28rpx;
+  margin-top: 6rpx;
+}
+
+.inspiration-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+
+.inspiration-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.inspire-sparkle {
+  font-size: 30rpx;
+}
+
+.inspire-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1E2320;
+}
+
+.inspire-hot-badge {
+  font-size: 20rpx;
+  font-weight: 700;
+  background: #FFF2E8;
+  color: #E6683B;
+  padding: 2rpx 14rpx;
+  border-radius: 16rpx;
+  border: 1rpx solid #FCD8C1;
+}
+
+.inspire-scroll-tip {
+  font-size: 22rpx;
+  color: #A39B8F;
+}
+
+.inspiration-scroll {
+  width: 100%;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  padding: 4rpx 2rpx 14rpx 2rpx;
+  box-sizing: border-box;
+}
+
+.inspire-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 240rpx;
+  min-width: 240rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #F2ECE1;
+  border-radius: 24rpx;
+  overflow: hidden;
+  margin-right: 20rpx;
+  box-shadow: 0 6rpx 16rpx rgba(184, 134, 78, 0.08);
   transition: all 0.2s ease;
 }
 
-.date-active {
-  background-color: #FFF8F2;
-  border-color: #E6683B;
-  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.16);
+.inspire-card-pinned {
+  border-color: #E6683B !important;
+  box-shadow: 0 8rpx 24rpx rgba(230, 104, 59, 0.28) !important;
+  transform: translateY(-2rpx);
 }
 
-.date-tab-title {
-  font-size: 28rpx;
-  font-weight: 600;
+.inspire-thumb-wrap {
+  width: 100%;
+  height: 160rpx;
+  position: relative;
+  overflow: hidden;
+  background: #FAF6F0;
+}
+
+.inspire-thumb {
+  width: 100%;
+  height: 100%;
+}
+
+.inspire-role-badge {
+  position: absolute;
+  bottom: 8rpx;
+  left: 10rpx;
+  font-size: 20rpx;
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  padding: 2rpx 12rpx;
+  border-radius: 10rpx;
+  font-weight: 500;
+}
+
+.inspire-pinned-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  font-size: 18rpx;
+  background: #E6683B;
+  color: #FFFFFF;
+  font-weight: 700;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(230, 104, 59, 0.4);
+}
+
+.inspire-meta {
+  padding: 14rpx 14rpx 16rpx 14rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.inspire-name {
+  font-size: 26rpx;
+  font-weight: 700;
   color: #1E2320;
-  margin-bottom: 6rpx;
-  letter-spacing: 0.8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.date-active .date-tab-title {
-  color: #E6683B;
-}
-
-.date-tab-sub {
-  font-size: 22rpx;
-  color: #7D827E;
-  letter-spacing: 0.4rpx;
-}
-
-/* 模式选择 */
-.mode-section {
+.inspire-sub-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 8rpx;
+}
+
+.inspire-taste {
+  font-size: 20rpx;
+  color: #7D827E;
+}
+
+.inspire-time {
+  font-size: 20rpx;
+  color: #E6683B;
+  font-weight: 600;
+}
+
+/* =========================================================
+   3. 就餐安排时间
+   ========================================================= */
+.date-section {
+  margin-top: 6rpx;
 }
 
 .section-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 18rpx;
 }
 
 .section-title {
   font-size: 28rpx;
-  font-weight: 600;
-  color: #555A56;
+  font-weight: 700;
+  color: #383D39;
+}
+
+.schedule-tip {
+  font-size: 22rpx;
+  color: #8C8477;
+}
+
+.date-tabs {
+  display: flex;
+  gap: 18rpx;
+}
+
+.date-tab {
+  flex: 1;
+  background-color: #FAF8F5;
+  border: 2rpx solid #F2ECE1;
+  border-radius: 24rpx;
+  padding: 22rpx 18rpx;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.date-active {
+  background-color: #FFF8F2 !important;
+  border-color: #E6683B !important;
+  box-shadow: 0 6rpx 20rpx rgba(230, 104, 59, 0.18) !important;
+}
+
+.date-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.date-tab-main-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1E2320;
+}
+
+.date-active .date-tab-main-title {
+  color: #E6683B;
+}
+
+.date-tab-tag {
+  background: #E6683B;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 2rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.date-tab-tag-normal {
+  background: #EAE6DF;
+  color: #6E726F;
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.date-tab-date {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #2E3330;
+  margin-bottom: 6rpx;
+}
+
+.date-active .date-tab-date {
+  color: #3B2E26;
+}
+
+.date-tab-sub {
+  font-size: 20rpx;
+  color: #8C918D;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   4. 视觉化餐盘模式矩阵
+   ========================================================= */
+.mode-section {
+  margin-top: 6rpx;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.section-sub-label {
+  font-size: 22rpx;
+  color: #9C968B;
 }
 
 .portion-badge {
   font-size: 22rpx;
   color: #E6683B;
-  background-color: #FDF1EA;
+  background-color: #FFF2E8;
+  border: 1rpx solid #FCD8C1;
   padding: 4rpx 16rpx;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   font-weight: 600;
 }
 
 .mode-grid-2x2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16rpx;
+  gap: 18rpx;
 }
 
 .mode-card {
   background-color: #FAF8F5;
-  border: 2rpx solid #F4EFE6;
+  border: 2rpx solid #F2ECE1;
   border-radius: 24rpx;
-  padding: 24rpx 16rpx;
-  text-align: center;
+  padding: 22rpx 16rpx;
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .mode-active {
-  background-color: #FFF8F2;
-  border-color: #E6683B;
-  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.16);
+  background: linear-gradient(145deg, #FFF9F4 0%, #FFF2E8 100%) !important;
+  border-color: #E6683B !important;
+  box-shadow: 0 8rpx 22rpx rgba(230, 104, 59, 0.18) !important;
+}
+
+.mode-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .mode-combo {
-  font-size: 32rpx;
-  font-weight: 600;
+  font-size: 30rpx;
+  font-weight: 700;
   color: #1E2320;
-  margin-bottom: 8rpx;
-  letter-spacing: 0.8rpx;
 }
 
 .mode-active .mode-combo {
   color: #E6683B;
 }
 
+.mode-badge-rec {
+  background: #E6683B;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 2rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.mode-badge-gray {
+  background: #EAE6DF;
+  color: #6E726F;
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.plate-visual-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5rpx solid #F0E6D8;
+  border-radius: 14rpx;
+  padding: 10rpx 4rpx;
+  margin: 12rpx 0 10rpx 0;
+}
+
+.plate-item {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #4A4F4C;
+}
+
+.plate-plus {
+  font-size: 18rpx;
+  color: #C7C1B5;
+  font-weight: 700;
+}
+
 .mode-desc {
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: #7D827E;
   line-height: 1.4;
-  letter-spacing: 0.4rpx;
 }
 
 .portion-explain {
-  margin-top: 20rpx;
+  margin-top: 18rpx;
   font-size: 22rpx;
-  color: #6E7470;
-  background-color: #F4EFE6;
+  color: #6E6454;
+  background-color: #F8F3EA;
+  border: 1.5rpx solid #EFE5D5;
   padding: 16rpx 22rpx;
-  border-radius: 18rpx;
+  border-radius: 20rpx;
   line-height: 1.5;
-  letter-spacing: 0.5rpx;
+  display: flex;
+  gap: 12rpx;
 }
 
-/* 操作区 */
+.explain-icon {
+  font-size: 26rpx;
+  flex-shrink: 0;
+}
+
+.explain-text {
+  flex: 1;
+}
+
+/* =========================================================
+   5. 今日调味偏好微调
+   ========================================================= */
+.flavor-section {
+  margin-top: 6rpx;
+  padding: 24rpx 28rpx;
+}
+
+.flavor-tip {
+  font-size: 22rpx;
+  color: #9C968B;
+}
+
+.flavor-capsule-row {
+  display: flex;
+  gap: 14rpx;
+  overflow-x: auto;
+  padding: 4rpx 0;
+}
+
+.flavor-capsule {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 36rpx;
+  background: #FAF8F5;
+  border: 2rpx solid #F2ECE1;
+  font-size: 22rpx;
+  color: #555A56;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.flavor-active {
+  background: #FFF2E8 !important;
+  border-color: #FCD8C1 !important;
+  color: #E6683B !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4rpx 14rpx rgba(230, 104, 59, 0.16) !important;
+}
+
+.flavor-emoji {
+  font-size: 24rpx;
+}
+
+.flavor-text {
+  font-size: 22rpx;
+}
+
+/* =========================================================
+   6. 触发生成主行动按钮
+   ========================================================= */
 .action-section {
   margin-top: 36rpx;
+  margin-bottom: 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -265,14 +682,221 @@
 
 .main-roll-btn {
   width: 94%;
-  font-size: 36rpx;
+  font-size: 34rpx;
+  font-weight: 700;
   letter-spacing: 2rpx;
-  padding: 26rpx 0;
+  padding: 28rpx 0;
+  border-radius: 56rpx;
+  background: linear-gradient(135deg, #FF7B50 0%, #E6683B 55%, #D65528 100%);
+  box-shadow: 0 12rpx 32rpx rgba(230, 104, 59, 0.38), inset 0 2rpx 2rpx rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.sub-tip {
-  margin-top: 20rpx;
-  font-size: 24rpx;
+.main-roll-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 6rpx 18rpx rgba(230, 104, 59, 0.3);
+}
+
+.btn-sparkle {
+  font-size: 32rpx;
+}
+
+.action-sub-tips {
+  margin-top: 22rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 22rpx;
   color: #8C918D;
+}
+
+.tip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.tip-icon {
+  font-size: 22rpx;
+}
+
+.tip-dot {
+  color: #D1CAC0;
+}
+
+/* =========================================================
+   7. 菜品详情与置顶排餐弹窗 Modal
+   ========================================================= */
+.dish-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12rpx);
+  -webkit-backdrop-filter: blur(12rpx);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  box-sizing: border-box;
+}
+
+.dish-modal-content {
+  width: 100%;
+  max-width: 620rpx;
+  background: #FFFFFF;
+  border-radius: 36rpx;
+  overflow: hidden;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.25);
+  border: 2rpx solid #F0E6D8;
+}
+
+.modal-dish-img-wrap {
+  width: 100%;
+  height: 340rpx;
+  position: relative;
+  background: #FAF6F0;
+}
+
+.modal-dish-img {
+  width: 100%;
+  height: 100%;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.modal-dish-emoji {
+  position: absolute;
+  bottom: 16rpx;
+  left: 20rpx;
+  font-size: 40rpx;
+  filter: drop-shadow(0 2rpx 6rpx rgba(0, 0, 0, 0.3));
+}
+
+.modal-dish-body {
+  padding: 30rpx 32rpx;
+}
+
+.modal-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.modal-dish-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1E2320;
+}
+
+.modal-time-badge {
+  font-size: 24rpx;
+  color: #E6683B;
+  background: #FFF2E8;
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+  font-weight: 600;
+}
+
+.modal-taste-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.modal-taste-tag {
+  background: #FDF1EA;
+  color: #E6683B;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  font-weight: 600;
+}
+
+.modal-method-tag {
+  background: #EAF3EC;
+  color: #2C5E43;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  font-weight: 600;
+}
+
+.modal-ing-box {
+  background: #FAF8F5;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  border: 1.5rpx solid #F0EAE0;
+  margin-bottom: 30rpx;
+}
+
+.modal-ing-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #4A4F4C;
+  margin-bottom: 12rpx;
+}
+
+.modal-ing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.modal-ing-chip {
+  font-size: 22rpx;
+  color: #6E7470;
+  background: #FFFFFF;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid #EBE4DA;
+}
+
+.modal-action-row {
+  display: flex;
+  justify-content: center;
+}
+
+.modal-pin-btn {
+  width: 100%;
+  padding: 22rpx 0;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 700;
   text-align: center;
+}
+
+.btn-pin {
+  background: linear-gradient(135deg, #FF7B50 0%, #E6683B 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8rpx 20rpx rgba(230, 104, 59, 0.35);
+}
+
+.btn-unpin {
+  background: #F4EFE6;
+  color: #7D827E;
+  border: 1.5rpx solid #E0D7C8;
 }

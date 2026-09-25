@@ -69,12 +69,29 @@ indexPage.onShow();
 console.log(`✅ Tab 1 [点菜] (pages/index) 渲染成功: 季节=${indexPage.data.seasonName}, 时令食材数=${indexPage.data.seasonalIngredients.length}`);
 assert(indexPage.data.seasonalIngredients.length > 0, '时令食材列表不应为空');
 assert(indexPage.data.tomorrowText.length > 0, '明日日期文案不应为空');
+assert(indexPage.data.inspirationDishes.length >= 4, '今日主厨灵感尝鲜至少应推荐 4 道时令大图美食');
+assert(indexPage.data.solarTermText.length > 0, '节气物候文本不应为空');
+assert(indexPage.data.greetingText.length > 0, '晨昏问候文本不应为空');
+
+// 测试快速调味胶囊切换
+indexPage.toggleQuickFlavor({ currentTarget: { dataset: { flavor: 'light_healthy' } } });
+assert.equal(indexPage.data.selectedFlavor, 'light_healthy', '快速调味应切换为 light_healthy');
+
+// 测试灵感菜品弹窗与指定排餐
+const firstInspire = indexPage.data.inspirationDishes[0];
+indexPage.openDishPreview({ currentTarget: { dataset: { id: firstInspire.id } } });
+assert(indexPage.data.showDishModal, '点击灵感菜品应打开详情弹窗');
+indexPage.preventBubble();
+indexPage.togglePinPreviewDish();
+assert.equal(indexPage.data.pinnedDishId, firstInspire.id, '应成功指定排入该灵感菜品');
 
 // 触发生成菜单
 indexPage.handleGenerateMenu();
 assert(appInstance.globalData.currentMenu, '生成菜单后全局 globalData 必须有 currentMenu');
 const generatedMenu = appInstance.globalData.currentMenu;
-console.log(`✅ Tab 1 [点菜] 成功生成菜单: ${generatedMenu.slots.map(s => s.dish.name).join(' + ')}`);
+assert(generatedMenu.slots.some(s => s.dish.id === firstInspire.id), '指定排餐的灵感菜品必须出现在生成的菜单中');
+console.log(`✅ Tab 1 [点菜] 成功生成包含指定排餐【${firstInspire.name}】的菜单: ${generatedMenu.slots.map(s => s.dish.name).join(' + ')}`);
+
 
 // 2. Tab 2: pages/dishes/index (菜库)
 currentPageName = 'pages/dishes/index';
