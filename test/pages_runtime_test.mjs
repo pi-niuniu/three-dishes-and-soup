@@ -95,6 +95,16 @@ for (const dish of dishesPage.data.allDishes) {
 }
 console.log(`✅ V2.0 菜库全部 ${dishesPage.data.allDishes.length} 道菜品缩略图本地文件与 Emoji 徽标 100% 校验通过！`);
 
+// 验证 Tab 2 菜库主食分类与模糊搜索
+dishesPage.switchCategory({ currentTarget: { dataset: { cat: 'staple_sauce' } } });
+assert.equal(dishesPage.data.filteredDishes.length, 14, '主食 Tab 筛选结果必须精确为 14 道菜');
+console.log('✅ Tab 2 [菜库] 主食 (staple_sauce) 分类切换质检通过: 14 道特色主食全部正常展示');
+
+dishesPage.switchCategory({ currentTarget: { dataset: { cat: 'all' } } });
+dishesPage.handleSearchInput({ detail: { value: '意面' } });
+assert(dishesPage.data.filteredDishes.length >= 2, '搜索【意面】应至少匹配 2 道特色意面');
+dishesPage.handleSearchInput({ detail: { value: '' } });
+
 // 3. Tab 3: pages/history/index (历史)
 currentPageName = 'pages/history/index';
 await import('../miniprogram/pages/history/index.js');
@@ -117,6 +127,15 @@ const resultPage = instantiatePage('pages/menu/result/index');
 resultPage.onLoad();
 console.log(`✅ 子页面 1 [菜单结果] (pages/menu/result) 渲染成功: 标题=${resultPage.data.modeTitle}, 槽位数=${resultPage.data.menu.slots.length}`);
 assert.equal(resultPage.data.menu.slots.length, 4, '3菜1汤模式应有 4 个槽位');
+
+// 验证自选换菜 Modal 中包含特色主食，且选入后角色正确更新为 staple_sauce
+resultPage.openSelectModal({ currentTarget: { dataset: { index: 0 } } });
+assert(resultPage.data.candidateDishes.some(d => d.category === 'staple_sauce'), '槽位 0 自选候选菜品必须包含特色主食');
+const testStaple = resultPage.data.candidateDishes.find(d => d.id === 'dish_112'); // 砂锅香菇腊肠煲仔饭
+resultPage.selectCandidateDish({ currentTarget: { dataset: { dish: testStaple } } });
+assert.equal(resultPage.data.menu.slots[0].dish.id, 'dish_112', '自选菜品必须成功放入槽位 0');
+assert.equal(resultPage.data.menu.slots[0].role, 'staple_sauce', '换入特色主食后槽位角色必须更新为 staple_sauce');
+console.log('✅ 子页面 1 自选换菜链路质检通过: 候选菜品支持特色主食，且角色正确同步为 staple_sauce');
 
 // 6. 子页面 2: pages/menu/shopping/index (交付中心)
 currentPageName = 'pages/menu/shopping/index';

@@ -57,7 +57,9 @@ Page({
         if (searchKeyword.trim()) {
             const kw = searchKeyword.trim().toLowerCase();
             result = result.filter(d => d.name.toLowerCase().includes(kw) ||
-                d.mainIngredient.toLowerCase().includes(kw));
+                d.mainIngredient.toLowerCase().includes(kw) ||
+                (d.tags && d.tags.some((t) => t.toLowerCase().includes(kw))) ||
+                (d.taste && d.taste.some((t) => t.toLowerCase().includes(kw))));
         }
         this.setData({ filteredDishes: result });
     },

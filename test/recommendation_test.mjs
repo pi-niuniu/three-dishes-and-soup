@@ -137,8 +137,8 @@ testMenu.slots.forEach((s, idx) => {
 assert.equal(testMenu.slots.length, 4, '高压去重下动态保底必须确保 4 个槽位完整');
 console.log('✅ 动态保底生效，未发生死锁或槽位缺损！');
 
-// 5. 验证食材口语化斤两换算
-console.log('\n--- 验证菜市场口语化斤两换算 ---');
+// 5. 验证食材口语化斤两换算与全库食材聚合归一
+console.log('\n--- 验证菜市场口语化斤两换算与全库食材聚合归一 ---');
 assert.equal(shoppingListService.formatGramsToJinLiang(600), '1 斤 2 两 (约 600g)');
 assert.equal(shoppingListService.formatGramsToJinLiang(450), '9 两 (约 450g)');
 assert.equal(shoppingListService.formatGramsToJinLiang(250), '半斤 (约 250g)');
@@ -151,7 +151,28 @@ assert.equal(shoppingListService.formatGramsToJinLiang(480), '1 斤 (约 480g)',
 assert.equal(shoppingListService.formatGramsToJinLiang(980), '2 斤 (约 980g)', '980g 进位应为 2 斤');
 assert.equal(shoppingListService.formatGramsToJinLiang(0), '适量');
 assert.equal(shoppingListService.formatGramsToJinLiang(30), '约 30g');
-console.log('✅ 口语化斤两换算算法 (1斤2两, 9两, 半斤, 1斤半及480g防10两边界) 全部匹配！');
+
+// 关键检验：新老菜品食材跨菜合并与调料防割裂 (杜绝鸡蛋与土鸡蛋分离、大蒜瓣变为2两蔬菜)
+const d1 = allDishes.find(d => d.id === 'dish_001'); // 回锅肉 (五花肉)
+const d80 = allDishes.find(d => d.id === 'dish_080'); // 韩式烤肉 (原切五花肉, 鲜牛上脑, 大蒜瓣)
+const mergedPorkList = shoppingListService.generateShoppingList([d1, d80], 1.8);
+const porkItem = mergedPorkList.find(i => i.name === '猪肉');
+assert(porkItem, '五花肉与原切五花肉必须归一合并为【猪肉】');
+assert.equal(porkItem.displayAmount, '1 斤 7 两 (约 850g)');
+
+const garlicItem = mergedPorkList.find(i => i.name === '大蒜');
+assert(garlicItem, '大蒜瓣必须归一为佐料【大蒜】');
+assert.equal(garlicItem.displayAmount, '1 头 (适量)', '大蒜佐料必须规范显示为 1 头 (适量)，严禁按蔬菜产生两数');
+
+const d4 = allDishes.find(d => d.id === 'dish_004'); // 番茄炒蛋 (鸡蛋)
+const d103 = allDishes.find(d => d.id === 'dish_103'); // 蒜苗爆炒土鸡蛋 (土鸡蛋)
+const mergedEggList = shoppingListService.generateShoppingList([d4, d103], 1.8);
+const eggItem = mergedEggList.find(i => i.name === '鸡蛋');
+assert(eggItem, '鸡蛋与土鸡蛋必须归一合并为【鸡蛋】');
+assert.equal(eggItem.displayAmount, '11 个', '鸡蛋与土鸡蛋合并后应为 11 个');
+assert(!mergedEggList.some(i => i.name === '土鸡蛋'), '清单中绝不应出现分裂的【土鸡蛋】项目');
+
+console.log('✅ 口语化斤两换算算法与新老食材归一化合并 (五花肉+原切五花肉、鸡蛋+土鸡蛋、大蒜瓣防分裂) 全部匹配！');
 
 // 6. 验证给大厨做饭叮嘱与买菜特别交代微信文本快照
 testMenu.cookNotes = '少放盐，排骨汤多炖半小时';
@@ -217,13 +238,13 @@ for (let i = 0; i < 20; i++) {
     targetDateDay: 'tomorrow'
   });
   const names = checkMenu.slots.map(s => s.dish.name);
-  const produceKeywords = ['丝瓜', '番茄', '冬瓜', '土豆', '豆腐', '西兰花', '茄子', '莲藕'];
+  const produceKeywords = ['丝瓜', '番茄', '冬瓜', '土豆', '豆腐', '西兰花', '茄子', '莲藕', '西葫芦', '佛手瓜', '荷兰豆', '油豆角', '奶白菜', '菠菜', '金针菇', '口蘑'];
   for (const kw of produceKeywords) {
     const kwHits = names.filter(n => n.includes(kw));
     assert(kwHits.length <= 1, `同一餐桌中关键词【${kw}】发生撞菜: ${kwHits.join(', ')}`);
   }
 }
-console.log('✅ 连续20次菜单生成全部通过蔬果防重检验，餐桌搭配层次丰富！');
+console.log('✅ 连续20次菜单生成全部通过蔬果防重检验（含西葫芦、佛手瓜、荷兰豆等新时令），餐桌搭配层次丰富！');
 
 // 10. 验证紧凑微信分享序列化与反序列化 (Compact Share Payload)
 console.log('\n--- 验证紧凑微信分享序列化与反序列化 ---');
@@ -257,5 +278,20 @@ assert(!serializedExtreme.slots.some(s => s === null || !s || !s.dish), 'slots �
 const safeNames = serializedExtreme.slots.map(s => s.dish.name);
 assert.equal(safeNames.length, serializedExtreme.slots.length, '下游页面安全 map 访问必须通过');
 console.log('✅ 极端稀疏测试通过：槽位全部有效填充，绝无 null 漏洞引发白屏崩溃！');
+
+// 12. 验证特色主食 (staple_sauce) 手动选择与同类换菜闭环
+console.log('\n--- 验证特色主食 (staple_sauce) 手动选入与同类连续换菜闭环 ---');
+const stapleDish = allDishes.find(d => d.id === 'dish_112'); // 砂锅香菇腊肠煲仔饭
+assert(stapleDish && stapleDish.category === 'staple_sauce', '砂锅香菇腊肠煲仔饭必须为特色主食分类');
+
+const menuWithStaple = menuRecommendationEngine.manualSetSlotDish(0, stapleDish, testMenu);
+assert.equal(menuWithStaple.slots[0].dish.id, 'dish_112');
+assert.equal(menuWithStaple.slots[0].role, 'staple_sauce', '手动设置主食后槽位角色必须更新为 staple_sauce');
+
+// 测试对主食槽位执行 replaceDish：必须替换为另一道特色主食，绝不能降级回锅肉
+const replacedStapleMenu = menuRecommendationEngine.replaceDish(0, menuWithStaple, 9, basePref, [], allDishes);
+assert.equal(replacedStapleMenu.slots[0].dish.category, 'staple_sauce', '特色主食换菜后新菜品分类必须仍为 staple_sauce');
+assert.notEqual(replacedStapleMenu.slots[0].dish.id, 'dish_112', '新换出的主食不应与原煲仔饭相同');
+console.log(`✅ 特色主食槽位换菜验证通过: 【${stapleDish.name}】 -> 【${replacedStapleMenu.slots[0].dish.name}】(${replacedStapleMenu.slots[0].dish.category})`);
 
 console.log('\n====== 全量家常菜库、四大模式、大厨端口语化、防重保底与分享链路全部 100% 通过！ ======');

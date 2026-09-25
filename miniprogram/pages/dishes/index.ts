@@ -68,7 +68,9 @@ Page({
       const kw = searchKeyword.trim().toLowerCase();
       result = result.filter(d =>
         d.name.toLowerCase().includes(kw) ||
-        d.mainIngredient.toLowerCase().includes(kw)
+        d.mainIngredient.toLowerCase().includes(kw) ||
+        (d.tags && d.tags.some((t: string) => t.toLowerCase().includes(kw))) ||
+        (d.taste && d.taste.some((t: string) => t.toLowerCase().includes(kw)))
       );
     }
 

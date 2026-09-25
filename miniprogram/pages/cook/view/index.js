@@ -53,7 +53,8 @@ Page({
             secondary_meat: '下饭副荤',
             egg_or_tofu: '蛋品豆味',
             vegetable: '当季时蔬',
-            soup: '暖胃靓汤'
+            soup: '暖胃靓汤',
+            staple_sauce: '特色主食'
         };
         const dishes = safeSlots.map(s => ({
             name: s.dish.name,

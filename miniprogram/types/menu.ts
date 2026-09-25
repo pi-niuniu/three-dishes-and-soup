@@ -11,7 +11,8 @@ export type SlotRole =
   | 'secondary_meat'
   | 'egg_or_tofu'
   | 'vegetable'
-  | 'soup';
+  | 'soup'
+  | 'staple_sauce';
 
 export interface MenuSlot {
   slotIndex: number;

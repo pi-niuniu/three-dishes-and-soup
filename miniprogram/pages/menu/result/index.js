@@ -12,7 +12,8 @@ Page({
             secondary_meat: '下饭副荤',
             egg_or_tofu: '蛋品豆味',
             vegetable: '当季时蔬',
-            soup: '暖胃靓汤'
+            soup: '暖胃靓汤',
+            staple_sauce: '特色主食'
         },
         showModal: false,
         modalTab: 'library',
@@ -106,10 +107,13 @@ Page({
                 candidates = allDishes.filter(d => d.category === 'soup');
             }
             else if (targetSlot.role === 'main_meat') {
-                candidates = allDishes.filter(d => d.category === 'main_meat');
+                candidates = allDishes.filter(d => d.category === 'main_meat' || d.category === 'staple_sauce');
+            }
+            else if (targetSlot.role === 'staple_sauce') {
+                candidates = allDishes.filter(d => d.category === 'staple_sauce' || d.category === 'main_meat');
             }
             else {
-                candidates = allDishes.filter(d => d.category === 'secondary_meat' || d.category === 'egg' || d.category === 'tofu');
+                candidates = allDishes.filter(d => d.category === 'secondary_meat' || d.category === 'egg' || d.category === 'tofu' || d.category === 'staple_sauce');
             }
         }
         if (this.data.menu.mode === 'three_stir_fries') {

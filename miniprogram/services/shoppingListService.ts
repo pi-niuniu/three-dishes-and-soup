@@ -283,23 +283,79 @@ ${shoppingText}${shoppingNotesText}
   }
 
   private normalizeIngredientName(rawName: string): string {
-    if (['猪里脊', '五花肉', '五花肉片', '猪瘦肉', '后腿肉', '猪肉片', '猪里脊肉片', '猪肉馅'].includes(rawName)) return '猪肉';
-    if (['肋排', '排骨'].includes(rawName)) return '排骨';
-    if (['牛腩', '牛肉馅'].includes(rawName)) return '牛肉';
+    // 猪肉类归一
+    if ([
+      '猪里脊', '五花肉', '五花肉片', '猪瘦肉', '后腿肉', '猪肉片',
+      '猪里脊肉片', '猪肉馅', '原切五花肉', '猪里脊肉', '精猪肉末'
+    ].includes(rawName)) return '猪肉';
+
+    // 排骨类归一
+    if (['肋排', '排骨', '猪小排'].includes(rawName)) return '排骨';
+
+    // 牛肉类归一
+    if (['牛腩', '牛肉馅', '牛腱子肉', '鲜牛上脑', '牛柳丝', '麻辣牛肉浇头'].includes(rawName)) return '牛肉';
+
+    // 羊肉类归一
+    if (['原切羊肉卷', '羊肉卷'].includes(rawName)) return '羊肉';
+
+    // 鲜鱼水产类归一
     if (['鲜活鲈鱼', '鲈鱼', '草鱼', '黑鱼片'].includes(rawName)) return '鲜鱼';
-    if (['基围虾', '鲜虾', '大虾', '鲜虾仁'].includes(rawName)) return '鲜虾';
-    if (['鸡胸肉', '鸡腿肉', '琵琶腿', '土鸡块'].includes(rawName)) return '鸡肉';
-    if (['大蒜', '蒜瓣', '蒜末', '蒜粒'].includes(rawName)) return '大蒜';
-    if (['生姜', '姜片', '姜丝'].includes(rawName)) return '生姜';
-    if (['小葱', '香葱', '葱花'].includes(rawName)) return '香葱';
+
+    // 鲜虾类归一
+    if (['基围虾', '鲜虾', '大虾', '鲜虾仁', '大虾仁', '鲜活基围虾'].includes(rawName)) return '鲜虾';
+
+    // 鸡肉类归一
+    if ([
+      '鸡胸肉', '鸡腿肉', '琵琶腿', '土鸡块', '鲜大鸡全腿',
+      '鸡胸肉碎', '鲜鸡肉', '鲜鸡腿肉', '鸡大腿肉丁'
+    ].includes(rawName)) return '鸡肉';
+
+    // 鸡蛋类归一
+    if (['鸡蛋', '土鸡蛋', '熟鸡蛋'].includes(rawName)) return '鸡蛋';
+
+    // 豆腐豆制品归一
+    if (['嫩豆腐', '老豆腐', '北豆腐', '豆腐'].includes(rawName)) return '豆腐';
+
+    // 大蒜调味归一 (防止大蒜末、大蒜瓣拆分为蔬菜并产生2两奇怪斤两)
+    if ([
+      '大蒜', '蒜瓣', '蒜末', '蒜粒', '大蒜末', '大蒜瓣',
+      '大蒜蓉', '蒜片', '蒜碎', '大蒜干辣椒'
+    ].includes(rawName)) return '大蒜';
+
+    // 生姜归一
+    if (['生姜', '姜片', '姜丝', '生姜末', '生姜大葱'].includes(rawName)) return '生姜';
+
+    // 香葱归一
+    if (['小葱', '香葱', '葱花', '小葱碎', '香葱末'].includes(rawName)) return '香葱';
+
+    // 蒜苗归一
     if (['青蒜苗', '蒜苗'].includes(rawName)) return '蒜苗';
+
+    // 菌菇与干货归一
     if (['黑木耳', '木耳'].includes(rawName)) return '木耳';
+    if (['新鲜香菇', '鲜香菇', '香菇碎', '香菇'].includes(rawName)) return '香菇';
+    if (['鲜金针菇', '金针菇'].includes(rawName)) return '金针菇';
+    if (['新鲜口蘑', '口蘑'].includes(rawName)) return '口蘑';
     if (['散花菜', '有机花菜'].includes(rawName)) return '花菜';
     if (['圆茄子', '茄子'].includes(rawName)) return '茄子';
     if (['薄皮青椒', '青椒'].includes(rawName)) return '青椒';
     if (['去壳板栗', '板栗'].includes(rawName)) return '板栗';
     if (['免洗紫菜', '紫菜'].includes(rawName)) return '紫菜';
     if (['铁棍山药', '山药'].includes(rawName)) return '山药';
+    if (['鲜嫩丝瓜', '丝瓜'].includes(rawName)) return '丝瓜';
+    if (['带皮小土豆', '薄切土豆片', '面土豆', '土豆'].includes(rawName)) return '土豆';
+    if (['鲜西葫芦', '西葫芦丝', '西葫芦'].includes(rawName)) return '西葫芦';
+    if (['新鲜菠菜', '菠菜'].includes(rawName)) return '菠菜';
+    if (['嫩荷兰豆', '荷兰豆'].includes(rawName)) return '荷兰豆';
+    if (['鲜佛手瓜', '佛手瓜'].includes(rawName)) return '佛手瓜';
+    if (['矮脚奶白菜', '奶白菜'].includes(rawName)) return '奶白菜';
+    if (['新鲜茴香', '茴香'].includes(rawName)) return '茴香';
+    if (['新鲜红苋菜', '红苋菜'].includes(rawName)) return '红苋菜';
+    if (['鲜西芹', '西芹'].includes(rawName)) return '西芹';
+    if (['东北油豆角', '油豆角'].includes(rawName)) return '油豆角';
+    if (['嫩甜豌豆', '甜豌豆', '豌豆'].includes(rawName)) return '豌豆';
+    if (['洋葱片', '洋葱碎', '洋葱'].includes(rawName)) return '洋葱';
+
     return rawName;
   }
 }

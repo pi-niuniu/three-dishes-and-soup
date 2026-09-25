@@ -15,9 +15,9 @@ function normalizeProduce(p) {
         return '茄子';
     if (p === '散花菜' || p === '花菜' || p === '有机花菜')
         return '花菜';
-    if (p === '老豆腐' || p === '嫩豆腐' || p === '豆腐')
+    if (p === '老豆腐' || p === '嫩豆腐' || p === '豆腐' || p === '北豆腐' || p === '千页豆腐' || p === '冻豆腐')
         return '豆腐';
-    if (p === '白萝卜' || p === '萝卜')
+    if (p === '白萝卜' || p === '萝卜' || p === '酸萝卜')
         return '白萝卜';
     if (p === '毛豆米' || p === '毛豆')
         return '毛豆';
@@ -27,6 +27,26 @@ function normalizeProduce(p) {
         return '青菜心';
     if (p === '铁棍山药' || p === '山药')
         return '山药';
+    if (p === '嫩荷兰豆' || p === '荷兰豆')
+        return '荷兰豆';
+    if (p === '鲜佛手瓜' || p === '佛手瓜')
+        return '佛手瓜';
+    if (p === '鲜西葫芦' || p === '西葫芦' || p === '西葫芦丝')
+        return '西葫芦';
+    if (p === '矮脚奶白菜' || p === '奶白菜')
+        return '奶白菜';
+    if (p === '新鲜菠菜' || p === '菠菜')
+        return '菠菜';
+    if (p === '鲜金针菇' || p === '金针菇')
+        return '金针菇';
+    if (p === '新鲜口蘑' || p === '口蘑')
+        return '口蘑';
+    if (p === '东北油豆角' || p === '油豆角')
+        return '油豆角';
+    if (p === '新鲜茴香' || p === '茴香')
+        return '茴香';
+    if (p === '新鲜红苋菜' || p === '红苋菜')
+        return '红苋菜';
     return p;
 }
 function getProduceKeys(dish) {
@@ -34,7 +54,8 @@ function getProduceKeys(dish) {
         '丝瓜', '番茄', '西红柿', '冬瓜', '南瓜尖', '卷心菜', '包菜', '四季豆', '圆茄子', '茄子', '土豆',
         '嫩豆腐', '老豆腐', '豆腐', '毛豆米', '毛豆', '白玉菇', '白萝卜', '萝卜', '空心菜', '茼蒿', '莲藕', '藕',
         '莴笋', '菜心', '青菜心', '蒜苔', '西兰花', '散花菜', '花菜', '豆芽',
-        '豌豆尖', '山药', '黄瓜', '木耳', '黑木耳', '香菇', '板栗'
+        '豌豆尖', '山药', '黄瓜', '木耳', '黑木耳', '香菇', '板栗',
+        '西葫芦', '佛手瓜', '荷兰豆', '油豆角', '奶白菜', '菠菜', '金针菇', '口蘑', '茴香', '红苋菜'
     ];
     const found = new Set();
     for (const p of produceList) {
@@ -208,6 +229,7 @@ export class MenuRecommendationEngine {
                 return {
                     ...s,
                     dish,
+                    role: (dish.category === 'staple_sauce' ? 'staple_sauce' : (dish.category === 'egg' || dish.category === 'tofu' ? 'egg_or_tofu' : s.role)),
                     isLocked: true
                 };
             }
@@ -329,6 +351,8 @@ export class MenuRecommendationEngine {
                 return category === 'vegetable';
             case 'soup':
                 return category === 'soup';
+            case 'staple_sauce':
+                return category === 'staple_sauce';
             default:
                 return false;
         }
