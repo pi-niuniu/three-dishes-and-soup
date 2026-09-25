@@ -109,6 +109,7 @@
 
 .custom-nav-container {
   padding-top: 16rpx !important;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom)) !important;
 }
 
 /* =========================================================

@@ -11,7 +11,7 @@ const projectRoot = path.resolve(__dirname, '..');
 // 1. 读取 package.json 获取版本号
 const pkgPath = path.join(projectRoot, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-const version = process.env.npm_config_app_version || pkg.version || '2.03';
+const version = process.env.npm_config_app_version || pkg.version || '2.04';
 
 // 2. 检查 project.config.json 是否存在
 const projectConfigPath = path.join(projectRoot, 'project.config.json');
@@ -21,7 +21,7 @@ if (!fs.existsSync(projectConfigPath)) {
 }
 
 // 3. 解析上传描述
-const defaultDesc = `发布 V${version} 版本，集成125道精选食谱库与高清出锅视觉资产`;
+const defaultDesc = `发布 V${version} 版本：全新重构点菜主页为东方生活美学UI，集成时令灵感大图横滑流、餐盘视觉化矩阵与即时调味偏好`;
 const desc = process.argv.slice(2).join(' ') || defaultDesc;
 
 // 4. 定位微信开发者工具 CLI

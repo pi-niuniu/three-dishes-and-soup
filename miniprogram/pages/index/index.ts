@@ -219,6 +219,21 @@ Page({
     const flavor = e.currentTarget.dataset.flavor;
     const newFlavor = this.data.selectedFlavor === flavor ? '' : flavor;
     this.setData({ selectedFlavor: newFlavor });
+
+    if (newFlavor === 'warm_soup') {
+      if (this.data.currentMode === 'three_dishes' || this.data.currentMode === 'three_stir_fries') {
+        this.setData({ currentMode: 'hearty_3_1' });
+        wx.showToast({ title: '已切换为滋养煲汤模式', icon: 'none' });
+      } else {
+        wx.showToast({ title: '已优选滋补靓汤', icon: 'none' });
+      }
+    } else if (newFlavor === 'light_healthy') {
+      wx.showToast({ title: '已调为清淡少油', icon: 'none' });
+    } else if (newFlavor === 'classic_spicy') {
+      wx.showToast({ title: '已调为川渝开胃微辣', icon: 'none' });
+    } else if (newFlavor === 'quick_speed') {
+      wx.showToast({ title: '已优选快手烹饪菜肴', icon: 'none' });
+    }
   },
 
   openDishPreview(e: any) {

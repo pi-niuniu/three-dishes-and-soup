@@ -5,7 +5,7 @@ import { MealMode } from '../../types/menu.js';
 
 Page({
   data: {
-    version: '2.03',
+    version: '2.04',
     preferences: {} as UserPreferences,
     dislikedMap: {} as Record<string, boolean>,
     spicyLevels: [

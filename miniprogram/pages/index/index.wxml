@@ -278,7 +278,8 @@
   <view class="action-section">
     <button class="btn-primary main-roll-btn" bindtap="handleGenerateMenu">
       <text class="btn-sparkle">✨</text>
-      <text>生成【{{ targetDay === 'tomorrow' ? '明天' : '今天' }}】家常菜单</text>
+      <text wx:if="{{ pinnedInspirationDish }}">生成包含【{{ pinnedInspirationDish.name }}】的【{{ targetDay === 'tomorrow' ? '明天' : '今天' }}】菜单</text>
+      <text wx:else>生成【{{ targetDay === 'tomorrow' ? '明天' : '今天' }}】家常菜单</text>
     </button>
     <view class="action-sub-tips">
       <view class="tip-item">
