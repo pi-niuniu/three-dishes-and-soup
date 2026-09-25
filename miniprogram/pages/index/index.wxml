@@ -4,7 +4,7 @@
     <view class="brand-capsule">
       <text class="brand-pot-icon">🍲</text>
       <view class="brand-text-box">
-        <text class="brand-part-one">一年四季</text>
+        <text class="brand-part-one">四季三餐</text>
         <text class="brand-part-dot">·</text>
         <text class="brand-part-two">好好吃饭</text>
       </view>

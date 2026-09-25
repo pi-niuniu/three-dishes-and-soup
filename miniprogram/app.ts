@@ -6,7 +6,7 @@ App<IAppOption>({
     currentMenu: null,
   },
   onLaunch() {
-    console.log('《一年四季·好好吃饭》小程序启动中...');
+    console.log('《四季三餐·好好吃饭》小程序启动中...');
     dataProvider.init();
     preferenceService.getPreferences();
   }

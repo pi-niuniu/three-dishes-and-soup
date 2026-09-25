@@ -6,7 +6,7 @@ import { dataProvider } from '../miniprogram/services/dataProvider.js';
 dataProvider.init();
 const allDishes = dataProvider.getAllDishes();
 
-console.log('====== 《三菜一汤 · 私厨小食堂》全量业务逻辑与防重回归验证 ======\n');
+console.log('====== 《四季三餐 · 好好吃饭》全量业务逻辑与防重回归验证 ======\n');
 console.log(`✅ 成功加载高频经典家常菜库，当前共计 ${allDishes.length} 道菜！`);
 
 // 1. 验证菜品分类覆盖

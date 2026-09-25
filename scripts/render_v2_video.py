@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《一年四季·好好吃饭》V2.0 全景生活美学菜品图文版 E2E 演示视频渲染管线
+《四季三餐·好好吃饭》V2.0 全景生活美学菜品图文版 E2E 演示视频渲染管线
 - 1:1 像素级绘制 V2.0 核心页面 (首页、图文结果页、单菜锁定磨砂角标、菜库全景图文流、大厨看板与做饭大图)
 - 合成手势触控平滑轨迹与波纹动画 (30fps, 768x1376 竖屏高清)
 - 调取系统 FFmpeg 压制 H.264 (yuv420p) 高兼容 MP4 视频
@@ -56,7 +56,7 @@ def get_dish_img(dish_id, size=(140, 140)):
     im = Image.new("RGBA", size, WARM_OAT)
     return im
 
-def draw_capsule_navbar(draw, title="一年四季 · 好好吃饭"):
+def draw_capsule_navbar(draw, title="四季三餐 · 好好吃饭"):
     """绘制顶部微信自定义胶囊导航栏"""
     draw.text((40, 96), title, font=font_subtitle, fill=DARK_TEXT)
     # 微信胶囊右侧占位
@@ -345,7 +345,7 @@ def create_title_frame():
     d = ImageDraw.Draw(im)
     d.rounded_rectangle([48, 140, W - 48, H - 140], radius=40, fill=CARD_BG, outline=WARM_OAT, width=3)
     
-    d.text((W // 2 - 240, 360), "《一年四季·好好吃饭》", font=font_title, fill=DARK_TEXT)
+    d.text((W // 2 - 240, 360), "《四季三餐·好好吃饭》", font=font_title, fill=DARK_TEXT)
     d.text((W // 2 - 200, 440), "V2.0 全景生活美学图文版", font=font_title, fill=ACCENT_ORANGE)
     
     d.line([W // 2 - 160, 530, W // 2 + 160, 530], fill=ACCENT_ORANGE, width=4)
@@ -398,7 +398,7 @@ def transition_slide(img_from, img_to, progress):
     return res
 
 def main():
-    print("🎬 开始压制生成《一年四季·好好吃饭》V2.0 演示视频...")
+    print("🎬 开始压制生成《四季三餐·好好吃饭》V2.0 演示视频...")
     
     im_home = render_home_page()
     im_result = render_result_page(locked=False)

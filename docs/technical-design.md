@@ -1,4 +1,4 @@
-# 《三菜一汤》微信小程序 V1.0 技术设计方案 (Technical Design)
+# 《四季三餐·好好吃饭》微信小程序 V1.0 技术设计方案 (Technical Design)
 
 > **文档版本**：V1.0  
 > **文档归档**：`docs/technical-design.md`  

@@ -2,7 +2,7 @@
   "name": "three-dishes-and-soup",
   "version": "1.0.0",
   "type": "module",
-  "description": "《三菜一汤 · 私厨小食堂》微信小程序",
+  "description": "《四季三餐 · 好好吃饭》微信小程序",
   "scripts": {
     "build": "tsc",
     "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs",
