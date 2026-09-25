@@ -1,0 +1,121 @@
+<!-- 顶部精美生活美学品牌导航栏 -->
+<view class="custom-nav-bar" style="padding-top: {{ statusBarHeight }}px;">
+  <view class="custom-nav-inner" style="height: {{ navBarHeight }}px;">
+    <view class="brand-capsule">
+      <text class="brand-pot-icon">🍲</text>
+      <view class="brand-text-box">
+        <text class="brand-part-one">一年四季</text>
+        <text class="brand-part-dot">·</text>
+        <text class="brand-part-two">好好吃饭</text>
+      </view>
+      <text class="brand-sparkle">🌱</text>
+    </view>
+  </view>
+</view>
+
+<view class="container custom-nav-container">
+  <!-- 顶部节气与时令卡片 -->
+  <view class="season-hero card">
+    <view class="season-header">
+      <view class="season-badge">{{ currentMonthText }} · {{ seasonName }}</view>
+      <view class="region-text">川渝时令</view>
+    </view>
+    <view class="season-slogan">顺时而食，每天配一桌可口家常菜</view>
+    
+    <!-- 当季优选食材列表 -->
+    <view class="seasonal-box">
+      <view class="seasonal-title">🌱 当季推荐食材：</view>
+      <view class="ingredient-tags">
+        <block wx:for="{{ seasonalIngredients }}" wx:key="id">
+          <view class="ing-tag">{{ item.name }}</view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日期切换区 (核心工作流：提前给明天排餐 vs 今天吃) -->
+  <view class="date-section card">
+    <view class="section-title">用餐就餐时间</view>
+    <view class="date-tabs">
+      <view 
+        class="date-tab {{ targetDay === 'tomorrow' ? 'date-active' : '' }}" 
+        bindtap="switchTargetDay" 
+        data-day="tomorrow"
+      >
+        <view class="date-tab-title">明天做饭 (推荐)</view>
+        <view class="date-tab-sub">{{ tomorrowText }} · 提前备菜发大厨</view>
+      </view>
+
+      <view 
+        class="date-tab {{ targetDay === 'today' ? 'date-active' : '' }}" 
+        bindtap="switchTargetDay" 
+        data-day="today"
+      >
+        <view class="date-tab-title">今天做饭</view>
+        <view class="date-tab-sub">{{ todayText }} · 临时排餐</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 模式选择区 (四大高频场景) -->
+  <view class="mode-section card">
+    <view class="section-header-row">
+      <view class="section-title">用餐模式</view>
+      <view class="portion-badge">🍲 2人午晚两餐分量</view>
+    </view>
+    
+    <view class="mode-grid-2x2">
+      <!-- 3菜1汤 -->
+      <view 
+        class="mode-card {{ currentMode === 'hearty_3_1' ? 'mode-active' : '' }}" 
+        bindtap="switchMode" 
+        data-mode="hearty_3_1"
+      >
+        <view class="mode-combo">3 菜 1 汤</view>
+        <view class="mode-desc">1大荤 + 1小荤/蛋 + 1素 + 1汤</view>
+      </view>
+
+      <!-- 2菜1汤 -->
+      <view 
+        class="mode-card {{ currentMode === 'routine_2_1' ? 'mode-active' : '' }}" 
+        bindtap="switchMode" 
+        data-mode="routine_2_1"
+      >
+        <view class="mode-combo">2 菜 1 汤</view>
+        <view class="mode-desc">1荤 + 1素/蛋 + 1汤</view>
+      </view>
+
+      <!-- 3个菜 (无汤) -->
+      <view 
+        class="mode-card {{ currentMode === 'three_dishes' ? 'mode-active' : '' }}" 
+        bindtap="switchMode" 
+        data-mode="three_dishes"
+      >
+        <view class="mode-combo">3 个菜</view>
+        <view class="mode-desc">1大荤 + 1副荤/蛋 + 1素 (无汤)</view>
+      </view>
+
+      <!-- 3个炒菜 -->
+      <view 
+        class="mode-card {{ currentMode === 'three_stir_fries' ? 'mode-active' : '' }}" 
+        bindtap="switchMode" 
+        data-mode="three_stir_fries"
+      >
+        <view class="mode-combo">3 个炒菜</view>
+        <view class="mode-desc">全快手干香炒菜，开胃下饭</view>
+      </view>
+    </view>
+    
+    <view class="portion-explain">
+      💡 大厨中午做一顿，自动按两人“中午吃一顿 + 晚上吃一顿”做足分量。
+    </view>
+  </view>
+
+  <!-- 触发生成主行动按钮 -->
+  <view class="action-section">
+    <button class="btn-primary main-roll-btn" bindtap="handleGenerateMenu">
+      ✨ 生成【{{ targetDay === 'tomorrow' ? '明天' : '今天' }}】菜单
+    </button>
+    <view class="sub-tip">生成后可单菜锁定/自选，一键转发小程序卡片给大厨</view>
+  </view>
+</view>

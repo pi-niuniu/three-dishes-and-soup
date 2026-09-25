@@ -1,0 +1,31 @@
+<view class="container history-container">
+  <view class="history-intro card">
+    <view class="intro-title">📅 30 天就餐足迹</view>
+    <view class="intro-desc">系统已自动为您避开最近 3~7 天内吃过的重复菜品。</view>
+  </view>
+
+  <view class="records-list">
+    <block wx:for="{{ records }}" wx:key="id">
+      <view class="record-card card">
+        <view class="record-top">
+          <text class="record-date">{{ item.date }}</text>
+          <text class="record-mode">{{ modeNames[item.mode] || '家庭小菜' }}</text>
+        </view>
+        <view class="record-dishes">
+          <block wx:for="{{ item.dishes || item.dishNames }}" wx:for-item="d" wx:key="name">
+            <view class="dish-tag-chip">
+              <image wx:if="{{ d.thumbUrl }}" class="chip-thumb" src="{{ d.thumbUrl }}" mode="aspectFill" lazy-load="true" />
+              <text class="chip-text">{{ d.name || d }}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{ records.length === 0 }}" class="empty-state">
+      <view class="empty-icon">🍚</view>
+      <view class="empty-text">最近还没有吃饭记录哦</view>
+      <view class="empty-sub">在首页生成菜单并点击「就吃这些」即可自动记录</view>
+    </view>
+  </view>
+</view>

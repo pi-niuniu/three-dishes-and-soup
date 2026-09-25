@@ -1,0 +1,61 @@
+<view class="container dishes-container">
+  <!-- 搜索栏 -->
+  <view class="search-box card">
+    <input 
+      class="search-input" 
+      placeholder="搜索菜名，例如：回锅肉、排骨、丝瓜..." 
+      value="{{ searchKeyword }}" 
+      bindinput="handleSearchInput"
+    />
+  </view>
+
+  <!-- 分类 Tab 切换 -->
+  <view class="category-tabs">
+    <block wx:for="{{ categories }}" wx:key="key">
+      <view 
+        class="cat-tab {{ currentCategory === item.key ? 'cat-active' : '' }}" 
+        bindtap="switchCategory" 
+        data-cat="{{ item.key }}"
+      >
+        {{ item.label }}
+      </view>
+    </block>
+  </view>
+
+  <!-- 菜品列表 -->
+  <view class="dishes-list">
+    <block wx:for="{{ filteredDishes }}" wx:key="id">
+      <view class="dish-item card">
+        <view class="dish-thumb-box">
+          <image 
+            class="dish-item-thumb" 
+            src="{{ item.thumbUrl || '/assets/dishes/default_dish.webp' }}" 
+            mode="aspectFill" 
+            lazy-load="true"
+          />
+          <text class="dish-emoji-badge">{{ item.dishEmoji || '🍲' }}</text>
+        </view>
+        <view class="dish-item-left">
+          <view class="item-name-row">
+            <text class="item-name">{{ item.name }}</text>
+            <text wx:if="{{ item.isSeasonBest }}" class="tag-season">当季尝鲜</text>
+          </view>
+          <view class="item-meta">
+            <text class="item-taste">{{ item.taste[0] || '家常' }}</text>
+            <text class="item-dot">·</text>
+            <text class="item-time">约 {{ item.cookingTimeMinutes }} 分钟</text>
+            <text class="item-dot">·</text>
+            <text class="item-ing">主料: {{ item.mainIngredient }}</text>
+          </view>
+        </view>
+        <view class="dish-item-right" bindtap="handleToggleFavorite" data-id="{{ item.id }}">
+          <text class="fav-icon">{{ item.isFav ? '❤️' : '🤍' }}</text>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{ filteredDishes.length === 0 }}" class="empty-tip">
+      没有找到相关菜品，换个关键词试试~
+    </view>
+  </view>
+</view>

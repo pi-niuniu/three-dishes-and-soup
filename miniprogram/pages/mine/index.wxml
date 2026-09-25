@@ -1,0 +1,70 @@
+<view class="container mine-container">
+  <!-- 用户卡片 -->
+  <view class="user-card card">
+    <view class="user-info">
+      <view class="user-avatar">🏡</view>
+      <view class="user-text">
+        <view class="user-name">我们的家庭餐桌</view>
+        <view class="user-sub">常住 2 人 · 大厨掌勺 · 午晚两餐</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 辣度偏好 -->
+  <view class="setting-card card">
+    <view class="card-title">🌶️ 辣度接受度</view>
+    <view class="spicy-options">
+      <block wx:for="{{ spicyLevels }}" wx:key="level">
+        <view 
+          class="spicy-pill {{ preferences.spicyLevel === item.level ? 'pill-active' : '' }}"
+          bindtap="setSpicyLevel"
+          data-level="{{ item.level }}"
+        >
+          {{ item.label }}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 忌口与不吃食材 -->
+  <view class="setting-card card">
+    <view class="card-title">🚫 忌口食材（算法自动排除）</view>
+    <view class="disliked-chips">
+      <block wx:for="{{ commonAvoids }}" wx:key="*this">
+        <view 
+          class="avoid-chip {{ dislikedMap[item] ? 'avoid-active' : '' }}"
+          bindtap="toggleAvoid"
+          data-item="{{ item }}"
+        >
+          <text>{{ item }}</text>
+          <text class="avoid-mark">{{ dislikedMap[item] ? '✓' : '+' }}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 默认开饭模式 -->
+  <view class="setting-card card">
+    <view class="card-title">🍲 默认餐桌模式</view>
+    <view class="mode-select-grid">
+      <block wx:for="{{ availableModes }}" wx:key="key">
+        <view 
+          class="mode-pill {{ preferences.defaultMode === item.key ? 'pill-active' : '' }}"
+          bindtap="setDefaultMode"
+          data-key="{{ item.key }}"
+        >
+          {{ item.name }}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 数据管理与重置 -->
+  <view class="setting-card card">
+    <view class="card-title">⚙️ 数据管理</view>
+    <view class="manage-row" bindtap="handleClearHistory">
+      <text class="row-label">清空吃饭历史记录 (重新开始防重)</text>
+      <text class="row-arrow">›</text>
+    </view>
+  </view>
+</view>

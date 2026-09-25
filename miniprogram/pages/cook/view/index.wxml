@@ -1,0 +1,125 @@
+<view class="container cook-container">
+  <!-- 头部问候与日期横幅 -->
+  <view class="greet-card card">
+    <view class="greet-title">👨‍🍳 大厨好！这是做饭与买菜清单</view>
+    <view class="target-date-highlight">{{ menu.targetDateText || '明天做饭' }}</view>
+    <view class="cook-tag-row">
+      <text class="cook-tag">2人午晚两餐</text>
+      <text class="cook-tag">菜量做足些</text>
+      <text class="cook-tag">大火家常风味</text>
+    </view>
+  </view>
+
+  <!-- 大厨端双视图无缝切换 Tab -->
+  <view class="cook-view-tabs">
+    <view 
+      class="cook-tab {{ currentTab === 'shopping' ? 'cook-tab-active' : '' }}" 
+      bindtap="switchTab" 
+      data-tab="shopping"
+    >
+      🛒 采购买菜清单
+    </view>
+    <view 
+      class="cook-tab {{ currentTab === 'cook' ? 'cook-tab-active' : '' }}" 
+      bindtap="switchTab" 
+      data-tab="cook"
+    >
+      🍳 厨师做饭看板
+    </view>
+  </view>
+
+  <!-- ================= 视图 1：采购买菜清单 (菜场用) ================= -->
+  <view wx:if="{{ currentTab === 'shopping' }}">
+    <!-- 主人的买菜专属交代 (醒目大字展示) -->
+    <view wx:if="{{ menu.shoppingNotes }}" class="card notes-highlight-card">
+      <view class="notes-badge">📝 给大厨的买菜特别交代：</view>
+      <view class="notes-content">{{ menu.shoppingNotes }}</view>
+    </view>
+
+    <!-- 菜市场买菜清单 (支持点击打勾防漏买) -->
+    <view class="shopping-section card">
+      <view class="shopping-header">
+        <view class="section-title">🛒 买菜清单 (点击文字可打勾)：</view>
+        <view class="check-tip">买好一样勾一样</view>
+      </view>
+
+      <view class="check-list">
+        <block wx:for="{{ shoppingList }}" wx:key="name">
+          <view 
+            class="check-item {{ item.checked ? 'item-checked' : '' }}" 
+            bindtap="toggleItemCheck" 
+            data-index="{{ index }}"
+          >
+            <view class="check-box">
+              <text class="checkbox-symbol">{{ item.checked ? '✓' : '' }}</text>
+            </view>
+            <view class="item-text-row">
+              <text class="item-name">{{ item.name }}</text>
+              <text class="item-amount">{{ item.displayAmount }}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- ================= 视图 2：厨师做饭看板 (厨房用) ================= -->
+  <view wx:if="{{ currentTab === 'cook' }}">
+    <!-- 主人的做饭专属叮嘱 (醒目大字展示) -->
+    <view wx:if="{{ menu.cookNotes }}" class="card notes-highlight-card">
+      <view class="notes-badge">📝 给大厨的做饭叮嘱：</view>
+      <view class="notes-content">{{ menu.cookNotes }}</view>
+    </view>
+
+    <!-- 今日要做菜品列表 (大字清晰) -->
+    <view class="dishes-section card">
+      <view class="section-title">🍳 今日做的菜品 (共 {{ dishes.length }} 道)：</view>
+      <view class="dishes-big-list">
+        <block wx:for="{{ dishes }}" wx:key="name">
+          <view class="dish-big-item">
+            <view class="dish-num">{{ index + 1 }}</view>
+            <view class="dish-big-thumb-wrap">
+              <image 
+                class="dish-big-thumb" 
+                src="{{ item.thumbUrl || '/assets/dishes/default_dish.webp' }}" 
+                mode="aspectFill" 
+                lazy-load="true"
+              />
+              <text class="dish-big-emoji">{{ item.dishEmoji || '🍲' }}</text>
+            </view>
+            <view class="dish-detail">
+              <view class="dish-big-name">{{ item.name }}</view>
+              <view class="dish-taste-label">{{ item.roleName }} · {{ item.taste }} · 制作约 {{ item.cookingTimeMinutes }} 分钟</view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="warm-tip-box card">
+      💡 贴心提示：空心菜等绿叶青菜建议中午趁鲜消灭，肉菜和根茎炖菜晚上热一热依然非常好吃！
+    </view>
+  </view>
+
+  <!-- 底部浮动操作栏 -->
+  <view class="bottom-bar">
+    <view wx:if="{{ currentTab === 'shopping' }}" class="shopping-progress-bar">
+      <view class="progress-info">
+        <text class="progress-label">采购进度:</text>
+        <text class="progress-count">已买 {{ checkedCount }}/{{ shoppingList.length }} 样</text>
+      </view>
+      <button 
+        class="progress-btn {{ checkedCount === shoppingList.length && shoppingList.length > 0 ? 'btn-all-done' : 'btn-copy-sm' }}" 
+        bindtap="handleBottomButtonClick"
+      >
+        {{ checkedCount === shoppingList.length && shoppingList.length > 0 ? '🎉 已全部买齐，开工！' : '📋 复制文字清单' }}
+      </button>
+    </view>
+
+    <view wx:if="{{ currentTab === 'cook' }}" class="cook-bottom-bar">
+      <button class="btn-primary copy-btn" bindtap="handleCopyText">
+        📋 复制文字清单
+      </button>
+    </view>
+  </view>
+</view>

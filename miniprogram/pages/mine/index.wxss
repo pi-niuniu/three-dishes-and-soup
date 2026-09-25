@@ -1,0 +1,145 @@
+.user-card {
+  padding: 36rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
+  border: 2rpx solid #F4EFE6;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.user-avatar {
+  font-size: 64rpx;
+  background-color: #F4EFE6;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2D312E;
+  margin-bottom: 6rpx;
+}
+
+.user-sub {
+  font-size: 24rpx;
+  color: #8C918D;
+}
+
+.setting-card {
+  margin-bottom: 24rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #555A56;
+  margin-bottom: 20rpx;
+}
+
+/* 辣度选项 */
+.spicy-options {
+  display: flex;
+  gap: 16rpx;
+}
+
+.spicy-pill {
+  flex: 1;
+  text-align: center;
+  background-color: #FAF8F5;
+  border: 2rpx solid #F4EFE6;
+  border-radius: 20rpx;
+  padding: 16rpx 0;
+  font-size: 26rpx;
+  color: #555A56;
+  transition: all 0.2s;
+}
+
+.pill-active {
+  background-color: #FFF8F2;
+  border-color: #E6683B;
+  color: #E6683B;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.15);
+}
+
+/* 忌口标签 */
+.disliked-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.avoid-chip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background-color: #FAF8F5;
+  border: 1rpx solid #F4EFE6;
+  padding: 12rpx 24rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #555A56;
+}
+
+.avoid-active {
+  background-color: #FDF0ED;
+  border-color: #E6683B;
+  color: #E6683B;
+  font-weight: 600;
+}
+
+.avoid-mark {
+  font-size: 22rpx;
+}
+
+/* 模式网格 */
+.mode-select-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.mode-pill {
+  text-align: center;
+  background-color: #FAF8F5;
+  border: 2rpx solid #F4EFE6;
+  border-radius: 20rpx;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #555A56;
+  transition: all 0.2s;
+}
+
+.mode-pill.pill-active {
+  background-color: #FFF8F2;
+  border-color: #E6683B;
+  color: #E6683B;
+  font-weight: 700;
+  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.15);
+}
+
+/* 管理行 */
+.manage-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.row-label {
+  font-size: 28rpx;
+  color: #E6683B;
+}
+
+.row-arrow {
+  font-size: 36rpx;
+  color: #C0C4C1;
+}

@@ -1,0 +1,317 @@
+.shopping-container {
+  padding-bottom: 240rpx;
+}
+
+.success-banner {
+  background: linear-gradient(135deg, #EAF3EC 0%, #FFFFFF 100%);
+  border: 2rpx solid #CFE5D6;
+  margin-bottom: 20rpx;
+}
+
+.banner-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #2C5E43;
+  margin-bottom: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+.banner-desc {
+  font-size: 24rpx;
+  color: #555A56;
+  letter-spacing: 0.4rpx;
+}
+
+/* 核心双视图切换 Tab */
+.view-switch-tabs {
+  display: flex;
+  background-color: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 8rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  border: 2rpx solid #F4EFE6;
+}
+
+.switch-tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  font-weight: 600;
+  letter-spacing: 0.8rpx;
+  color: #7D827E;
+  border-radius: 18rpx;
+  transition: all 0.2s;
+}
+
+.tab-active {
+  background-color: #2C5E43;
+  color: #FFFFFF;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1E2320;
+  margin-bottom: 20rpx;
+  letter-spacing: 0.8rpx;
+}
+
+/* 厨师视图菜品列表 */
+.dishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.cook-dish-item {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  background-color: #FAF8F5;
+  border: 1rpx solid #F4EFE6;
+  border-radius: 20rpx;
+  padding: 16rpx 20rpx;
+}
+
+.dish-num-badge {
+  width: 44rpx;
+  height: 44rpx;
+  background-color: #2C5E43;
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dish-cook-thumb-wrap {
+  position: relative;
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #F4EFE6;
+}
+
+.dish-cook-thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.dish-cook-emoji {
+  position: absolute;
+  bottom: 4rpx;
+  right: 4rpx;
+  font-size: 18rpx;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  width: 28rpx;
+  height: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dish-cook-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dish-cook-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2D312E;
+  margin-bottom: 6rpx;
+}
+
+.dish-cook-tags {
+  display: flex;
+  gap: 12rpx;
+}
+
+.tag-taste {
+  font-size: 22rpx;
+  color: #7D827E;
+  background-color: #F4EFE6;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.tag-time {
+  font-size: 22rpx;
+  color: #8C918D;
+}
+
+.cook-summary-tip {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #8C918D;
+  text-align: right;
+}
+
+/* 备注输入卡片 */
+.notes-card {
+  border-left: 8rpx solid #E6683B;
+}
+
+.notes-textarea {
+  width: 100%;
+  height: 140rpx;
+  background-color: #FAF8F5;
+  border: 2rpx solid #F4EFE6;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+  color: #2D312E;
+  box-sizing: border-box;
+  margin-bottom: 16rpx;
+}
+
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.quick-tag-label {
+  font-size: 22rpx;
+  color: #8C918D;
+}
+
+.quick-tag {
+  background-color: #FDF1EA;
+  color: #E6683B;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-weight: 600;
+}
+
+.warm-card {
+  background-color: #F4EFE6;
+  font-size: 24rpx;
+  color: #6D736E;
+  line-height: 1.5;
+}
+
+/* 采购列表视图 */
+.shopping-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16rpx;
+}
+
+.portion-tip {
+  font-size: 22rpx;
+  color: #E6683B;
+  font-weight: 600;
+}
+
+.check-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 18rpx 0;
+  border-bottom: 1rpx dashed #EAE3D5;
+}
+
+.check-item:last-child {
+  border-bottom: none;
+}
+
+.check-box {
+  width: 38rpx;
+  height: 38rpx;
+  border: 2rpx solid #C8C2B4;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: #FFFFFF;
+}
+
+.box-checked {
+  background-color: #2C5E43;
+  border-color: #2C5E43;
+}
+
+.item-text-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.item-name {
+  font-size: 30rpx;
+  color: #2D312E;
+  font-weight: 500;
+}
+
+.item-amount {
+  font-size: 28rpx;
+  color: #E6683B;
+  font-weight: 700;
+}
+
+.text-checked .item-name {
+  text-decoration: line-through;
+  color: #A0A5A1;
+}
+
+/* 底部操作 */
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  padding: 20rpx 36rpx calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 16rpx;
+  z-index: 100;
+}
+
+.btn-share-cook {
+  flex: 1.4;
+  background: linear-gradient(135deg, #3B7B58 0%, #2C5E43 100%);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  padding: 22rpx 0;
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+  box-shadow: 0 6rpx 20rpx rgba(44, 94, 67, 0.28);
+}
+
+.copy-btn {
+  flex: 1;
+  background-color: #F4EFE6;
+  color: #2D312E;
+  border: 2rpx solid #EAE3D5;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  padding: 22rpx 0;
+  text-align: center;
+  margin: 0;
+  box-shadow: none;
+}

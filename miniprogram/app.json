@@ -1,0 +1,44 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/menu/result/index",
+    "pages/menu/shopping/index",
+    "pages/cook/view/index",
+    "pages/dishes/index",
+    "pages/history/index",
+    "pages/mine/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFFDF7",
+    "navigationBarTitleText": "一年四季·好好吃饭",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFFDF7"
+  },
+  "tabBar": {
+    "color": "#8C918D",
+    "selectedColor": "#2C5E43",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "点菜"
+      },
+      {
+        "pagePath": "pages/dishes/index",
+        "text": "菜库"
+      },
+      {
+        "pagePath": "pages/history/index",
+        "text": "历史"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

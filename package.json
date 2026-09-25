@@ -1,0 +1,23 @@
+{
+  "name": "three-dishes-and-soup",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "《三菜一汤 · 私厨小食堂》微信小程序",
+  "scripts": {
+    "build": "tsc",
+    "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs",
+    "test:algo": "node test/recommendation_test.mjs",
+    "test:e2e": "node test/e2e_full_lifecycle_test.mjs",
+    "test:pages": "node test/pages_runtime_test.mjs"
+  },
+  "keywords": [
+    "wechat-miniprogram",
+    "menu-recommendation",
+    "cooking"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

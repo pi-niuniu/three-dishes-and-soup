@@ -1,0 +1,120 @@
+<view class="container result-container">
+  <!-- 顶部状态栏 -->
+  <view class="result-header">
+    <view class="header-left">
+      <view class="mode-tag">{{ modeTitle }}</view>
+      <view class="portion-badge">{{ menu.portionLabel || '两人午晚两餐' }}</view>
+    </view>
+    <view class="cook-time">⏱️ 预估大厨做饭耗时约 {{ menu.totalTimeMinutes || 35 }} 分钟</view>
+  </view>
+
+  <!-- 菜品槽位卡片列表 -->
+  <view class="slots-list">
+    <block wx:for="{{ menu.slots }}" wx:key="slotIndex">
+      <view class="slot-card card {{ item.isLocked ? 'slot-locked' : '' }}">
+        <!-- 卡片头部信息 -->
+        <view class="card-main-row">
+          <view class="dish-thumb-wrap">
+            <image 
+              class="dish-card-thumb" 
+              src="{{ item.dish.thumbUrl || '/assets/dishes/default_dish.webp' }}" 
+              mode="aspectFill" 
+              lazy-load="true"
+            />
+            <view wx:if="{{ item.isLocked }}" class="thumb-lock-badge">已锁定</view>
+            <view wx:else class="thumb-emoji-badge">{{ item.dish.dishEmoji || '🍲' }}</view>
+          </view>
+          <view class="dish-info">
+            <view class="dish-title-row">
+              <text class="dish-name">{{ item.dish.name }}</text>
+              <text class="role-tag role-badge-sub">{{ roleNames[item.role] || '家常菜' }}</text>
+            </view>
+            <view class="dish-tags">
+              <!-- 口味 -->
+              <text wx:for="{{ item.dish.taste }}" wx:for-item="t" wx:key="*this" class="taste-tag">{{ t }}</text>
+              <!-- 耗时 -->
+              <text class="time-tag">{{ item.dish.cookingTimeMinutes }}min</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 卡片操作按钮行 -->
+        <view class="card-actions">
+          <!-- 锁定切换 -->
+          <view class="action-btn {{ item.isLocked ? 'btn-locked-active' : '' }}" bindtap="toggleLock" data-index="{{ item.slotIndex }}">
+            <text>{{ item.isLocked ? '🔓 解锁' : '🔒 锁定' }}</text>
+          </view>
+
+          <!-- 换一个 -->
+          <view class="action-btn" bindtap="handleReplaceDish" data-index="{{ item.slotIndex }}">
+            <text>🔄 换一个</text>
+          </view>
+
+          <!-- 自选或手动输入 -->
+          <view class="action-btn btn-custom" bindtap="openSelectModal" data-index="{{ item.slotIndex }}">
+            <text>✏️ 自选/输入</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部固定操作栏 -->
+  <view class="bottom-bar">
+    <button class="btn-reroll" bindtap="handleReroll">
+      🔄 重新搭配 (保留锁定)
+    </button>
+    <button class="btn-confirm btn-primary" bindtap="handleConfirmMeal">
+      ✨ 就吃这些 (去买菜)
+    </button>
+  </view>
+
+  <!-- 自选/输入弹窗 Modal -->
+  <view wx:if="{{ showModal }}" class="modal-mask" bindtap="closeSelectModal">
+    <view class="modal-content" catchtap="preventBubble">
+      <view class="modal-header">
+        <text class="modal-title">替换第 {{ currentSlotIndex + 1 }} 道菜</text>
+        <text class="close-icon" bindtap="closeSelectModal">✕</text>
+      </view>
+
+      <!-- Tab 切换 -->
+      <view class="modal-tabs">
+        <view class="tab-item {{ modalTab === 'library' ? 'tab-active' : '' }}" bindtap="switchModalTab" data-tab="library">
+          从菜库自选
+        </view>
+        <view class="tab-item {{ modalTab === 'input' ? 'tab-active' : '' }}" bindtap="switchModalTab" data-tab="input">
+          手动输入菜名
+        </view>
+      </view>
+
+      <!-- 菜库列表 -->
+      <scroll-view wx:if="{{ modalTab === 'library' }}" scroll-y="true" class="library-scroll">
+        <view class="library-grid">
+          <block wx:for="{{ candidateDishes }}" wx:key="id">
+            <view class="library-item" bindtap="selectCandidateDish" data-dish="{{ item }}">
+              <image class="lib-dish-thumb" src="{{ item.thumbUrl || '/assets/dishes/default_dish.webp' }}" mode="aspectFill" lazy-load="true" />
+              <view class="lib-dish-meta">
+                <view class="lib-dish-name">{{ item.name }}</view>
+                <view class="lib-dish-desc">{{ item.taste[0] || '家常' }} · {{ item.cookingTimeMinutes }}m</view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+
+      <!-- 手动输入 -->
+      <view wx:if="{{ modalTab === 'input' }}" class="input-pane">
+        <view class="input-tip">输入您或大厨的拿手私房菜名：</view>
+        <input 
+          class="custom-input" 
+          placeholder="例如：大厨蒜薹炒腊肉、清蒸多宝鱼" 
+          value="{{ customInputName }}" 
+          bindinput="handleCustomNameInput"
+        />
+        <button class="btn-primary submit-custom-btn" bindtap="confirmCustomInput">
+          确认加入菜单
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

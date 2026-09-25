@@ -1,0 +1,135 @@
+<view class="container shopping-container">
+  <!-- 顶部状态横幅 -->
+  <view class="success-banner card">
+    <view class="banner-title">🎉 【{{ menu.targetDateText || '明天' }}】菜单已敲定！</view>
+    <view class="banner-desc">已记录到就餐历史，下方已自动生成【厨师看板】与【买菜清单】。</view>
+  </view>
+
+  <!-- 核心双视图切换 Tab -->
+  <view class="view-switch-tabs">
+    <view 
+      class="switch-tab {{ activeView === 'cook' ? 'tab-active' : '' }}" 
+      bindtap="switchView" 
+      data-view="cook"
+    >
+      🍳 厨师做饭看板
+    </view>
+    <view 
+      class="switch-tab {{ activeView === 'shopping' ? 'tab-active' : '' }}" 
+      bindtap="switchView" 
+      data-view="shopping"
+    >
+      🛒 采购买菜清单
+    </view>
+  </view>
+
+  <!-- ================= 视图 A：厨师做饭看板 ================= -->
+  <view wx:if="{{ activeView === 'cook' }}" class="view-content">
+    <!-- 菜品列表卡片 -->
+    <view class="card">
+      <view class="section-title">🍳 今日做饭菜谱 ({{ dishes.length }} 道菜)</view>
+      <view class="dishes-list">
+        <block wx:for="{{ dishes }}" wx:key="id">
+          <view class="cook-dish-item">
+            <view class="dish-num-badge">{{ index + 1 }}</view>
+            <view class="dish-cook-thumb-wrap">
+              <image 
+                class="dish-cook-thumb" 
+                src="{{ item.thumbUrl || '/assets/dishes/default_dish.webp' }}" 
+                mode="aspectFill" 
+                lazy-load="true"
+              />
+              <text class="dish-cook-emoji">{{ item.dishEmoji || '🍲' }}</text>
+            </view>
+            <view class="dish-cook-info">
+              <view class="dish-cook-name">{{ item.name }}</view>
+              <view class="dish-cook-tags">
+                <text class="tag-taste">{{ item.taste[0] || '家常' }}</text>
+                <text class="tag-time">制作约 {{ item.cookingTimeMinutes }} 分钟</text>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+      <view class="cook-summary-tip">
+        ⏱️ 大厨做完全部菜品总耗时预估约 {{ menu.totalTimeMinutes || 35 }} 分钟
+      </view>
+    </view>
+
+    <!-- 厨师专属做饭备注区 -->
+    <view class="card notes-card">
+      <view class="section-title">📝 给大厨的做饭叮嘱</view>
+      <textarea 
+        class="notes-textarea" 
+        placeholder="例如：少放点盐、少放油、回锅肉多煸干一点、排骨汤多煲一小时..." 
+        value="{{ cookNotes }}" 
+        bindinput="handleCookNotesInput"
+      />
+      <!-- 快捷标签点选 -->
+      <view class="quick-tags">
+        <text class="quick-tag-label">快捷添加：</text>
+        <block wx:for="{{ quickCookNotes }}" wx:key="*this">
+          <view class="quick-tag" bindtap="appendCookNote" data-text="{{ item }}">+ {{ item }}</view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 贴心建议 -->
+    <view class="warm-card card">
+      💡 用餐建议：2人吃午晚两顿，空心菜等绿叶菜建议中午吃完，肉菜晚上热热吃依然鲜香美味！
+    </view>
+  </view>
+
+  <!-- ================= 视图 B：采购买菜清单 ================= -->
+  <view wx:if="{{ activeView === 'shopping' }}" class="view-content">
+    <!-- 买菜清单卡片 -->
+    <view class="card">
+      <view class="shopping-header">
+        <view class="section-title">🛒 菜市场买菜明细</view>
+        <view class="portion-tip">2人午晚两餐份量 (已同类合并)</view>
+      </view>
+
+      <view class="check-list">
+        <block wx:for="{{ shoppingList }}" wx:key="name">
+          <view class="check-item" bindtap="toggleItemCheck" data-index="{{ index }}">
+            <view class="check-box {{ item.checked ? 'box-checked' : '' }}">
+              <text wx:if="{{ item.checked }}">✓</text>
+            </view>
+            <view class="item-text-row {{ item.checked ? 'text-checked' : '' }}">
+              <text class="item-name">{{ item.name }}</text>
+              <text class="item-amount">{{ item.displayAmount }}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 采购专属买菜交代区 -->
+    <view class="card notes-card">
+      <view class="section-title">📝 给大厨的买菜特别交代</view>
+      <textarea 
+        class="notes-textarea" 
+        placeholder="例如：家里有生姜大蒜不用买、番茄挑沙瓤软一点的、肉买后腿肥瘦适中..." 
+        value="{{ shoppingNotes }}" 
+        bindinput="handleShoppingNotesInput"
+      />
+      <!-- 快捷标签点选 -->
+      <view class="quick-tags">
+        <text class="quick-tag-label">快捷添加：</text>
+        <block wx:for="{{ quickShoppingNotes }}" wx:key="*this">
+          <view class="quick-tag" bindtap="appendShoppingNote" data-text="{{ item }}">+ {{ item }}</view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部固定双操作栏 -->
+  <view class="bottom-action-bar">
+    <button class="btn-share-cook" open-type="share">
+      📲 微信分享给大厨
+    </button>
+    <button class="btn-primary copy-btn" bindtap="handleCopyTextForCook">
+      📋 复制文字清单
+    </button>
+  </view>
+</view>
