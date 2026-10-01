@@ -1,6 +1,6 @@
 import { dataProvider } from './services/dataProvider.js';
 import { preferenceService } from './services/preferenceService.js';
-export const APP_VERSION = '2.04';
+export const APP_VERSION = '2.05';
 App({
     globalData: {
         currentMenu: null,

@@ -2,6 +2,7 @@ import { dataProvider } from '../../services/dataProvider.js';
 import { menuRecommendationEngine } from '../../services/menuRecommendation.js';
 import { preferenceService } from '../../services/preferenceService.js';
 import { historyService } from '../../services/historyService.js';
+import { imageService } from '../../services/imageService.js';
 const SOLAR_TERMS = {
     1: '小寒·大寒 · 暖身温补',
     2: '立春·雨水 · 迎春生发',
@@ -162,7 +163,7 @@ Page({
                     name: match.name,
                     category: match.category,
                     categoryName: categoryLabels[match.category] || '家常菜',
-                    thumbUrl: match.thumbUrl || '/assets/dishes/default_dish.webp',
+                    thumbUrl: match.thumbUrl || '/assets/dishes/default_dish.jpg',
                     cookingTimeMinutes: match.cookingTimeMinutes || 20,
                     tasteText: (match.taste && match.taste.slice(0, 2).join('·')) || '家常可口',
                     dishEmoji: match.dishEmoji || '🍲',
@@ -209,7 +210,7 @@ Page({
         const item = this.data.inspirationDishes.find(d => d.id === dishId);
         if (item) {
             this.setData({
-                previewDish: item.rawDish,
+                previewDish: { ...item.rawDish, thumbUrl: item.thumbUrl || item.rawDish.thumbUrl },
                 showDishModal: true
             });
         }
@@ -311,5 +312,28 @@ Page({
         wx.navigateTo({
             url: '/pages/menu/result/index'
         });
+    },
+    handleInspireImageError(e) {
+        const index = e?.currentTarget?.dataset?.index;
+        if (typeof index !== 'number')
+            return;
+        const item = this.data.inspirationDishes[index];
+        if (!item)
+            return;
+        const nextUrl = imageService.getNextFallbackUrl(item.thumbUrl, item.category);
+        if (nextUrl !== item.thumbUrl) {
+            const key = `inspirationDishes[${index}].thumbUrl`;
+            this.setData({ [key]: nextUrl });
+        }
+    },
+    handleModalImageError() {
+        const dish = this.data.previewDish;
+        if (!dish)
+            return;
+        const current = dish.thumbUrl || '';
+        const nextUrl = imageService.getNextFallbackUrl(current, dish.category);
+        if (nextUrl !== current) {
+            this.setData({ 'previewDish.thumbUrl': nextUrl });
+        }
     }
 });

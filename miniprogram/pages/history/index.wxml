@@ -12,9 +12,18 @@
           <text class="record-mode">{{ modeNames[item.mode] || '家庭小菜' }}</text>
         </view>
         <view class="record-dishes">
-          <block wx:for="{{ item.dishes || item.dishNames }}" wx:for-item="d" wx:key="name">
+          <block wx:for="{{ item.dishes || item.dishNames }}" wx:for-item="d" wx:for-index="dIndex" wx:key="name">
             <view class="dish-tag-chip">
-              <image wx:if="{{ d.thumbUrl }}" class="chip-thumb" src="{{ d.thumbUrl }}" mode="aspectFill" lazy-load="true" />
+              <image 
+                wx:if="{{ d.thumbUrl }}" 
+                class="chip-thumb" 
+                src="{{ d.thumbUrl || '/assets/dishes/default_dish.jpg' }}" 
+                mode="aspectFill" 
+                lazy-load="true"
+                binderror="handleHistoryImageError"
+                data-record-index="{{ index }}"
+                data-dish-index="{{ dIndex }}"
+              />
               <text class="chip-text">{{ d.name || d }}</text>
             </view>
           </block>

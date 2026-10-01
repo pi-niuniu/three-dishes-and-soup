@@ -17,9 +17,11 @@
           <view class="dish-thumb-wrap">
             <image 
               class="dish-card-thumb" 
-              src="{{ item.dish.thumbUrl || '/assets/dishes/default_dish.webp' }}" 
+              src="{{ item.dish.thumbUrl || '/assets/dishes/default_dish.jpg' }}" 
               mode="aspectFill" 
               lazy-load="true"
+              binderror="handleSlotImageError"
+              data-slot-index="{{ index }}"
             />
             <view wx:if="{{ item.isLocked }}" class="thumb-lock-badge">已锁定</view>
             <view wx:else class="thumb-emoji-badge">{{ item.dish.dishEmoji || '🍲' }}</view>
@@ -92,7 +94,15 @@
         <view class="library-grid">
           <block wx:for="{{ candidateDishes }}" wx:key="id">
             <view class="library-item" bindtap="selectCandidateDish" data-dish="{{ item }}">
-              <image class="lib-dish-thumb" src="{{ item.thumbUrl || '/assets/dishes/default_dish.webp' }}" mode="aspectFill" lazy-load="true" />
+              <image 
+                class="lib-dish-thumb" 
+                src="{{ item.thumbUrl || '/assets/dishes/default_dish.jpg' }}" 
+                mode="aspectFill" 
+                lazy-load="true"
+                binderror="handleCandidateImageError"
+                data-id="{{ item.id }}"
+                data-index="{{ index }}"
+              />
               <view class="lib-dish-meta">
                 <view class="lib-dish-name">{{ item.name }}</view>
                 <view class="lib-dish-desc">{{ item.taste[0] || '家常' }} · {{ item.cookingTimeMinutes }}m</view>

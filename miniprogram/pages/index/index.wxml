@@ -74,9 +74,11 @@
           <view class="inspire-thumb-wrap">
             <image 
               class="inspire-thumb" 
-              src="{{ item.thumbUrl }}" 
+              src="{{ item.thumbUrl || '/assets/dishes/default_dish.jpg' }}" 
               mode="aspectFill" 
               lazy-load="true"
+              binderror="handleInspireImageError"
+              data-index="{{ index }}"
             />
             <view class="inspire-role-badge">{{ item.categoryName }}</view>
             <view wx:if="{{ pinnedDishId === item.id }}" class="inspire-pinned-badge">
@@ -304,7 +306,12 @@
 <view wx:if="{{ showDishModal }}" class="dish-modal-mask" bindtap="closeDishModal">
   <view class="dish-modal-content" catchtap="preventBubble">
     <view class="modal-dish-img-wrap">
-      <image class="modal-dish-img" src="{{ previewDish.thumbUrl }}" mode="aspectFill" />
+      <image 
+        class="modal-dish-img" 
+        src="{{ previewDish.thumbUrl || '/assets/dishes/default_dish.jpg' }}" 
+        mode="aspectFill" 
+        binderror="handleModalImageError"
+      />
       <view class="modal-close-btn" bindtap="closeDishModal">✕</view>
       <view class="modal-dish-emoji">{{ previewDish.dishEmoji || '🍲' }}</view>
     </view>

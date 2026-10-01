@@ -3,6 +3,7 @@ import { dataProvider } from '../../../services/dataProvider.js';
 import { menuRecommendationEngine } from '../../../services/menuRecommendation.js';
 import { preferenceService } from '../../../services/preferenceService.js';
 import { historyService } from '../../../services/historyService.js';
+import { imageService } from '../../../services/imageService.js';
 Page({
     data: {
         currentTab: 'shopping',
@@ -58,10 +59,11 @@ Page({
         };
         const dishes = safeSlots.map(s => ({
             name: s.dish.name,
+            category: s.dish.category,
             taste: s.dish.taste?.slice(0, 2).join('·') || '家常',
             roleName: roleMap[s.role] || '特色菜',
             cookingTimeMinutes: s.dish.cookingTimeMinutes || 20,
-            thumbUrl: s.dish.thumbUrl || '/assets/dishes/default_dish.webp',
+            thumbUrl: s.dish.thumbUrl || '/assets/dishes/default_dish.jpg',
             dishEmoji: s.dish.dishEmoji || '🍲'
         }));
         const list = shoppingListService.generateShoppingList(safeSlots.map(s => s.dish), menu.portionScale || 1.8);
@@ -153,5 +155,18 @@ Page({
             title: `👨‍🍳 大厨做饭与买菜清单【${dayLabel}】`,
             path: `/pages/cook/view/index?data=${compactData}`,
         };
+    },
+    handleCookViewImageError(e) {
+        const index = e?.currentTarget?.dataset?.index;
+        if (typeof index !== 'number')
+            return;
+        const dish = this.data.dishes[index];
+        if (!dish)
+            return;
+        const nextUrl = imageService.getNextFallbackUrl(dish.thumbUrl, dish.category);
+        if (nextUrl !== dish.thumbUrl) {
+            const key = `dishes[${index}].thumbUrl`;
+            this.setData({ [key]: nextUrl });
+        }
     }
 });

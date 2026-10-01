@@ -29,9 +29,12 @@
         <view class="dish-thumb-box">
           <image 
             class="dish-item-thumb" 
-            src="{{ item.thumbUrl || '/assets/dishes/default_dish.webp' }}" 
+            src="{{ item.thumbUrl || '/assets/dishes/default_dish.jpg' }}" 
             mode="aspectFill" 
             lazy-load="true"
+            binderror="handleDishImageError"
+            data-id="{{ item.id }}"
+            data-index="{{ index }}"
           />
           <text class="dish-emoji-badge">{{ item.dishEmoji || '🍲' }}</text>
         </view>

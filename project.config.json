@@ -1,5 +1,5 @@
 {
-  "description": "《四季三餐·好好吃饭》微信小程序 V2.03",
+  "description": "《四季三餐·好好吃饭》微信小程序 V2.05",
   "setting": {
     "urlCheck": false,
     "es6": true,
@@ -22,6 +22,7 @@
     "useMultiFrameRuntime": true,
     "useApiHook": true,
     "useApiHostProcess": true,
+    "ignoreUploadUnusedFiles": false,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -36,9 +37,7 @@
     "disableUseStrict": false,
     "minifyWXML": true,
     "showES6CompileOption": false,
-    "useCompilerPlugins": [
-      "typescript"
-    ],
+    "useCompilerPlugins": [],
     "compileWorklet": false,
     "localPlugins": false,
     "condition": false
@@ -46,14 +45,42 @@
   "compileType": "miniprogram",
   "libVersion": "3.3.4",
   "appid": "wx9c6a049ca34de9fe",
-  "projectname": "four-seasons-three-meals-v2.03",
-  "version": "2.03",
+  "projectname": "four-seasons-three-meals-v2.05",
+  "version": "2.05",
   "miniprogramRoot": "miniprogram/",
   "condition": {},
-  "srcMiniprogramRoot": "miniprogram/",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "suffix",
+        "value": ".webp"
+      },
+      {
+        "type": "glob",
+        "value": "assets/dishes/*.webp"
+      },
+      {
+        "type": "file",
+        "value": "data/dishes.json"
+      },
+      {
+        "type": "file",
+        "value": "data/ingredients.json"
+      },
+      {
+        "type": "suffix",
+        "value": ".ts"
+      },
+      {
+        "type": "suffix",
+        "value": ".map"
+      },
+      {
+        "type": "suffix",
+        "value": ".DS_Store"
+      }
+    ],
     "include": []
   },
   "editorSetting": {}

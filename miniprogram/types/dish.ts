@@ -64,7 +64,7 @@ export interface Dish {
   enabled: boolean;                // 是否启用
 
   // V2.0 菜品缩略图与生活美学资产体系
-  thumbUrl?: string;               // 本地内置缩略图路径 (例如 /assets/dishes/dish_001.webp)
+  thumbUrl?: string;               // 本地内置缩略图路径 (例如 /assets/dishes/dish_001.jpg)
   imageUrl?: string;               // 远程高清大图 URL (可选)
   dishEmoji?: string;              // 兜底可爱食材/分类微标 (如 🥩, 🥬, 🍲, 🍳)
 }

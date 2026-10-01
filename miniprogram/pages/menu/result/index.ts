@@ -3,6 +3,7 @@ import { menuRecommendationEngine } from '../../../services/menuRecommendation.j
 import { preferenceService } from '../../../services/preferenceService.js';
 import { historyService } from '../../../services/historyService.js';
 import { shoppingListService } from '../../../services/shoppingListService.js';
+import { imageService } from '../../../services/imageService.js';
 import { TableMenu, MenuSlot } from '../../../types/menu.js';
 import { Dish } from '../../../types/dish.js';
 
@@ -202,7 +203,7 @@ Page({
       recommendedForTwo: true,
       tags: ['私房自定义'],
       enabled: true,
-      thumbUrl: `/assets/dishes/default_${targetSlot?.dish?.category === 'main_meat' ? 'main' : targetSlot?.dish?.category === 'soup' ? 'soup' : targetSlot?.dish?.category === 'vegetable' ? 'vegetable' : 'secondary'}.webp`,
+      thumbUrl: imageService.getDefaultImage(targetSlot?.dish?.category || 'secondary_meat'),
       dishEmoji: '✨'
     };
 
@@ -270,5 +271,39 @@ Page({
     try {
       wx.setStorageSync('active_table_menu', newMenu);
     } catch (e) {}
+  },
+
+  handleSlotImageError(e: any) {
+    const slotIndex = e?.currentTarget?.dataset?.slotIndex;
+    if (typeof slotIndex !== 'number') return;
+    const slot = this.data.menu?.slots?.[slotIndex];
+    if (!slot || !slot.dish) return;
+    const nextUrl = imageService.getNextFallbackUrl(slot.dish.thumbUrl, slot.dish.category);
+    if (nextUrl !== slot.dish.thumbUrl) {
+      const key = `menu.slots[${slotIndex}].dish.thumbUrl`;
+      this.setData({ [key]: nextUrl });
+      const app = getApp();
+      if (app?.globalData?.currentMenu?.slots?.[slotIndex]?.dish) {
+        app.globalData.currentMenu.slots[slotIndex].dish.thumbUrl = nextUrl;
+      }
+    }
+  },
+
+  handleCandidateImageError(e: any) {
+    const id = e?.currentTarget?.dataset?.id;
+    const index = e?.currentTarget?.dataset?.index;
+    if (!id && typeof index !== 'number') return;
+    const dish = this.data.candidateDishes.find((d: any) => d.id === id) || this.data.candidateDishes[index];
+    if (!dish) return;
+    const nextUrl = imageService.getNextFallbackUrl(dish.thumbUrl, dish.category);
+    if (nextUrl !== dish.thumbUrl) {
+      const updated = this.data.candidateDishes.map((d: any) => {
+        if (d.id === dish.id) {
+          return { ...d, thumbUrl: nextUrl };
+        }
+        return d;
+      });
+      this.setData({ candidateDishes: updated });
+    }
   }
 });

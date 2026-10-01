@@ -3,6 +3,7 @@ import { dataProvider } from '../../../services/dataProvider.js';
 import { preferenceService } from '../../../services/preferenceService.js';
 import { historyService } from '../../../services/historyService.js';
 import { menuRecommendationEngine } from '../../../services/menuRecommendation.js';
+import { imageService } from '../../../services/imageService.js';
 import { TableMenu } from '../../../types/menu.js';
 import { Dish } from '../../../types/dish.js';
 
@@ -173,5 +174,17 @@ Page({
         });
       }
     });
+  },
+
+  handleCookDishImageError(e: any) {
+    const index = e?.currentTarget?.dataset?.index;
+    if (typeof index !== 'number') return;
+    const dish = this.data.dishes[index];
+    if (!dish) return;
+    const nextUrl = imageService.getNextFallbackUrl(dish.thumbUrl, dish.category);
+    if (nextUrl !== dish.thumbUrl) {
+      const key = `dishes[${index}].thumbUrl`;
+      this.setData({ [key]: nextUrl });
+    }
   }
 });

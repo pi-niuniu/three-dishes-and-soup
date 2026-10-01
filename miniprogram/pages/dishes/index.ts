@@ -1,5 +1,6 @@
 import { dataProvider } from '../../services/dataProvider.js';
 import { preferenceService } from '../../services/preferenceService.js';
+import { imageService } from '../../services/imageService.js';
 import { Dish } from '../../types/dish.js';
 
 Page({
@@ -93,5 +94,31 @@ Page({
       title: isFav ? '已收藏' : '已取消收藏',
       icon: 'none'
     });
+  },
+
+  handleDishImageError(e: any) {
+    const id = e?.currentTarget?.dataset?.id;
+    const index = e?.currentTarget?.dataset?.index;
+    if (!id && typeof index !== 'number') return;
+    
+    const dish = this.data.filteredDishes.find((d: any) => d.id === id) || this.data.filteredDishes[index];
+    if (!dish) return;
+
+    const nextUrl = imageService.getNextFallbackUrl(dish.thumbUrl, dish.category);
+    if (nextUrl !== dish.thumbUrl) {
+      const updatedFiltered = this.data.filteredDishes.map((d: any) => {
+        if (d.id === dish.id) {
+          return { ...d, thumbUrl: nextUrl };
+        }
+        return d;
+      });
+      const updatedAll = this.data.allDishes.map((d: any) => {
+        if (d.id === dish.id) {
+          return { ...d, thumbUrl: nextUrl };
+        }
+        return d;
+      });
+      this.setData({ filteredDishes: updatedFiltered, allDishes: updatedAll });
+    }
   }
 });

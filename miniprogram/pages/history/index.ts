@@ -1,5 +1,6 @@
 import { historyService } from '../../services/historyService.js';
 import { dataProvider } from '../../services/dataProvider.js';
+import { imageService } from '../../services/imageService.js';
 import { MealHistoryRecord } from '../../types/user.js';
 
 Page({
@@ -28,11 +29,25 @@ Page({
         const found = dishMap.get(name);
         return {
           name,
-          thumbUrl: found?.thumbUrl || '/assets/dishes/default_dish.webp',
+          category: found?.category,
+          thumbUrl: found?.thumbUrl || '/assets/dishes/default_dish.jpg',
           dishEmoji: found?.dishEmoji || '🍲'
         };
       })
     }));
     this.setData({ records: enrichedList });
+  },
+
+  handleHistoryImageError(e: any) {
+    const recIndex = e?.currentTarget?.dataset?.recordIndex;
+    const dishIndex = e?.currentTarget?.dataset?.dishIndex;
+    if (typeof recIndex !== 'number' || typeof dishIndex !== 'number') return;
+    const dish = this.data.records?.[recIndex]?.dishes?.[dishIndex];
+    if (!dish) return;
+    const nextUrl = imageService.getNextFallbackUrl(dish.thumbUrl, dish.category);
+    if (nextUrl !== dish.thumbUrl) {
+      const key = `records[${recIndex}].dishes[${dishIndex}].thumbUrl`;
+      this.setData({ [key]: nextUrl });
+    }
   }
 });

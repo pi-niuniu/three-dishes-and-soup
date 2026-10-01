@@ -74,7 +74,7 @@ export const defaultDishes: Dish[] = [
       "大厨拿手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_001.webp",
+    "thumbUrl": "/assets/dishes/dish_001.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -137,7 +137,7 @@ export const defaultDishes: Dish[] = [
       "家常必备"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_002.webp",
+    "thumbUrl": "/assets/dishes/dish_002.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -206,7 +206,7 @@ export const defaultDishes: Dish[] = [
       "肉香浓郁"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_003.webp",
+    "thumbUrl": "/assets/dishes/dish_003.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -273,7 +273,7 @@ export const defaultDishes: Dish[] = [
       "国民家常"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_004.webp",
+    "thumbUrl": "/assets/dishes/dish_004.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -331,7 +331,7 @@ export const defaultDishes: Dish[] = [
       "快手清口"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_005.webp",
+    "thumbUrl": "/assets/dishes/dish_005.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -392,7 +392,7 @@ export const defaultDishes: Dish[] = [
       "家常靓汤"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_006.webp",
+    "thumbUrl": "/assets/dishes/dish_006.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -453,7 +453,7 @@ export const defaultDishes: Dish[] = [
       "经典大菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_007.webp",
+    "thumbUrl": "/assets/dishes/dish_007.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -527,7 +527,7 @@ export const defaultDishes: Dish[] = [
       "下饭神作"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_008.webp",
+    "thumbUrl": "/assets/dishes/dish_008.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -601,7 +601,7 @@ export const defaultDishes: Dish[] = [
       "大厨拿手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_009.webp",
+    "thumbUrl": "/assets/dishes/dish_009.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -675,7 +675,7 @@ export const defaultDishes: Dish[] = [
       "浓郁汤汁拌饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_010.webp",
+    "thumbUrl": "/assets/dishes/dish_010.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -749,7 +749,7 @@ export const defaultDishes: Dish[] = [
       "酸甜下饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_011.webp",
+    "thumbUrl": "/assets/dishes/dish_011.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -828,7 +828,7 @@ export const defaultDishes: Dish[] = [
       "米饭杀手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_012.webp",
+    "thumbUrl": "/assets/dishes/dish_012.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -888,7 +888,7 @@ export const defaultDishes: Dish[] = [
       "软烂下饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_013.webp",
+    "thumbUrl": "/assets/dishes/dish_013.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -943,7 +943,7 @@ export const defaultDishes: Dish[] = [
       "快手素菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_014.webp",
+    "thumbUrl": "/assets/dishes/dish_014.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -993,7 +993,7 @@ export const defaultDishes: Dish[] = [
       "川渝特色时蔬"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_015.webp",
+    "thumbUrl": "/assets/dishes/dish_015.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -1048,7 +1048,7 @@ export const defaultDishes: Dish[] = [
       "清脆爽口"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_016.webp",
+    "thumbUrl": "/assets/dishes/dish_016.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -1110,7 +1110,7 @@ export const defaultDishes: Dish[] = [
       "清爽不腻"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_017.webp",
+    "thumbUrl": "/assets/dishes/dish_017.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -1168,7 +1168,7 @@ export const defaultDishes: Dish[] = [
       "开胃配饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_018.webp",
+    "thumbUrl": "/assets/dishes/dish_018.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -1237,7 +1237,7 @@ export const defaultDishes: Dish[] = [
       "大肉硬菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_019.webp",
+    "thumbUrl": "/assets/dishes/dish_019.jpg",
     "dishEmoji": "🦐"
   },
   {
@@ -1308,7 +1308,7 @@ export const defaultDishes: Dish[] = [
       "鲜美嫩滑"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_020.webp",
+    "thumbUrl": "/assets/dishes/dish_020.jpg",
     "dishEmoji": "🐟"
   },
   {
@@ -1382,7 +1382,7 @@ export const defaultDishes: Dish[] = [
       "老少皆宜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_021.webp",
+    "thumbUrl": "/assets/dishes/dish_021.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -1456,7 +1456,7 @@ export const defaultDishes: Dish[] = [
       "低脂健康"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_022.webp",
+    "thumbUrl": "/assets/dishes/dish_022.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -1530,7 +1530,7 @@ export const defaultDishes: Dish[] = [
       "软嫩顺滑"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_023.webp",
+    "thumbUrl": "/assets/dishes/dish_023.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -1600,7 +1600,7 @@ export const defaultDishes: Dish[] = [
       "开胃香脆"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_024.webp",
+    "thumbUrl": "/assets/dishes/dish_024.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -1674,7 +1674,7 @@ export const defaultDishes: Dish[] = [
       "酸辣解腻"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_025.webp",
+    "thumbUrl": "/assets/dishes/dish_025.jpg",
     "dishEmoji": "🥔"
   },
   {
@@ -1737,7 +1737,7 @@ export const defaultDishes: Dish[] = [
       "下饭好菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_026.webp",
+    "thumbUrl": "/assets/dishes/dish_026.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -1798,7 +1798,7 @@ export const defaultDishes: Dish[] = [
       "快手肉丝"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_027.webp",
+    "thumbUrl": "/assets/dishes/dish_027.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -1867,7 +1867,7 @@ export const defaultDishes: Dish[] = [
       "麻辣过瘾"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_028.webp",
+    "thumbUrl": "/assets/dishes/dish_028.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -1928,7 +1928,7 @@ export const defaultDishes: Dish[] = [
       "夏秋开胃"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_029.webp",
+    "thumbUrl": "/assets/dishes/dish_029.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -1983,7 +1983,7 @@ export const defaultDishes: Dish[] = [
       "鲜甜清口"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_030.webp",
+    "thumbUrl": "/assets/dishes/dish_030.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -2054,7 +2054,7 @@ export const defaultDishes: Dish[] = [
       "大肉硬菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_031.webp",
+    "thumbUrl": "/assets/dishes/dish_031.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -2128,7 +2128,7 @@ export const defaultDishes: Dish[] = [
       "晚餐加热更入味"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_032.webp",
+    "thumbUrl": "/assets/dishes/dish_032.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -2202,7 +2202,7 @@ export const defaultDishes: Dish[] = [
       "高蛋白大菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_033.webp",
+    "thumbUrl": "/assets/dishes/dish_033.jpg",
     "dishEmoji": "🐟"
   },
   {
@@ -2264,7 +2264,7 @@ export const defaultDishes: Dish[] = [
       "大肉硬菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_034.webp",
+    "thumbUrl": "/assets/dishes/dish_034.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -2337,7 +2337,7 @@ export const defaultDishes: Dish[] = [
       "生爆干香"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_035.webp",
+    "thumbUrl": "/assets/dishes/dish_035.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -2391,7 +2391,7 @@ export const defaultDishes: Dish[] = [
       "软糯耐热"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_036.webp",
+    "thumbUrl": "/assets/dishes/dish_036.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -2453,7 +2453,7 @@ export const defaultDishes: Dish[] = [
       "米饭杀手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_037.webp",
+    "thumbUrl": "/assets/dishes/dish_037.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -2532,7 +2532,7 @@ export const defaultDishes: Dish[] = [
       "荤素平衡"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_038.webp",
+    "thumbUrl": "/assets/dishes/dish_038.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -2597,7 +2597,7 @@ export const defaultDishes: Dish[] = [
       "脆嫩下饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_039.webp",
+    "thumbUrl": "/assets/dishes/dish_039.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -2652,7 +2652,7 @@ export const defaultDishes: Dish[] = [
       "清甜解腻"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_040.webp",
+    "thumbUrl": "/assets/dishes/dish_040.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -2710,7 +2710,7 @@ export const defaultDishes: Dish[] = [
       "快手香浓"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_041.webp",
+    "thumbUrl": "/assets/dishes/dish_041.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -2783,7 +2783,7 @@ export const defaultDishes: Dish[] = [
       "极耐加热"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_042.webp",
+    "thumbUrl": "/assets/dishes/dish_042.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -2857,7 +2857,7 @@ export const defaultDishes: Dish[] = [
       "清淡少油"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_043.webp",
+    "thumbUrl": "/assets/dishes/dish_043.jpg",
     "dishEmoji": "🦐"
   },
   {
@@ -2923,7 +2923,7 @@ export const defaultDishes: Dish[] = [
       "干香下饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_044.webp",
+    "thumbUrl": "/assets/dishes/dish_044.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -2988,7 +2988,7 @@ export const defaultDishes: Dish[] = [
       "脆爽健康"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_045.webp",
+    "thumbUrl": "/assets/dishes/dish_045.jpg",
     "dishEmoji": "🥦"
   },
   {
@@ -3044,7 +3044,7 @@ export const defaultDishes: Dish[] = [
       "茼蒿清香"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_046.webp",
+    "thumbUrl": "/assets/dishes/dish_046.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -3102,7 +3102,7 @@ export const defaultDishes: Dish[] = [
       "脆嫩清甜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_047.webp",
+    "thumbUrl": "/assets/dishes/dish_047.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -3161,7 +3161,7 @@ export const defaultDishes: Dish[] = [
       "脆爽开胃"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_048.webp",
+    "thumbUrl": "/assets/dishes/dish_048.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -3227,7 +3227,7 @@ export const defaultDishes: Dish[] = [
       "极耐加热"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_049.webp",
+    "thumbUrl": "/assets/dishes/dish_049.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -3293,7 +3293,7 @@ export const defaultDishes: Dish[] = [
       "焦香下饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_050.webp",
+    "thumbUrl": "/assets/dishes/dish_050.jpg",
     "dishEmoji": "🫑"
   },
   {
@@ -3367,7 +3367,7 @@ export const defaultDishes: Dish[] = [
       "老少皆宜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_051.webp",
+    "thumbUrl": "/assets/dishes/dish_051.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -3441,7 +3441,7 @@ export const defaultDishes: Dish[] = [
       "鲜香解腻"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_052.webp",
+    "thumbUrl": "/assets/dishes/dish_052.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -3504,7 +3504,7 @@ export const defaultDishes: Dish[] = [
       "清香滋补"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_053.webp",
+    "thumbUrl": "/assets/dishes/dish_053.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -3573,7 +3573,7 @@ export const defaultDishes: Dish[] = [
       "极低脂"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_054.webp",
+    "thumbUrl": "/assets/dishes/dish_054.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -3628,7 +3628,7 @@ export const defaultDishes: Dish[] = [
       "清甜滑润"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_055.webp",
+    "thumbUrl": "/assets/dishes/dish_055.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -3715,7 +3715,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_056.webp",
+    "thumbUrl": "/assets/dishes/dish_056.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -3770,7 +3770,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_057.webp",
+    "thumbUrl": "/assets/dishes/dish_057.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -3839,7 +3839,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_058.webp",
+    "thumbUrl": "/assets/dishes/dish_058.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -3919,7 +3919,7 @@ export const defaultDishes: Dish[] = [
       "硬菜推荐"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_059.webp",
+    "thumbUrl": "/assets/dishes/dish_059.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -3996,7 +3996,7 @@ export const defaultDishes: Dish[] = [
       "硬菜推荐"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_060.webp",
+    "thumbUrl": "/assets/dishes/dish_060.jpg",
     "dishEmoji": "🦐"
   },
   {
@@ -4060,7 +4060,7 @@ export const defaultDishes: Dish[] = [
       "时令推荐"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_061.webp",
+    "thumbUrl": "/assets/dishes/dish_061.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -4128,7 +4128,7 @@ export const defaultDishes: Dish[] = [
       "外焦里嫩"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_062.webp",
+    "thumbUrl": "/assets/dishes/dish_062.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -4198,7 +4198,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_063.webp",
+    "thumbUrl": "/assets/dishes/dish_063.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -4260,7 +4260,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_064.webp",
+    "thumbUrl": "/assets/dishes/dish_064.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -4327,7 +4327,7 @@ export const defaultDishes: Dish[] = [
       "养生靓汤"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_065.webp",
+    "thumbUrl": "/assets/dishes/dish_065.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -4408,7 +4408,7 @@ export const defaultDishes: Dish[] = [
       "常备快手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_066.webp",
+    "thumbUrl": "/assets/dishes/dish_066.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -4479,7 +4479,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_067.webp",
+    "thumbUrl": "/assets/dishes/dish_067.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -4560,7 +4560,7 @@ export const defaultDishes: Dish[] = [
       "快手素菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_068.webp",
+    "thumbUrl": "/assets/dishes/dish_068.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -4642,7 +4642,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_069.webp",
+    "thumbUrl": "/assets/dishes/dish_069.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -4705,7 +4705,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_070.webp",
+    "thumbUrl": "/assets/dishes/dish_070.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -4782,7 +4782,7 @@ export const defaultDishes: Dish[] = [
       "下饭神菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_071.webp",
+    "thumbUrl": "/assets/dishes/dish_071.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -4863,7 +4863,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_072.webp",
+    "thumbUrl": "/assets/dishes/dish_072.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -4937,7 +4937,7 @@ export const defaultDishes: Dish[] = [
       "慢炖靓菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_073.webp",
+    "thumbUrl": "/assets/dishes/dish_073.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -5018,7 +5018,7 @@ export const defaultDishes: Dish[] = [
       "大厨拿手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_074.webp",
+    "thumbUrl": "/assets/dishes/dish_074.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -5093,7 +5093,7 @@ export const defaultDishes: Dish[] = [
       "治愈两人食"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_075.webp",
+    "thumbUrl": "/assets/dishes/dish_075.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -5176,7 +5176,7 @@ export const defaultDishes: Dish[] = [
       "俄式风味"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_076.webp",
+    "thumbUrl": "/assets/dishes/dish_076.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -5256,7 +5256,7 @@ export const defaultDishes: Dish[] = [
       "老少皆宜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_077.webp",
+    "thumbUrl": "/assets/dishes/dish_077.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -5327,7 +5327,7 @@ export const defaultDishes: Dish[] = [
       "大厨拿手"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_078.webp",
+    "thumbUrl": "/assets/dishes/dish_078.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -5401,7 +5401,7 @@ export const defaultDishes: Dish[] = [
       "硬菜推荐"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_079.webp",
+    "thumbUrl": "/assets/dishes/dish_079.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -5483,7 +5483,7 @@ export const defaultDishes: Dish[] = [
       "双重肉感"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_080.webp",
+    "thumbUrl": "/assets/dishes/dish_080.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -5558,7 +5558,7 @@ export const defaultDishes: Dish[] = [
       "肉食狂喜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_081.webp",
+    "thumbUrl": "/assets/dishes/dish_081.jpg",
     "dishEmoji": "🍗"
   },
   {
@@ -5634,7 +5634,7 @@ export const defaultDishes: Dish[] = [
       "二人食常备"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_082.webp",
+    "thumbUrl": "/assets/dishes/dish_082.jpg",
     "dishEmoji": "🥩"
   },
   {
@@ -5704,7 +5704,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_083.webp",
+    "thumbUrl": "/assets/dishes/dish_083.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -5773,7 +5773,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_084.webp",
+    "thumbUrl": "/assets/dishes/dish_084.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -5843,7 +5843,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_085.webp",
+    "thumbUrl": "/assets/dishes/dish_085.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -5918,7 +5918,7 @@ export const defaultDishes: Dish[] = [
       "风味独特"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_086.webp",
+    "thumbUrl": "/assets/dishes/dish_086.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -5991,7 +5991,7 @@ export const defaultDishes: Dish[] = [
       "颜值大菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_087.webp",
+    "thumbUrl": "/assets/dishes/dish_087.jpg",
     "dishEmoji": "🦐"
   },
   {
@@ -6060,7 +6060,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_088.webp",
+    "thumbUrl": "/assets/dishes/dish_088.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -6142,7 +6142,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_089.webp",
+    "thumbUrl": "/assets/dishes/dish_089.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -6210,7 +6210,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_090.webp",
+    "thumbUrl": "/assets/dishes/dish_090.jpg",
     "dishEmoji": "🥓"
   },
   {
@@ -6275,7 +6275,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_091.webp",
+    "thumbUrl": "/assets/dishes/dish_091.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -6335,7 +6335,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_092.webp",
+    "thumbUrl": "/assets/dishes/dish_092.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -6399,7 +6399,7 @@ export const defaultDishes: Dish[] = [
       "时令推荐"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_093.webp",
+    "thumbUrl": "/assets/dishes/dish_093.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -6464,7 +6464,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_094.webp",
+    "thumbUrl": "/assets/dishes/dish_094.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -6521,7 +6521,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_095.webp",
+    "thumbUrl": "/assets/dishes/dish_095.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -6601,7 +6601,7 @@ export const defaultDishes: Dish[] = [
       "免开火"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_096.webp",
+    "thumbUrl": "/assets/dishes/dish_096.jpg",
     "dishEmoji": "🥔"
   },
   {
@@ -6671,7 +6671,7 @@ export const defaultDishes: Dish[] = [
       "下酒下饭"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_097.webp",
+    "thumbUrl": "/assets/dishes/dish_097.jpg",
     "dishEmoji": "🥔"
   },
   {
@@ -6753,7 +6753,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_098.webp",
+    "thumbUrl": "/assets/dishes/dish_098.jpg",
     "dishEmoji": "🥔"
   },
   {
@@ -6834,7 +6834,7 @@ export const defaultDishes: Dish[] = [
       "西式暖盘"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_099.webp",
+    "thumbUrl": "/assets/dishes/dish_099.jpg",
     "dishEmoji": "🥔"
   },
   {
@@ -6899,7 +6899,7 @@ export const defaultDishes: Dish[] = [
       "时令特色"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_100.webp",
+    "thumbUrl": "/assets/dishes/dish_100.jpg",
     "dishEmoji": "🥬"
   },
   {
@@ -6980,7 +6980,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_101.webp",
+    "thumbUrl": "/assets/dishes/dish_101.jpg",
     "dishEmoji": "🍄"
   },
   {
@@ -7050,7 +7050,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_102.webp",
+    "thumbUrl": "/assets/dishes/dish_102.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -7120,7 +7120,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_103.webp",
+    "thumbUrl": "/assets/dishes/dish_103.jpg",
     "dishEmoji": "🍳"
   },
   {
@@ -7195,7 +7195,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_104.webp",
+    "thumbUrl": "/assets/dishes/dish_104.jpg",
     "dishEmoji": "🥚"
   },
   {
@@ -7270,7 +7270,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_105.webp",
+    "thumbUrl": "/assets/dishes/dish_105.jpg",
     "dishEmoji": "🍳"
   },
   {
@@ -7351,7 +7351,7 @@ export const defaultDishes: Dish[] = [
       "两人食暖菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_106.webp",
+    "thumbUrl": "/assets/dishes/dish_106.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -7432,7 +7432,7 @@ export const defaultDishes: Dish[] = [
       "家常巧思"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_107.webp",
+    "thumbUrl": "/assets/dishes/dish_107.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -7514,7 +7514,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_108.webp",
+    "thumbUrl": "/assets/dishes/dish_108.jpg",
     "dishEmoji": "🥢"
   },
   {
@@ -7583,7 +7583,7 @@ export const defaultDishes: Dish[] = [
       "快手清润"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_109.webp",
+    "thumbUrl": "/assets/dishes/dish_109.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -7659,7 +7659,7 @@ export const defaultDishes: Dish[] = [
       "十分钟羹汤"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_110.webp",
+    "thumbUrl": "/assets/dishes/dish_110.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -7734,7 +7734,7 @@ export const defaultDishes: Dish[] = [
       "治愈两人食"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_111.webp",
+    "thumbUrl": "/assets/dishes/dish_111.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -7815,7 +7815,7 @@ export const defaultDishes: Dish[] = [
       "两人食盛宴"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_112.webp",
+    "thumbUrl": "/assets/dishes/dish_112.jpg",
     "dishEmoji": "🍚"
   },
   {
@@ -7895,7 +7895,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_113.webp",
+    "thumbUrl": "/assets/dishes/dish_113.jpg",
     "dishEmoji": "🥪"
   },
   {
@@ -7976,7 +7976,7 @@ export const defaultDishes: Dish[] = [
       "干炒牛河"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_114.webp",
+    "thumbUrl": "/assets/dishes/dish_114.jpg",
     "dishEmoji": "🍜"
   },
   {
@@ -8051,7 +8051,7 @@ export const defaultDishes: Dish[] = [
       "一碗治愈"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_115.webp",
+    "thumbUrl": "/assets/dishes/dish_115.jpg",
     "dishEmoji": "🍚"
   },
   {
@@ -8125,7 +8125,7 @@ export const defaultDishes: Dish[] = [
       "爽口轻负担"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_116.webp",
+    "thumbUrl": "/assets/dishes/dish_116.jpg",
     "dishEmoji": "🍜"
   },
   {
@@ -8206,7 +8206,7 @@ export const defaultDishes: Dish[] = [
       "嗦粉狂喜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_117.webp",
+    "thumbUrl": "/assets/dishes/dish_117.jpg",
     "dishEmoji": "🍜"
   },
   {
@@ -8287,7 +8287,7 @@ export const defaultDishes: Dish[] = [
       "经典意面"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_118.webp",
+    "thumbUrl": "/assets/dishes/dish_118.jpg",
     "dishEmoji": "🍜"
   },
   {
@@ -8357,7 +8357,7 @@ export const defaultDishes: Dish[] = [
       "滋补暖身"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_119.webp",
+    "thumbUrl": "/assets/dishes/dish_119.jpg",
     "dishEmoji": "🍲"
   },
   {
@@ -8437,7 +8437,7 @@ export const defaultDishes: Dish[] = [
       "老少皆宜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_120.webp",
+    "thumbUrl": "/assets/dishes/dish_120.jpg",
     "dishEmoji": "🍚"
   },
   {
@@ -8519,7 +8519,7 @@ export const defaultDishes: Dish[] = [
       "镬气十足"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_121.webp",
+    "thumbUrl": "/assets/dishes/dish_121.jpg",
     "dishEmoji": "🍚"
   },
   {
@@ -8587,7 +8587,7 @@ export const defaultDishes: Dish[] = [
       "治愈两人食"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_122.webp",
+    "thumbUrl": "/assets/dishes/dish_122.jpg",
     "dishEmoji": "🍜"
   },
   {
@@ -8668,7 +8668,7 @@ export const defaultDishes: Dish[] = [
       "快手菜"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_123.webp",
+    "thumbUrl": "/assets/dishes/dish_123.jpg",
     "dishEmoji": "🍜"
   },
   {
@@ -8749,7 +8749,7 @@ export const defaultDishes: Dish[] = [
       "下午茶小点"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_124.webp",
+    "thumbUrl": "/assets/dishes/dish_124.jpg",
     "dishEmoji": "🥪"
   },
   {
@@ -8825,7 +8825,7 @@ export const defaultDishes: Dish[] = [
       "西式两人餐"
     ],
     "enabled": true,
-    "thumbUrl": "/assets/dishes/dish_125.webp",
+    "thumbUrl": "/assets/dishes/dish_125.jpg",
     "dishEmoji": "🍜"
   }
 ];

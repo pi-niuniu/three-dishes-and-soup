@@ -1,15 +1,16 @@
 {
   "name": "three-dishes-and-soup",
-  "version": "2.04",
+  "version": "2.05",
   "type": "module",
   "description": "《四季三餐 · 好好吃饭》微信小程序",
   "scripts": {
     "build": "tsc",
     "upload": "node scripts/upload.mjs",
-    "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs",
+    "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs && node test/image_resilience_test.mjs",
     "test:algo": "node test/recommendation_test.mjs",
     "test:e2e": "node test/e2e_full_lifecycle_test.mjs",
-    "test:pages": "node test/pages_runtime_test.mjs"
+    "test:pages": "node test/pages_runtime_test.mjs",
+    "test:images": "node test/image_resilience_test.mjs"
   },
   "keywords": [
     "wechat-miniprogram",
