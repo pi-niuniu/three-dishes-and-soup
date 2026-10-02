@@ -1,6 +1,7 @@
 import { dataProvider } from '../../services/dataProvider.js';
 import { preferenceService } from '../../services/preferenceService.js';
 import { imageService } from '../../services/imageService.js';
+import { familyService } from '../../services/familyService.js';
 import { Dish } from '../../types/dish.js';
 
 Page({
@@ -11,7 +12,8 @@ Page({
       { key: 'secondary_meat', label: '副荤' },
       { key: 'vegetable', label: '素菜' },
       { key: 'soup', label: '靓汤' },
-      { key: 'staple_sauce', label: '主食' }
+      { key: 'staple_sauce', label: '主食' },
+      { key: 'custom', label: '私房菜' }
     ],
     currentCategory: 'all',
     searchKeyword: '',
@@ -21,6 +23,12 @@ Page({
 
   onShow() {
     this.loadDishes();
+    const fam = familyService.getCurrentFamily();
+    if (fam) {
+      dataProvider.syncCloudCustomDishes().then(() => {
+        this.loadDishes();
+      }).catch(() => {});
+    }
   },
 
   loadDishes() {
@@ -32,7 +40,7 @@ Page({
     const list = dishes.map(d => ({
       ...d,
       isFav: favSet.has(d.id),
-      isSeasonBest: d.bestMonths.includes(currentMonth)
+      isSeasonBest: d.bestMonths?.includes(currentMonth) || false
     }));
 
     this.setData({ allDishes: list }, () => {
@@ -53,12 +61,20 @@ Page({
     });
   },
 
+  navigateToCustomAdd() {
+    wx.navigateTo({
+      url: '/pages/dishes/custom-add/index'
+    });
+  },
+
   applyFilter() {
     const { allDishes, currentCategory, searchKeyword } = this.data;
     let result = allDishes;
 
     if (currentCategory !== 'all') {
-      if (currentCategory === 'secondary_meat') {
+      if (currentCategory === 'custom') {
+        result = result.filter(d => Boolean(d.isCustom));
+      } else if (currentCategory === 'secondary_meat') {
         result = result.filter(d => d.category === 'secondary_meat' || d.category === 'egg' || d.category === 'tofu');
       } else {
         result = result.filter(d => d.category === currentCategory);
@@ -69,7 +85,7 @@ Page({
       const kw = searchKeyword.trim().toLowerCase();
       result = result.filter(d =>
         d.name.toLowerCase().includes(kw) ||
-        d.mainIngredient.toLowerCase().includes(kw) ||
+        (d.mainIngredient && d.mainIngredient.toLowerCase().includes(kw)) ||
         (d.tags && d.tags.some((t: string) => t.toLowerCase().includes(kw))) ||
         (d.taste && d.taste.some((t: string) => t.toLowerCase().includes(kw)))
       );

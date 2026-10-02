@@ -1,15 +1,26 @@
 <view class="container history-container">
   <view class="history-intro card">
-    <view class="intro-title">📅 30 天就餐足迹</view>
-    <view class="intro-desc">系统已自动为您避开最近 3~7 天内吃过的重复菜品。</view>
+    <view class="intro-title-row">
+      <view class="intro-title">{{ syncStatusText }}</view>
+      <view class="sync-badge {{ hasFamily ? 'sync-synced' : 'sync-local' }}">
+        {{ hasFamily ? '☁️ 全家实时互通' : '📱 本地单机' }}
+      </view>
+    </view>
+    <view class="intro-desc">系统已自动为您避开最近 3~7 天内吃过的重复菜品，同日多餐（午/晚餐）独立记录不覆盖。</view>
   </view>
 
   <view class="records-list">
     <block wx:for="{{ records }}" wx:key="id">
       <view class="record-card card">
         <view class="record-top">
-          <text class="record-date">{{ item.date }}</text>
-          <text class="record-mode">{{ modeNames[item.mode] || '家庭小菜' }}</text>
+          <view class="record-top-left">
+            <text class="record-date">{{ item.date }}</text>
+            <text wx:if="{{ item.mealTypeLabel }}" class="meal-type-badge">{{ item.mealTypeLabel }}</text>
+          </view>
+          <view class="record-top-right">
+            <text wx:if="{{ item.confirmedByText }}" class="record-confirmer">{{ item.confirmedByText }} · </text>
+            <text class="record-mode">{{ modeNames[item.mode] || '家庭小菜' }}</text>
+          </view>
         </view>
         <view class="record-dishes">
           <block wx:for="{{ item.dishes || item.dishNames }}" wx:for-item="d" wx:for-index="dIndex" wx:key="name">

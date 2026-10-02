@@ -3,16 +3,40 @@
   border: 2rpx solid #EAE3D5;
 }
 
+.intro-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6rpx;
+}
+
 .intro-title {
   font-size: 30rpx;
   font-weight: 700;
   color: #E6683B;
-  margin-bottom: 6rpx;
+}
+
+.sync-badge {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+}
+
+.sync-synced {
+  background-color: #E8F2EC;
+  color: #2C5E43;
+}
+
+.sync-local {
+  background-color: #EAE3D5;
+  color: #8C918D;
 }
 
 .intro-desc {
   font-size: 24rpx;
   color: #6D736E;
+  line-height: 1.5;
 }
 
 .records-list {
@@ -34,10 +58,37 @@
   border-bottom: 1rpx solid #F4EFE6;
 }
 
+.record-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
 .record-date {
   font-size: 28rpx;
   font-weight: 600;
   color: #2D312E;
+}
+
+.meal-type-badge {
+  font-size: 20rpx;
+  color: #E6683B;
+  background-color: #FFF2ED;
+  border: 1rpx solid #FDDDD0;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+.record-top-right {
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+}
+
+.record-confirmer {
+  color: #8C918D;
+  margin-right: 6rpx;
 }
 
 .record-mode {

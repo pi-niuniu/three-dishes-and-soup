@@ -1,0 +1,9 @@
+{
+  "name": "customDish",
+  "version": "1.0.0",
+  "description": "微信云函数: 纯文字私房菜录入、文本安全msgSecCheck审核与家庭菜谱共享",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

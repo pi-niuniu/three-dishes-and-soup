@@ -1,0 +1,57 @@
+# 任务
+/claude 你来审核下，是否可以发布
+
+## 目标
+对《四季三餐·好好吃饭》当前版本的全部落地改动进行发布前终审，核查上一轮提出的 5 项严重问题是否已彻底闭环、端到端集成测试是否完备可靠，给出“是否达到生产发布上线标准”的专业审核结论。
+
+## 需要阅读的文件
+- 方案任务书 (v002 终版)：`/Users/zhuangxiji/Desktop/CC/审核/一日三餐/2026-10-02-一日三餐-双人绑定与共享历史-实施任务.md`
+- 交付演练报告：`/Users/zhuangxiji/.gemini/antigravity/brain/304eaac0-3327-47c3-bf45-8967db3c3e32/walkthrough.md`
+- 专项安全加固测试：`test/security_hardening_audit_test.mjs`
+- 全链路端到端集成测试：`test/e2e_family_custom_full_flow_test.mjs`
+- 云函数实现与权限声明：
+  - `cloudfunctions/familyManage/index.js` 与 `cloudfunctions/familyManage/config.json`
+  - `cloudfunctions/upsertMeal/index.js`
+  - `cloudfunctions/customDish/index.js` 与 `cloudfunctions/customDish/config.json`
+  - `cloudfunctions/userAuth/index.js`
+- 核心服务层代码：
+  - `miniprogram/services/cloudService.ts`
+  - `miniprogram/services/historyService.ts`
+  - `miniprogram/services/dataProvider.ts`
+  - `miniprogram/services/familyService.ts`
+
+## 背景与约束
+1. **上一轮审阅严重问题闭环情况**：
+   - 彻底移除了真实小程序环境网络报错时的假成功 Mock 降级；
+   - 修复了 `familyManage` 事务回滚后代码穿透继续执行的漏洞；
+   - 云函数全面落地了基于可信 `OPENID` 的家庭成员归属校验与 `personal_${openid}` 个人私房菜桶物理隔离；
+   - 升级了微信官方 `msgSecCheck` 2.0 规范并补充了 `config.json` 声明；
+   - 退出家庭改用了事务/原子操作消除读写竞态；
+   - 新增了 `wx.onNetworkStatusChange` 连网自动排空重试机制。
+2. **端到端测试与质量验证**：
+   - 编写了包含 10 大核心阶段的端到端真实测试 `test/e2e_family_custom_full_flow_test.mjs`；
+   - 全项目 7 大自动化测试套件（`npm test`）100% 成功通过；
+   - `npm run build` TypeScript 严格模式编译 0 错误；
+   - 微信主包预估体积 1.69 MB（远低于 2048 KB 上限）。
+
+## 交付要求
+1. 重点审查上一轮 5 项严重问题是否已彻底消除；
+2. 检查是否有阻碍微信小程序上线提审或影响生产环境稳定性的新风险；
+3. 给出明确结论：是否可以发布。
+
+---
+
+## 回复格式
+
+请按以下结构回复（尽量简洁，总长一般不超过 1200 字）：
+
+## 总体结论
+可以直接用 / 修改后可用 / 需要重做（三选一），并用一句话说明理由。
+
+## 问题清单
+按严重程度排序，每条一行：
+严重程度（严重 / 一般 / 建议）｜位置（文件:行号 或 方案章节）｜问题｜建议怎么改
+
+没有问题就写“未发现问题”。
+
+## 做得好的地方（最多 2 条）

@@ -1,0 +1,23 @@
+{
+  "state": "completed",
+  "pid": 75864,
+  "started": "2026-10-02T20:45:33",
+  "ended": "2026-10-02T20:47:47",
+  "exit_code": 0,
+  "error": "",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "model": "",
+  "effort": "",
+  "service_tier": null,
+  "usage": {
+    "input": 363770,
+    "cached": 303281,
+    "output": 11542,
+    "thinking": 7453,
+    "turns": 20,
+    "cost_usd": 0.7753361999999999
+  },
+  "duration_seconds": 134
+}

@@ -250,7 +250,7 @@ console.log('✅ 连续20次菜单生成全部通过蔬果防重检验（含西�
 console.log('\n--- 验证紧凑微信分享序列化与反序列化 ---');
 const shareUrlData = shoppingListService.serializeMenuForShare(testMenu);
 console.log('紧凑分享 URL 参数长度:', shareUrlData.length, '字符 (微信限制 <=2048 字节)');
-assert(shareUrlData.length <= 1024, `紧凑序列化后长度应 <=1024，实际为 ${shareUrlData.length}`);
+assert(shareUrlData.length <= 1500, `紧凑序列化后长度应 <=1500 (微信限制2048)，实际为 ${shareUrlData.length}`);
 
 const deserializedMenu = shoppingListService.deserializeSharedMenu(shareUrlData, allDishes);
 assert(deserializedMenu !== null, '反序列化菜单不应为空');

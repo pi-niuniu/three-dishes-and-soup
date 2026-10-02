@@ -1,13 +1,86 @@
 <view class="container mine-container">
-  <!-- 用户卡片 -->
-  <view class="user-card card">
-    <view class="user-info">
-      <view class="user-avatar">🏡</view>
-      <view class="user-text">
-        <view class="user-name">我们的家庭餐桌</view>
-        <view class="user-sub">常住 2 人 · 大厨掌勺 · 午晚两餐</view>
+  <!-- 4人家庭空间卡片 -->
+  <view class="family-card card">
+    <!-- 未加入家庭状态 -->
+    <block wx:if="{{ !family }}">
+      <view class="fam-empty-box">
+        <view class="fam-header">
+          <view class="fam-icon">🏡</view>
+          <view class="fam-title-wrap">
+            <view class="fam-title">家庭厨房空间</view>
+            <view class="fam-sub">支持 1~4 人共享每日做菜历史与私房菜库</view>
+          </view>
+        </view>
+        <view class="fam-actions">
+          <view class="create-row">
+            <input 
+              class="fam-name-input" 
+              placeholder="自定义厨房名称 (如：温馨小家食堂)" 
+              value="{{ newFamilyNameInput }}" 
+              bindinput="handleFamilyNameInput" 
+              maxlength="15"
+            />
+            <button class="btn-create-fam" bindtap="handleCreateFamily">创建厨房</button>
+          </view>
+          <view class="divider-text">或输入家人分享的口令</view>
+          <view class="join-row">
+            <input 
+              class="join-code-input" 
+              type="number" 
+              maxlength="6" 
+              placeholder="输入 6 位家庭邀请口令" 
+              value="{{ joinCodeInput }}" 
+              bindinput="handleJoinCodeInput" 
+            />
+            <button class="btn-join-fam" bindtap="handleJoinFamily">加入厨房</button>
+          </view>
+        </view>
       </view>
-    </view>
+    </block>
+
+    <!-- 已绑定家庭状态 (上限 4 人) -->
+    <block wx:else>
+      <view class="fam-active-box">
+        <view class="fam-header">
+          <view class="fam-icon">🍳</view>
+          <view class="fam-title-wrap">
+            <view class="fam-title">{{ family.name || '温馨小家食堂' }}</view>
+            <view class="fam-badge">家庭成员 ({{ family.members.length }}/4 人)</view>
+          </view>
+        </view>
+
+        <!-- 成员头像列表 -->
+        <view class="members-grid">
+          <block wx:for="{{ family.members }}" wx:key="openid">
+            <view class="member-chip">
+              <view class="member-avatar">
+                <text>{{ item.role === 'creator' ? '👨‍🍳' : '🥣' }}</text>
+              </view>
+              <view class="member-name">{{ item.nickName }}</view>
+              <view wx:if="{{ item.role === 'creator' }}" class="role-tag">房主</view>
+            </view>
+          </block>
+        </view>
+
+        <!-- 邀请码与复制口令 -->
+        <view class="invite-banner">
+          <view class="invite-left">
+            <text class="invite-label">动态邀请口令 (24小时有效)</text>
+            <text class="invite-code">{{ family.inviteCode }}</text>
+          </view>
+          <view class="invite-actions">
+            <button class="btn-copy-code" bindtap="handleCopyInviteCode">复制口令</button>
+            <button wx:if="{{ currentUser.role === 'creator' }}" class="btn-refresh-code" bindtap="handleRefreshInviteCode">刷新</button>
+          </view>
+        </view>
+
+        <view class="fam-bottom-bar">
+          <text class="fam-leave-btn" bindtap="handleLeaveFamily">
+            {{ currentUser.role === 'creator' ? '解散/退出家庭' : '退出家庭厨房' }}
+          </text>
+        </view>
+      </view>
+    </block>
   </view>
 
   <!-- 辣度偏好 -->

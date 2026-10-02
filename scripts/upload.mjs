@@ -71,7 +71,7 @@ function calculatePackSize(dir) {
     if (stat.isDirectory()) {
       calculatePackSize(full);
     } else {
-      if (item.endsWith('.webp') || item.endsWith('.ts') || item === '.DS_Store') continue;
+      if (item.endsWith('.webp') || item.endsWith('.ts') || item.endsWith('.map') || item === '.DS_Store') continue;
       if (rel === 'data/dishes.json' || rel === 'data/ingredients.json') continue;
       estimatedUploadBytes += stat.size;
     }

@@ -5,6 +5,7 @@
     "pages/menu/shopping/index",
     "pages/cook/view/index",
     "pages/dishes/index",
+    "pages/dishes/custom-add/index",
     "pages/history/index",
     "pages/mine/index"
   ],

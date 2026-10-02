@@ -1,0 +1,20 @@
+{
+  "state": "completed",
+  "pid": 60660,
+  "started": "2026-10-02T20:01:38",
+  "ended": "2026-10-02T20:03:51",
+  "exit_code": 0,
+  "error": "",
+  "models": [],
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "service_tier": "fast",
+  "usage": {
+    "input": 231486,
+    "cached": 177792,
+    "output": 3478,
+    "thinking": 911,
+    "turns": null
+  },
+  "duration_seconds": 132
+}

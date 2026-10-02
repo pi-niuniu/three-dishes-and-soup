@@ -1,3 +1,212 @@
+.family-card {
+  padding: 32rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
+  border: 2rpx solid #F4EFE6;
+  margin-bottom: 24rpx;
+}
+
+.fam-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.fam-icon {
+  font-size: 56rpx;
+  width: 88rpx;
+  height: 88rpx;
+  background: #FFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.fam-title-wrap {
+  flex: 1;
+}
+
+.fam-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2D312E;
+  margin-bottom: 6rpx;
+}
+
+.fam-sub {
+  font-size: 22rpx;
+  color: #8C918D;
+}
+
+.fam-badge {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #2C5E43;
+  background: #E8F2EC;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+}
+
+.fam-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.create-row, .join-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.fam-name-input, .join-code-input {
+  flex: 1;
+  background: #FFF;
+  border: 2rpx solid #EFEAE0;
+  border-radius: 16rpx;
+  padding: 12rpx 20rpx;
+  font-size: 26rpx;
+  color: #2D312E;
+}
+
+.btn-create-fam, .btn-join-fam {
+  background: #2C5E43;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 0 24rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 16rpx;
+  margin: 0;
+}
+
+.btn-join-fam {
+  background: #E6683B;
+}
+
+.divider-text {
+  text-align: center;
+  font-size: 20rpx;
+  color: #B5B9B6;
+  margin: 4rpx 0;
+}
+
+/* 成员头像网格 */
+.members-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.member-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.member-avatar {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: #FFF;
+  border: 2rpx solid #EFEAE0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.member-name {
+  font-size: 20rpx;
+  color: #555A56;
+  margin-top: 8rpx;
+  max-width: 90rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-tag {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  background: #E6683B;
+  color: #FFF;
+  font-size: 16rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 8rpx;
+}
+
+/* 邀请码条幅 */
+.invite-banner {
+  background: #FFFDF8;
+  border: 2rpx dashed #E6DFD3;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.invite-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.invite-label {
+  font-size: 20rpx;
+  color: #8C918D;
+}
+
+.invite-code {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2C5E43;
+  letter-spacing: 4rpx;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.btn-copy-code, .btn-refresh-code {
+  font-size: 22rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 12rpx;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.btn-copy-code {
+  background: #2C5E43;
+  color: #FFF;
+}
+
+.btn-refresh-code {
+  background: #FAF8F5;
+  color: #8C918D;
+  border: 1rpx solid #EFEAE0;
+}
+
+.fam-bottom-bar {
+  text-align: right;
+  padding-top: 8rpx;
+}
+
+.fam-leave-btn {
+  font-size: 22rpx;
+  color: #C0C4C1;
+  text-decoration: underline;
+}
+
 .user-card {
   padding: 36rpx;
   background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);

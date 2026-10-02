@@ -324,7 +324,10 @@ export class MenuRecommendationEngine {
         const now = Date.now();
         let minDaysAgo = 999;
         for (const record of history) {
-            if (record.dishIds.includes(dishId)) {
+            const ids = Array.isArray(record?.dishIds)
+                ? record.dishIds
+                : (Array.isArray(record?.dishes) ? record.dishes.map(d => d.id).filter(Boolean) : []);
+            if (ids.includes(dishId)) {
                 const daysAgo = Math.floor((now - record.timestamp) / (1000 * 60 * 60 * 24));
                 if (daysAgo < minDaysAgo) {
                     minDaysAgo = daysAgo;

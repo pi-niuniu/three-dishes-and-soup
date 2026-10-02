@@ -6,11 +6,15 @@
   "scripts": {
     "build": "tsc",
     "upload": "node scripts/upload.mjs",
-    "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs && node test/image_resilience_test.mjs",
+    "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs && node test/image_resilience_test.mjs && node test/family_sharing_custom_dishes_test.mjs && node test/security_hardening_audit_test.mjs && node test/e2e_family_custom_full_flow_test.mjs && node test/final_security_hardening_test.mjs",
     "test:algo": "node test/recommendation_test.mjs",
     "test:e2e": "node test/e2e_full_lifecycle_test.mjs",
     "test:pages": "node test/pages_runtime_test.mjs",
-    "test:images": "node test/image_resilience_test.mjs"
+    "test:images": "node test/image_resilience_test.mjs",
+    "test:family": "node test/family_sharing_custom_dishes_test.mjs",
+    "test:security": "node test/security_hardening_audit_test.mjs",
+    "test:e2e-family": "node test/e2e_family_custom_full_flow_test.mjs",
+    "test:hardening": "node test/final_security_hardening_test.mjs"
   },
   "keywords": [
     "wechat-miniprogram",

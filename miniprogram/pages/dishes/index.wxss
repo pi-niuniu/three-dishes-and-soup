@@ -1,3 +1,45 @@
+.search-header-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.search-header-row .search-box {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.btn-add-custom-trigger {
+  background: #2C5E43;
+  color: #FFF;
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(44, 94, 67, 0.2);
+  flex-shrink: 0;
+}
+
+.add-icon {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.tag-custom {
+  font-size: 20rpx;
+  background-color: #FFF2ED;
+  color: #E6683B;
+  border: 1rpx solid #FDDDD0;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
 .search-box {
   padding: 16rpx 24rpx;
   margin-bottom: 20rpx;

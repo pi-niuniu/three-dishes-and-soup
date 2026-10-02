@@ -1,4 +1,4 @@
-import { dataProvider } from '../../../services/dataProvider.js';
+import { dataProvider, hydrateCustomDish } from '../../../services/dataProvider.js';
 import { menuRecommendationEngine } from '../../../services/menuRecommendation.js';
 import { preferenceService } from '../../../services/preferenceService.js';
 import { historyService } from '../../../services/historyService.js';
@@ -146,7 +146,7 @@ Page({
     handleCustomNameInput(e) {
         this.setData({ customInputName: e.detail.value });
     },
-    confirmCustomInput() {
+    async confirmCustomInput() {
         const name = this.data.customInputName.trim();
         if (!name) {
             wx.showToast({ title: '请输入菜名', icon: 'none' });
@@ -154,34 +154,24 @@ Page({
         }
         const slotIndex = this.data.currentSlotIndex;
         const targetSlot = this.data.menu.slots.find(s => s.slotIndex === slotIndex);
-        const customDish = {
-            id: `custom_${Date.now()}`,
+        const customDish = hydrateCustomDish({
             name,
-            category: (targetSlot?.dish?.category || 'secondary_meat'),
-            cookingMethod: 'stir_fry',
+            category: targetSlot?.dish?.category || 'secondary_meat',
             taste: ['家常特色'],
             spicyLevel: 1,
-            ingredients: [
-                { name, amount: 200, unit: 'g', isMain: true },
-                { name: '大蒜', amount: 1, unit: '适量' }
-            ],
-            mainIngredient: name,
-            bestMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            availableMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            regions: ['川渝', '全国'],
             cookingTimeMinutes: 20,
-            difficulty: 1,
-            estimatedCostLevel: 2,
-            recommendedForTwo: true,
-            tags: ['私房自定义'],
-            enabled: true,
-            thumbUrl: imageService.getDefaultImage(targetSlot?.dish?.category || 'secondary_meat'),
-            dishEmoji: '✨'
-        };
-        const newMenu = menuRecommendationEngine.manualSetSlotDish(slotIndex, customDish, this.data.menu);
-        this.updateMenuState(newMenu);
-        this.closeSelectModal();
-        wx.showToast({ title: `已加入：${name}`, icon: 'none' });
+            tags: ['私房自定义']
+        });
+        try {
+            await dataProvider.addCustomDish(customDish);
+            const newMenu = menuRecommendationEngine.manualSetSlotDish(slotIndex, customDish, this.data.menu);
+            this.updateMenuState(newMenu);
+            this.closeSelectModal();
+            wx.showToast({ title: `已加入：${name}`, icon: 'none' });
+        }
+        catch (err) {
+            wx.showToast({ title: err?.message || '菜名违规或添加失败', icon: 'none' });
+        }
     },
     preventBubble() { },
     handleReroll() {

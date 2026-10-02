@@ -67,4 +67,10 @@ export interface Dish {
   thumbUrl?: string;               // 本地内置缩略图路径 (例如 /assets/dishes/dish_001.jpg)
   imageUrl?: string;               // 远程高清大图 URL (可选)
   dishEmoji?: string;              // 兜底可爱食材/分类微标 (如 🥩, 🥬, 🍲, 🍳)
+
+  // 私房自选菜扩展属性
+  isCustom?: boolean;              // 是否为自选私房菜
+  familyId?: string;               // 归属家庭ID
+  creatorOpenid?: string;          // 录入人 openid
 }
+

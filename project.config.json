@@ -48,6 +48,7 @@
   "projectname": "four-seasons-three-meals-v2.05",
   "version": "2.05",
   "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "condition": {},
   "simulatorPluginLibVersion": {},
   "packOptions": {
