@@ -1,7 +1,7 @@
 import { dataProvider } from './services/dataProvider.js';
 import { preferenceService } from './services/preferenceService.js';
 import { familyService } from './services/familyService.js';
-export const APP_VERSION = '2.05';
+export const APP_VERSION = '2.10';
 App({
     globalData: {
         currentMenu: null,

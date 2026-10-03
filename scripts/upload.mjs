@@ -89,7 +89,7 @@ if (estimatedUploadBytes > 2048 * 1024) {
 console.log(`✅ 体积预算校验安全通过！裕量: ${(2048 - estimatedUploadBytes / 1024).toFixed(1)} KB。\n`);
 
 // 6. 解析上传描述
-const defaultDesc = `发布 V${version} 版本：彻底解决菜品出锅图显示问题，集成全量高兼容JPEG资产、微信打包白名单与云端CDN/SVG双轨容灾`;
+const defaultDesc = `发布 V${version} 版本：4人家庭厨房空间绑定、同日多餐共享做菜历史（午餐晚餐0覆盖）、纯文字自选私房菜（零图片合规水合）与全链路安全加固`;
 const desc = process.argv.slice(2).join(' ') || defaultDesc;
 
 // 7. 定位微信开发者工具 CLI

@@ -1,0 +1,69 @@
+# 任务
+/codex 你实际测试下。
+
+## 目标
+请作为独立专家，对《四季三餐·好好吃饭》多用户家庭空间（最多4人）、共享做菜历史（同日多餐午餐/晚餐独立记录）及纯文字自选私房菜（零图片上传，微信 2.0 msgSecCheck 审核，hydrateCustomDish 水合）进行全方位的实际测试、代码审计与质量复核，给出权威的测试结论与发布建议。
+
+## 需要阅读的文件
+1. 实施方案任务书：
+   - `/Users/zhuangxiji/Desktop/CC/审核/一日三餐/2026-10-02-一日三餐-双人绑定与共享历史-实施任务.md`
+2. 自动化测试套件（建议在终端实际运行或深入审计）：
+   - `test/recommendation_test.mjs`（菜谱算法、四场景排餐、菜市场斤两口语化换算）
+   - `test/e2e_full_lifecycle_test.mjs`（12 步端到端生命周期）
+   - `test/pages_runtime_test.mjs`（7 大核心页面 JS 原生运行时渲染）
+   - `test/image_resilience_test.mjs`（125 道实拍出锅图物理完整性与 5 级平滑容灾降级）
+   - `test/family_sharing_custom_dishes_test.mjs`（4人家庭绑定、同日多餐独立存储、纯文字私房菜录入与水合）
+   - `test/security_hardening_audit_test.mjs`（Claude 5 项严重问题渗透回归与加固防线）
+   - `test/e2e_family_custom_full_flow_test.mjs`（全链路 10 大阶段真实 E2E 自动化测试）
+   - `test/final_security_hardening_test.mjs`（Claude 终审 3 项细节安全加固自动化测试）
+3. 云函数核心实现：
+   - `cloudfunctions/userAuth/index.js`（静默鉴权）
+   - `cloudfunctions/familyManage/index.js`（4人上限原子锁、24h邀请码防暴力枚举、退出旧家庭失败中断抛错）
+   - `cloudfunctions/upsertMeal/index.js`（同日多餐原子追加、剔除 _id 冗余属性、服务端已核验昵称防伪造）
+   - `cloudfunctions/customDish/index.js`（微信 2.0 msgSecCheck 文本安全审核、personal_${openid} 隔离桶）
+4. 端侧服务与数据层：
+   - `miniprogram/services/cloudService.ts`（区分本地 Mock 与真实环境网络超时，拒绝假成功）
+   - `miniprogram/services/familyService.ts`（家庭状态与邀请码管理）
+   - `miniprogram/services/historyService.ts`（SWR 本地优先、同日多餐独立存储、连网自动恢复、不可逆业务拒绝直接出队防死循环）
+   - `miniprogram/services/dataProvider.ts`（纯文字录入、hydrateCustomDish 美学图与 Emoji 水合）
+   - `miniprogram/services/menuRecommendation.ts`（全家历史联动排餐避重）
+5. 微信开发者工具原生配置与页面：
+   - `project.config.json`（主包预算、packOptions 打包白名单与忽略规则）
+   - `miniprogram/app.json`（8 大页面路由配置）
+   - `miniprogram/pages/dishes/custom-add/index.ts`（纯文字自选录入表单）
+   - `miniprogram/pages/history/index.ts`（同日多餐午餐/晚餐卡片）
+   - `miniprogram/pages/mine/index.ts`（4人家庭卡片与邀请码）
+
+## 背景与约束
+1. 项目采用微信小程序原生 TypeScript 架构，严格遵循微信规范；
+2. 主包体积严格预算在 2048 KB（2.0 MB）以内（当前静态源文件 1.69 MB，SummerCompiler 实际打包为 1.50 MB）；
+3. 严格禁止上传任何用户图片（纯文字录入自选菜，消除审核风险与云存储流量）；
+4. 支持且仅支持最多 4 人弹性绑定，严格防超员；
+5. 同日多次做菜（如午餐与晚餐）独立记录，杜绝覆盖丢失；
+6. 离线优先（SWR），本地读写 0 毫秒秒开，连网静默增量同步。
+
+## 交付要求
+请实际运行或审计全部 8 大测试套件，重点测试与复核以下维度，给出清晰详尽的实测复核报告：
+1. **测试执行情况**：运行全部自动化测试（如 `npm test`），确认 8 大套件执行结果与耗时；
+2. **4人家庭空间并发与安全**：4 人上限原子事务控制、24 小时动态口令防刷限频、退出旧家庭失败中断防一人跨两家、服务端鉴权防越权；
+3. **同日多餐做菜历史**：午餐/晚餐独立记录并存（0 覆盖）、开饭人昵称防伪造、离线队列业务明确拒绝出队防死循环、连网自动同步；
+4. **纯文字私房菜合规与算法鲁棒性**：零图片上传策略、微信 2.0 msgSecCheck 文本拦截、hydrateCustomDish 水合完整性、排餐引擎避重；
+5. **微信开发者工具兼容性与包体积**：编译构建 0 错误、主包体积安全裕量；
+6. **最终验收与发布结论**：是否满足上线发布要求？是否有遗留潜在隐患？给出确切结论与建议。
+
+---
+
+## 回复格式
+
+请按以下结构回复（尽量简洁，总长一般不超过 1200 字）：
+
+## 总体结论
+可以直接用 / 修改后可用 / 需要重做（三选一），并用一句话说明理由。
+
+## 问题清单
+按严重程度排序，每条一行：
+严重程度（严重 / 一般 / 建议）｜位置（文件:行号 或 方案章节）｜问题｜建议怎么改
+
+没有问题就写“未发现问题”。
+
+## 做得好的地方（最多 2 条）

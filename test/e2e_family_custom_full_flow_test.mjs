@@ -484,14 +484,14 @@ async function runFullE2ESuite() {
 
   const lunchDishes = [
     dongpoDish, // 奶奶的私房菜
-    dataProvider.getDishById('d_pork_02') || { id: 'd_pork_02', name: '青椒肉丝' },
-    dataProvider.getDishById('d_veg_01') || { id: 'd_veg_01', name: '清炒菜心' }
+    dataProvider.getDishById('dish_002') || { id: 'dish_002', name: '青椒肉丝' },
+    dataProvider.getDishById('dish_047') || { id: 'dish_047', name: '白灼广东菜心' }
   ];
 
   const lunchRecord = historyService.recordMeal('hearty_3_1', lunchDishes, '2026-10-02', 'menu_lunch_01', '午餐');
   assert.equal(lunchRecord.mealType, '午餐');
   await historyService.flushPendingQueue();
-  console.log('✅ 妈妈成功记录【2026-10-02 午餐】: 奶奶牌秘制东坡肉 + 青椒肉丝 + 清炒菜心');
+  console.log('✅ 妈妈成功记录【2026-10-02 午餐】: 奶奶牌秘制东坡肉 + 青椒肉丝 + 白灼广东菜心');
 
   // -------------------------------------------------------------
   // 【阶段 5】爸爸安排【今日晚餐】并确认开饭 (同日多餐 0 覆盖测试)
@@ -502,9 +502,9 @@ async function runFullE2ESuite() {
   await historyService.syncCloudHistory();
 
   const dinnerDishes = [
-    dataProvider.getDishById('d_beef_01') || { id: 'd_beef_01', name: '番茄炖牛腩' },
-    dataProvider.getDishById('d_fish_01') || { id: 'd_fish_01', name: '清蒸鲈鱼' },
-    dataProvider.getDishById('d_soup_01') || { id: 'd_soup_01', name: '冬瓜排骨汤' }
+    dataProvider.getDishById('dish_008') || { id: 'dish_008', name: '麻婆豆腐' },
+    dataProvider.getDishById('dish_020') || { id: 'dish_020', name: '清蒸鲈鱼' },
+    dataProvider.getDishById('dish_007') || { id: 'dish_007', name: '莲藕排骨汤' }
   ];
 
   const dinnerRecord = historyService.recordMeal('hearty_3_1', dinnerDishes, '2026-10-02', 'menu_dinner_01', '晚餐');

@@ -64,7 +64,24 @@ exports.main = async (event, context) => {
 
         return await db.runTransaction(async transaction => {
           const docRef = transaction.collection('meal_history').doc(docId);
-          const existingDoc = await docRef.get().catch(() => null);
+          let existingDoc = null;
+          try {
+            existingDoc = await docRef.get();
+          } catch (err) {
+            const errMsg = String(err?.message || err || '').toLowerCase();
+            const errCode = err?.errCode;
+            const isNotExist =
+              errMsg.includes('does not exist') ||
+              errMsg.includes('not exist') ||
+              errCode === -502005;
+
+            if (isNotExist) {
+              existingDoc = null;
+            } else {
+              console.error('[upsertMeal] 读取历史日文档瞬时异常，中止回滚事务以防整日误覆盖:', err);
+              throw err;
+            }
+          }
 
           if (!existingDoc || !existingDoc.data) {
             // 该日首次开饭，创建日文档 (剔除冗余 _id 字段，避免老版本云开发 SDK 报 cannot update _id 错误)

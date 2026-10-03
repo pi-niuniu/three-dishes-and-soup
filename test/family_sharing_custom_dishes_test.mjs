@@ -26,7 +26,7 @@ global.wx = {
 const appInstance = {
   globalData: {
     currentMenu: null,
-    version: '2.05'
+    version: '2.10'
   }
 };
 global.getApp = () => appInstance;

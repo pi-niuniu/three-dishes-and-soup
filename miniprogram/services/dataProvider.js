@@ -172,8 +172,8 @@ class DataProvider {
      */
     async addCustomDish(raw) {
         const currentFamily = familyService.getCurrentFamily();
-        const familyId = currentFamily?.id || currentFamily?._id || 'personal';
         const currentUser = familyService.getCurrentUser();
+        const familyId = currentFamily?.id || currentFamily?._id || (currentUser.openid ? `personal_${currentUser.openid}` : 'personal');
         // 1. 水合补齐字段
         const hydrated = hydrateCustomDish({
             ...raw,
@@ -198,6 +198,9 @@ class DataProvider {
         if (cloudRes.dish?.id) {
             hydrated.id = cloudRes.dish.id;
         }
+        if (cloudRes.dish?.familyId) {
+            hydrated.familyId = cloudRes.dish.familyId;
+        }
         // 3. 校验通过后，存入本地缓存直出 (SWR 0延迟秒开体验)
         const existingIndex = this.customDishes.findIndex(d => d.name === hydrated.name);
         if (existingIndex >= 0) {
@@ -210,17 +213,17 @@ class DataProvider {
         return hydrated;
     }
     /**
-     * 从云端拉取当前家庭的自选私房菜并合并
+     * 从云端拉取当前家庭或个人空间的自选私房菜并合并
+     * 单人模式（无 familyId）也拉取 personal_${openid} 个人桶私房菜
      */
     async syncCloudCustomDishes() {
         const currentFamily = familyService.getCurrentFamily();
-        const familyId = currentFamily?.id || currentFamily?._id;
-        if (!familyId)
-            return this.getCustomDishes();
         const currentUser = familyService.getCurrentUser();
+        const familyId = currentFamily?.id || currentFamily?._id;
+        const effectiveFamilyId = familyId || (currentUser.openid ? `personal_${currentUser.openid}` : 'personal');
         const res = await cloudService.callFunction('customDish', {
             action: 'getDishes',
-            familyId,
+            familyId: effectiveFamilyId,
             mockOpenid: currentUser.openid
         });
         if (res.success && Array.isArray(res.dishes)) {
@@ -230,9 +233,9 @@ class DataProvider {
             for (const d of cloudDishes) {
                 map.set(d.name, d);
             }
-            // 本地菜品补全 (只补全属于当前家庭或无家庭归属的私房菜，严防跨家庭串门)
+            // 本地菜品补全 (只补全属于当前有效桶或无家庭归属的私房菜，严防跨家庭串门)
             for (const d of this.customDishes) {
-                if (d.familyId && d.familyId !== familyId) {
+                if (d.familyId && d.familyId !== effectiveFamilyId && d.familyId !== 'personal') {
                     continue;
                 }
                 if (!map.has(d.name)) {

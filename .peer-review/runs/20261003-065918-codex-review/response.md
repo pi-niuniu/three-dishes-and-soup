@@ -1,0 +1,44 @@
+# Codex · 审阅（只读）
+
+- 状态：**完成**
+- 模型：gpt-6.1-sol（跟随 Codex 设置）；Codex 不回报实际模型，以此为准
+- 强度：high（跟随 Codex 设置）
+- 服务层级 / 模式：fast（固定设置）
+- 本次用量：读入 102.7 万（缓存 94 万） · 写出 6,189（思考 1,680）
+- 登录方式：subscription（Logged in using ChatGPT）
+- 服务提供方：官方
+- 用时：2 分 18 秒
+- 运行编号：20261003-065918-codex-review
+
+## 回复
+
+## 总体结论
+
+**修改后可用**：已复现历史覆盖、重复家庭归属和审核绕过等问题，暂不满足发布要求，应由实施方修复后复验。
+
+八套测试首轮 **7 通过、1 失败**；按任务书顺序耗时为 **0.063／0.037／0.042／0.091／1.039／0.039／0.036／0.033 秒**。家庭 E2E 首轮避重断言失败，随后十次通过，存在不稳定性。TypeScript 无输出检查通过；静态包估算 **1696.1 KiB**，余量 **351.9 KiB**。CDN 探针失败，真实云端、开发者工具打包及真机验收未验证。本次未修改文件。
+
+## 问题清单
+
+严重｜[upsertMeal:67](/Users/zhuangxiji/Desktop/CC/一日三餐/cloudfunctions/upsertMeal/index.js:67)｜读取异常被当成文档不存在；内存故障注入复现晚餐覆盖午餐｜仅明确“不存在”时创建，其余异常中止事务。
+
+严重｜[familyManage:188](/Users/zhuangxiji/Desktop/CC/一日三餐/cloudfunctions/familyManage/index.js:188)｜退出旧家、创建新家、更新用户分步提交；并发创建复现同一人留在两个家庭｜将归属迁移整体纳入读取用户文档的事务。
+
+严重｜[customDish:88](/Users/zhuangxiji/Desktop/CC/一日三餐/cloudfunctions/customDish/index.js:88)｜审核接口缺失时直接跳过检测，实测仍成功入库；家庭文本检测同样如此｜审核能力缺失时拒绝写入。
+
+严重｜[historyService:126](/Users/zhuangxiji/Desktop/CC/一日三餐/miniprogram/services/historyService.ts:126)｜同一菜单用于午餐、晚餐生成相同餐次 ID；实测最终只剩晚餐｜餐次 ID 独立生成，重复提交沿用同一餐次 ID。
+
+一般｜[dataProvider:223](/Users/zhuangxiji/Desktop/CC/一日三餐/miniprogram/services/dataProvider.ts:223)｜个人模式直接返回缓存，不拉取个人云端私房菜；清空缓存后实测无法恢复｜支持个人桶拉取，并采用服务端返回的归属标识。
+
+一般｜[historyService:84](/Users/zhuangxiji/Desktop/CC/一日三餐/miniprogram/services/historyService.ts:84)｜本地历史未按身份、家庭隔离，换家后同步失败仍返回旧家记录；异步响应也未复核当前归属｜分桶缓存，写回前检查身份及家庭是否变化。
+
+一般｜[familyManage:105](/Users/zhuangxiji/Desktop/CC/一日三餐/cloudfunctions/familyManage/index.js:105)｜防刷计数采用读后覆盖，并发失败可能丢计数，读写异常又被吞掉｜事务化限频检查与计数，异常时拒绝继续。
+
+一般｜[家庭 E2E:504](/Users/zhuangxiji/Desktop/CC/一日三餐/test/e2e_family_custom_full_flow_test.mjs:504)｜历史夹具使用不存在的菜品 ID；推荐仅降权随机抽样，却断言绝不重复｜使用真实 ID、固定随机源，并明确避重验收标准。
+
+一般｜[Mock SDK:120](/Users/zhuangxiji/Desktop/CC/一日三餐/node_modules/wx-server-sdk/index.js:120)｜事务 Mock 没有锁或回滚，审核固定通过，不能证明真实并发和内容拦截｜补真实测试环境并发、回滚及审核拒绝验证。
+
+## 做得好的地方（最多 2 条）
+
+- 家庭加入人数检查与日文档多餐写入采用事务，具备修复基础。
+- 录入表单无图片上传入口，水合器保留空食材数组，避免虚构购物清单。

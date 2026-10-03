@@ -8,7 +8,7 @@ import { FamilySpace, UserProfile } from '../../types/family.js';
 
 Page({
   data: {
-    version: '2.05',
+    version: '2.10',
     preferences: {} as UserPreferences,
     dislikedMap: {} as Record<string, boolean>,
     spicyLevels: [
@@ -29,8 +29,10 @@ Page({
     currentUser: {} as UserProfile,
     family: null as FamilySpace | null,
     joinCodeInput: '',
-    newFamilyNameInput: ''
+    newFamilyNameInput: '',
+    isCreatingFamily: false
   },
+  isSubmittingCreate: false,
 
   onShow() {
     const app = getApp<any>();
@@ -82,23 +84,32 @@ Page({
   },
 
   async handleCreateFamily() {
-    const name = this.data.newFamilyNameInput || '温馨小家食堂';
-    wx.showLoading({ title: '创建中...' });
-    const res = await familyService.createFamily(name);
-    wx.hideLoading();
+    if (this.isSubmittingCreate || this.data.isCreatingFamily) return;
+    this.isSubmittingCreate = true;
+    this.setData({ isCreatingFamily: true });
 
-    if (res.success && res.family) {
-      this.setData({
-        family: res.family,
-        currentUser: familyService.getCurrentUser(),
-        newFamilyNameInput: ''
-      });
-      wx.showToast({ title: '家庭厨房创建成功！', icon: 'success' });
-      // 同步家庭历史与自选私房菜
-      historyService.syncCloudHistory().catch(() => {});
-      dataProvider.syncCloudCustomDishes().catch(() => {});
-    } else {
-      wx.showToast({ title: res.error || '创建失败', icon: 'none' });
+    try {
+      const name = this.data.newFamilyNameInput || '温馨小家食堂';
+      wx.showLoading({ title: '创建中...' });
+      const res = await familyService.createFamily(name);
+      wx.hideLoading();
+
+      if (res.success && res.family) {
+        this.setData({
+          family: res.family,
+          currentUser: familyService.getCurrentUser(),
+          newFamilyNameInput: ''
+        });
+        wx.showToast({ title: '家庭厨房创建成功！', icon: 'success' });
+        // 同步家庭历史与自选私房菜
+        historyService.syncCloudHistory().catch(() => {});
+        dataProvider.syncCloudCustomDishes().catch(() => {});
+      } else {
+        wx.showToast({ title: res.error || '创建失败', icon: 'none' });
+      }
+    } finally {
+      this.isSubmittingCreate = false;
+      this.setData({ isCreatingFamily: false });
     }
   },
 
@@ -168,6 +179,8 @@ Page({
             // 清理本地家庭历史与私房菜，安全恢复单人纯净模式
             historyService.clearHistory();
             dataProvider.clearCustomDishes();
+            // 恢复单人 personal_${openid} 隔离桶私房菜
+            dataProvider.syncCloudCustomDishes().catch(() => {});
             this.setData({
               family: null,
               currentUser: familyService.getCurrentUser()

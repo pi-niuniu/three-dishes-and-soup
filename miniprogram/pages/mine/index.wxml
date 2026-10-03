@@ -20,7 +20,7 @@
               bindinput="handleFamilyNameInput" 
               maxlength="15"
             />
-            <button class="btn-create-fam" bindtap="handleCreateFamily">创建厨房</button>
+            <button class="btn-create-fam" bindtap="handleCreateFamily" disabled="{{ isCreatingFamily }}">创建厨房</button>
           </view>
           <view class="divider-text">或输入家人分享的口令</view>
           <view class="join-row">

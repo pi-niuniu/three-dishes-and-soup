@@ -68,11 +68,35 @@ const JOIN_RATE_LIMIT = {
 };
 
 /**
+ * 判断云开发数据库错误是否为文档不存在
+ */
+function isNotFoundError(err) {
+  if (!err) return false;
+  const msg = String(err.message || err || '').toLowerCase();
+  return (
+    msg.includes('does not exist') ||
+    msg.includes('not exist') ||
+    err.errCode === -502005
+  );
+}
+
+/**
  * 检查 openid 的口令尝试防刷限频（按 openid 记录失败尝试，防止暴力枚举）
+ * 严格 fail-closed：查询异常时拒绝放行
  */
 async function checkJoinRateLimit(openid, now) {
   try {
-    const userDoc = await db.collection('users').doc(`user_${openid}`).get().catch(() => null);
+    let userDoc = null;
+    try {
+      userDoc = await db.collection('users').doc(`user_${openid}`).get();
+    } catch (docErr) {
+      // 用户文档尚不存在属于正常初次状态，不当作异常
+      if (isNotFoundError(docErr)) {
+        return { allowed: true };
+      }
+      throw docErr;
+    }
+
     const data = userDoc?.data;
     if (!data) return { allowed: true };
 
@@ -90,52 +114,56 @@ async function checkJoinRateLimit(openid, now) {
         error: `邀请口令尝试失败次数过多，已被安全锁定，请 ${remainingMinutes} 分钟后再试（防暴力枚举）`
       };
     }
+    return { allowed: true };
   } catch (err) {
-    console.warn('[familyManage] 检查防刷限频异常:', err);
+    console.error('[familyManage] 检查防刷限频异常 (严格 fail-closed 拦截):', err);
+    return {
+      allowed: false,
+      error: '安全防刷限频服务异常，请稍后重试'
+    };
   }
-  return { allowed: true };
 }
 
 /**
- * 记录一次加入失败尝试 (按 openid 累加失败计数并更新时间戳)
+ * 记录一次加入失败尝试 (在事务内原子更新失败计数与时间戳，防止并发竞态丢失计数)
  */
 async function recordJoinFailure(openid, now) {
   try {
-    const userDocRef = db.collection('users').doc(`user_${openid}`);
-    const userRes = await userDocRef.get().catch(() => null);
-    const data = userRes?.data;
-    const lastFailTime = data?.joinFailLastTime || 0;
-    const isExpired = (now - lastFailTime) > JOIN_RATE_LIMIT.WINDOW_MS;
-    const newCount = isExpired ? 1 : ((data?.joinFailCount || 0) + 1);
-
-    if (userRes && userRes.data) {
-      await userDocRef.update({
-        data: {
-          joinFailCount: newCount,
-          joinFailLastTime: now
+    await db.runTransaction(async transaction => {
+      const userDocRef = transaction.collection('users').doc(`user_${openid}`);
+      let userRes = null;
+      try {
+        userRes = await userDocRef.get();
+      } catch (err) {
+        if (!isNotFoundError(err)) {
+          throw err;
         }
-      }).catch(async () => {
-        const cleanData = { ...(data || {}) };
-        delete cleanData._id;
-        await userDocRef.set({
+      }
+
+      const data = userRes?.data;
+      const lastFailTime = data?.joinFailLastTime || 0;
+      const isExpired = (now - lastFailTime) > JOIN_RATE_LIMIT.WINDOW_MS;
+      const newCount = isExpired ? 1 : ((data?.joinFailCount || 0) + 1);
+
+      if (data) {
+        await userDocRef.update({
           data: {
-            ...cleanData,
             joinFailCount: newCount,
             joinFailLastTime: now
           }
-        }).catch(() => {});
-      });
-    } else {
-      await userDocRef.set({
-        data: {
-          _openid: openid,
-          joinFailCount: newCount,
-          joinFailLastTime: now
-        }
-      }).catch(() => {});
-    }
+        });
+      } else {
+        await userDocRef.set({
+          data: {
+            _openid: openid,
+            joinFailCount: newCount,
+            joinFailLastTime: now
+          }
+        });
+      }
+    });
   } catch (err) {
-    console.warn('[familyManage] 记录加入失败计数异常:', err);
+    console.warn('[familyManage] 事务记录加入失败计数异常:', err);
   }
 }
 
@@ -171,71 +199,117 @@ exports.main = async (event, context) => {
         const nickSec = await checkTextSecurity(nickName, openid);
         if (!nickSec.pass) return { success: false, error: nickSec.error };
 
-        const userDocRef = db.collection('users').doc(`user_${openid}`);
-        
-        let user;
-        try {
-          const uRes = await userDocRef.get();
-          user = (uRes && uRes.data) ? uRes.data : null;
-        } catch (e) {
-          user = null;
-        }
-        if (!user) {
-          user = { _openid: openid, nickName: nickName || '房主' };
-        }
-
-        // 如果用户已在旧家庭中，先处理退出旧家庭（失败直接中断抛错，严防一人跨两家）
-        if (user.familyId) {
-          try {
-            await leaveCurrentFamilyInternal(openid, user.familyId);
-          } catch (e) {
-            console.error('[familyManage] 退出旧家庭失败，已中断创建新家庭以防一人跨两家:', e);
-            throw new Error(`退出原有家庭失败，中断创建新家庭: ${e?.message || e}`);
-          }
-        }
-
+        // 口令与 familyId 在事务外预先生成 (防并发碰撞与事务内网络等待)
         const familyId = `fam_${now}_${Math.random().toString(36).slice(2, 6)}`;
         const inviteCode = await generateUniqueInviteCode();
         const inviteExpiredAt = now + 24 * 60 * 60 * 1000; // 24小时过期
 
-        const newFamily = {
-          _id: familyId,
-          name: familyName,
-          creatorOpenid: openid,
-          members: [
-            {
-              openid,
+        return await db.runTransaction(async transaction => {
+          const userDocRef = transaction.collection('users').doc(`user_${openid}`);
+          
+          let user = null;
+          try {
+            const uRes = await userDocRef.get();
+            user = (uRes && uRes.data) ? uRes.data : null;
+          } catch (e) {
+            if (isNotFoundError(e)) {
+              user = null;
+            } else {
+              console.error('[familyManage] createFamily 读取用户文档异常，回滚事务:', e);
+              throw e;
+            }
+          }
+          if (!user) {
+            user = { _openid: openid, nickName: nickName || '房主' };
+          }
+
+          // 如果用户已在旧家庭中，先处理退出旧家庭（失败直接中断抛错，严防一人跨两家）
+          if (user.familyId) {
+            try {
+              const oldFamilyId = user.familyId;
+              const oldFamDocRef = transaction.collection('families').doc(oldFamilyId);
+              let oldFamRes = null;
+              try {
+                oldFamRes = await oldFamDocRef.get();
+              } catch (famErr) {
+                if (isNotFoundError(famErr)) {
+                  oldFamRes = null;
+                } else {
+                  throw famErr;
+                }
+              }
+              if (oldFamRes && oldFamRes.data) {
+                const oldFamily = oldFamRes.data;
+                const remainingMembers = (oldFamily.members || []).filter(m => m.openid !== openid);
+                const remainingOpenids = (oldFamily.memberOpenids || []).filter(id => id !== openid);
+
+                if (remainingMembers.length === 0) {
+                  await oldFamDocRef.remove();
+                } else {
+                  let newCreatorOpenid = oldFamily.creatorOpenid;
+                  if (oldFamily.creatorOpenid === openid) {
+                    newCreatorOpenid = remainingMembers[0].openid;
+                    remainingMembers[0].role = 'creator';
+                    await transaction.collection('users').doc(`user_${remainingMembers[0].openid}`).update({
+                      data: { role: 'creator', updatedAt: now }
+                    }).catch(() => {});
+                  }
+
+                  await oldFamDocRef.update({
+                    data: {
+                      creatorOpenid: newCreatorOpenid,
+                      members: remainingMembers,
+                      memberOpenids: remainingOpenids,
+                      updatedAt: now
+                    }
+                  });
+                }
+              }
+            } catch (e) {
+              console.error('[familyManage] 退出旧家庭失败，已中断创建新家庭以防一人跨两家:', e);
+              throw new Error(`退出原有家庭失败，中断创建新家庭: ${e?.message || e}`);
+            }
+          }
+
+          const newFamily = {
+            _id: familyId,
+            name: familyName,
+            creatorOpenid: openid,
+            members: [
+              {
+                openid,
+                nickName: nickName || user.nickName || '房主',
+                avatarUrl: event.avatarUrl || user.avatarUrl || '',
+                role: 'creator',
+                joinedAt: now
+              }
+            ],
+            memberOpenids: [openid],
+            inviteCode,
+            inviteExpiredAt,
+            createdAt: now,
+            updatedAt: now
+          };
+
+          await transaction.collection('families').doc(familyId).set({ data: newFamily });
+
+          // 更新用户档案 (剔除冗余 _id 字段，避免老版本云开发 SDK 报 cannot update _id 错误)
+          await transaction.collection('users').doc(`user_${openid}`).set({
+            data: {
+              _openid: openid,
               nickName: nickName || user.nickName || '房主',
               avatarUrl: event.avatarUrl || user.avatarUrl || '',
+              familyId,
               role: 'creator',
-              joinedAt: now
+              updatedAt: now
             }
-          ],
-          memberOpenids: [openid],
-          inviteCode,
-          inviteExpiredAt,
-          createdAt: now,
-          updatedAt: now
-        };
+          });
 
-        await db.collection('families').add({ data: newFamily });
-
-        // 更新用户档案 (剔除冗余 _id 字段，避免老版本云开发 SDK 报 cannot update _id 错误)
-        await db.collection('users').doc(`user_${openid}`).set({
-          data: {
-            _openid: openid,
-            nickName: nickName || user.nickName || '房主',
-            avatarUrl: event.avatarUrl || user.avatarUrl || '',
-            familyId,
-            role: 'creator',
-            updatedAt: now
-          }
+          return {
+            success: true,
+            family: newFamily
+          };
         });
-
-        return {
-          success: true,
-          family: newFamily
-        };
       }
 
       /**
@@ -279,7 +353,16 @@ exports.main = async (event, context) => {
         // 2. 进入原子数据库事务锁定文档并校验 4 人并发上限
         try {
           return await db.runTransaction(async transaction => {
-            const famDoc = await transaction.collection('families').doc(targetFamilyId).get().catch(() => null);
+            let famDoc = null;
+            try {
+              famDoc = await transaction.collection('families').doc(targetFamilyId).get();
+            } catch (e) {
+              if (isNotFoundError(e)) {
+                famDoc = null;
+              } else {
+                throw e;
+              }
+            }
             if (!famDoc || !famDoc.data) {
               await transaction.rollback('未找到该邀请口令对应的家庭厨房').catch(() => {});
               throw new Error('未找到该邀请口令对应的家庭厨房');
@@ -309,10 +392,28 @@ exports.main = async (event, context) => {
             }
 
             // 用户一人一家庭互斥：查询并清理原有家庭归属 (易错点 3 防御)
-            const userDoc = await transaction.collection('users').doc(`user_${openid}`).get().catch(() => null);
+            let userDoc = null;
+            try {
+              userDoc = await transaction.collection('users').doc(`user_${openid}`).get();
+            } catch (e) {
+              if (isNotFoundError(e)) {
+                userDoc = null;
+              } else {
+                throw e;
+              }
+            }
             const oldFamilyId = userDoc?.data?.familyId;
             if (oldFamilyId && oldFamilyId !== targetFamilyId) {
-              const oldFamDoc = await transaction.collection('families').doc(oldFamilyId).get().catch(() => null);
+              let oldFamDoc = null;
+              try {
+                oldFamDoc = await transaction.collection('families').doc(oldFamilyId).get();
+              } catch (e) {
+                if (isNotFoundError(e)) {
+                  oldFamDoc = null;
+                } else {
+                  throw e;
+                }
+              }
               if (oldFamDoc?.data) {
                 const remainingMembers = (oldFamDoc.data.members || []).filter(m => m.openid !== openid);
                 const remainingOpenids = (oldFamDoc.data.memberOpenids || []).filter(id => id !== openid);
@@ -401,7 +502,16 @@ exports.main = async (event, context) => {
        */
       case 'leaveFamily': {
         return await db.runTransaction(async transaction => {
-          const userDoc = await transaction.collection('users').doc(`user_${openid}`).get().catch(() => null);
+          let userDoc = null;
+          try {
+            userDoc = await transaction.collection('users').doc(`user_${openid}`).get();
+          } catch (e) {
+            if (isNotFoundError(e)) {
+              userDoc = null;
+            } else {
+              throw e;
+            }
+          }
           const user = userDoc?.data;
 
           if (!user || !user.familyId) {
@@ -409,7 +519,16 @@ exports.main = async (event, context) => {
           }
 
           const familyId = user.familyId;
-          const famDoc = await transaction.collection('families').doc(familyId).get().catch(() => null);
+          let famDoc = null;
+          try {
+            famDoc = await transaction.collection('families').doc(familyId).get();
+          } catch (e) {
+            if (isNotFoundError(e)) {
+              famDoc = null;
+            } else {
+              throw e;
+            }
+          }
 
           if (famDoc && famDoc.data) {
             const family = famDoc.data;
@@ -522,7 +641,16 @@ exports.main = async (event, context) => {
 async function leaveCurrentFamilyInternal(openid, familyId) {
   return await db.runTransaction(async transaction => {
     const famDocRef = transaction.collection('families').doc(familyId);
-    const famRes = await famDocRef.get().catch(() => null);
+    let famRes = null;
+    try {
+      famRes = await famDocRef.get();
+    } catch (e) {
+      if (isNotFoundError(e)) {
+        famRes = null;
+      } else {
+        throw e;
+      }
+    }
     if (!famRes || !famRes.data) return;
 
     const family = famRes.data;

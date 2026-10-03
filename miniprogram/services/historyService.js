@@ -103,7 +103,7 @@ class HistoryService {
         const targetDate = dateStr || localDate;
         const resolvedMealType = mealType || this.deduceMealType(now);
         const randSuffix = Math.random().toString(36).slice(2, 6);
-        const mealId = menuId ? `hist_${menuId}` : `hist_${now.getTime()}_${randSuffix}`;
+        const mealId = menuId ? `hist_${menuId}_${targetDate}_${resolvedMealType}` : `hist_${now.getTime()}_${randSuffix}`;
         const currentUser = familyService.getCurrentUser();
         const currentFamily = familyService.getCurrentFamily();
         const familyId = currentFamily?.id || currentFamily?._id || undefined;
@@ -131,10 +131,10 @@ class HistoryService {
             syncStatus: familyId ? 'pending' : 'synced'
         };
         // 智能去重判断：
-        // 若同一餐次（同一有效 menuId 或 同一日期且相同餐次标签且相同菜名）已记录过，就地更新防止重复
-        // 若同一天是不同餐次（如午餐与晚餐），则独立并存，绝不覆盖！
+        // 若同一餐次（同一有效 menuId 且相同日期相同餐次，或同一日期且相同餐次标签且相同菜名）已记录过，就地更新防止重复
+        // 若同一天是不同餐次（如午餐与晚餐），或跨天相同 menuId，则独立并存，绝不互相覆盖！
         const existingIndex = history.findIndex(r => r.id === mealId ||
-            (Boolean(menuId) && r.menuId === menuId) ||
+            (Boolean(menuId) && r.menuId === menuId && r.date === targetDate && r.mealType === resolvedMealType) ||
             (r.date === targetDate && r.mealType === resolvedMealType && r.dishNames.join(',') === newRecord.dishNames.join(',')));
         let updated;
         if (existingIndex >= 0) {
@@ -222,7 +222,7 @@ class HistoryService {
                         const history = this.getHistory();
                         const target = history.find(r => r.id === item.record.id ||
                             (Boolean(item.record.mealId) && r.mealId === item.record.mealId) ||
-                            (Boolean(item.record.menuId) && r.menuId === item.record.menuId));
+                            (Boolean(item.record.menuId) && r.menuId === item.record.menuId && r.date === item.record.date && r.mealType === item.record.mealType));
                         if (target) {
                             target.syncStatus = 'synced';
                             this.saveHistory([...history]);
@@ -274,7 +274,7 @@ class HistoryService {
                             const history = this.getHistory();
                             const target = history.find(r => r.id === item.record.id ||
                                 (Boolean(item.record.mealId) && r.mealId === item.record.mealId) ||
-                                (Boolean(item.record.menuId) && r.menuId === item.record.menuId));
+                                (Boolean(item.record.menuId) && r.menuId === item.record.menuId && r.date === item.record.date && r.mealType === item.record.mealType));
                             if (target) {
                                 target.syncStatus = 'failed';
                                 this.saveHistory([...history]);
