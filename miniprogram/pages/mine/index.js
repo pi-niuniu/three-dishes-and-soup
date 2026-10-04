@@ -4,7 +4,7 @@ import { familyService } from '../../services/familyService.js';
 import { dataProvider } from '../../services/dataProvider.js';
 Page({
     data: {
-        version: '2.10',
+        version: '2.11',
         preferences: {},
         dislikedMap: {},
         spicyLevels: [
@@ -70,6 +70,17 @@ Page({
             newFamilyNameInput: (e?.detail?.value || '').trim()
         });
     },
+    formatErrorTip(err) {
+        if (!err)
+            return '操作失败，请重试';
+        if (err.includes('-601034') || err.includes('Environment not found')) {
+            return '云开发环境未就绪，已切换为本地模式';
+        }
+        if (err.includes('cloud.callFunction:fail')) {
+            return '服务连接异常，请重试';
+        }
+        return err;
+    },
     async handleCreateFamily() {
         if (this.isSubmittingCreate || this.data.isCreatingFamily)
             return;
@@ -92,7 +103,7 @@ Page({
                 dataProvider.syncCloudCustomDishes().catch(() => { });
             }
             else {
-                wx.showToast({ title: res.error || '创建失败', icon: 'none' });
+                wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
             }
         }
         finally {
@@ -121,7 +132,7 @@ Page({
             dataProvider.syncCloudCustomDishes().catch(() => { });
         }
         else {
-            wx.showToast({ title: res.error || '加入失败', icon: 'none' });
+            wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
         }
     },
     handleCopyInviteCode() {

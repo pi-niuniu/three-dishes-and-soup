@@ -8,7 +8,7 @@ import { FamilySpace, UserProfile } from '../../types/family.js';
 
 Page({
   data: {
-    version: '2.10',
+    version: '2.11',
     preferences: {} as UserPreferences,
     dislikedMap: {} as Record<string, boolean>,
     spicyLevels: [
@@ -83,6 +83,17 @@ Page({
     });
   },
 
+  formatErrorTip(err?: string): string {
+    if (!err) return '操作失败，请重试';
+    if (err.includes('-601034') || err.includes('Environment not found')) {
+      return '云开发环境未就绪，已切换为本地模式';
+    }
+    if (err.includes('cloud.callFunction:fail')) {
+      return '服务连接异常，请重试';
+    }
+    return err;
+  },
+
   async handleCreateFamily() {
     if (this.isSubmittingCreate || this.data.isCreatingFamily) return;
     this.isSubmittingCreate = true;
@@ -105,7 +116,7 @@ Page({
         historyService.syncCloudHistory().catch(() => {});
         dataProvider.syncCloudCustomDishes().catch(() => {});
       } else {
-        wx.showToast({ title: res.error || '创建失败', icon: 'none' });
+        wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
       }
     } finally {
       this.isSubmittingCreate = false;
@@ -135,7 +146,7 @@ Page({
       historyService.syncCloudHistory().catch(() => {});
       dataProvider.syncCloudCustomDishes().catch(() => {});
     } else {
-      wx.showToast({ title: res.error || '加入失败', icon: 'none' });
+      wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
     }
   },
 

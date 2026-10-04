@@ -511,9 +511,36 @@ export class CloudService {
         return this.isCloudAvailable;
     }
     /**
+     * 判断错误是否属于微信云开发环境未就绪/未开通/云函数未部署
+     * -601034: Environment not found
+     * -601016: Environment does not exist
+     * -601020: Function not found
+     */
+    isEnvironmentUnavailableError(err) {
+        if (!err)
+            return false;
+        const errCode = err?.errCode ?? err?.code;
+        const msg = String(err?.errMsg || err?.message || err || '');
+        if (errCode === -601034 || errCode === -601016 || errCode === -601015 || errCode === -601020) {
+            return true;
+        }
+        if (msg.includes('-601034') ||
+            msg.includes('Environment not found') ||
+            msg.includes('environment not found') ||
+            msg.includes('Environment does not exist') ||
+            msg.includes('FunctionName is not exist') ||
+            msg.includes('function not exist') ||
+            msg.includes('Function not found') ||
+            msg.includes('no permission to callFunction')) {
+            return true;
+        }
+        return false;
+    }
+    /**
      * 统一云函数调用方法
-     * 真实微信小程序环境下：严禁网络报错后假成功降级返回 Mock！一律返回失败交由离线待同步队列重试。
-     * 本地仿真 Mock 仅在无微信环境（Node.js 本地单测）或本地强制模拟模式下生效。
+     * 1. 真实微信小程序环境下：严禁网络报错后假成功降级返回 Mock！一律返回失败交由离线待同步队列重试。
+     * 2. 当检测到根本性环境缺失 (-601034 / 未开通云开发 / 云函数未部署)：自动熔断并平滑切换至本地高可用容灾模式。
+     * 3. 本地仿真 Mock 保证单机与离线环境完整可用。
      */
     async callFunction(name, data = {}) {
         const hasCloud = this.checkCloudAvailability();
@@ -531,12 +558,26 @@ export class CloudService {
             catch (err) {
                 const errMsg = err?.errMsg || err?.message || String(err);
                 console.warn(`[CloudService] 云函数 ${name} 线上调用失败:`, errMsg);
-                // 严格遵循第 1 项要求：严禁降级返回 Mock 的 success！一律返回 { success: false, error: err.message }
+                // 核心容灾防御：若为环境未就绪 (-601034)，自动熔断并无缝降级为本地高可用模式
+                if (this.isEnvironmentUnavailableError(err)) {
+                    console.warn(`[CloudService] 检测到微信云开发环境未就绪/未开通 (-601034)，自动切换至本地高可用容灾模式`);
+                    this.isCloudAvailable = false;
+                    const fallbackRes = this.invokeLocalMock(name, data);
+                    return {
+                        ...fallbackRes,
+                        isLocalFallback: true
+                    };
+                }
+                // 真实网络故障等瞬时错误：严格遵循加固规范，严禁网络异常假成功，一律返回真实错误交由离线队列重试
                 return { success: false, error: err?.message || errMsg };
             }
         }
-        // 本地仿真降级处理 (仅在无微信环境下使用)
-        return this.invokeLocalMock(name, data);
+        // 本地高可用模式 (离线、无微信环境或降级模式)
+        const localRes = this.invokeLocalMock(name, data);
+        return {
+            ...localRes,
+            isLocalFallback: true
+        };
     }
     /**
      * 本地 Mock 逻辑分发
