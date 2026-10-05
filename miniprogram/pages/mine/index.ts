@@ -1,6 +1,6 @@
 import { preferenceService } from '../../services/preferenceService.js';
 import { historyService } from '../../services/historyService.js';
-import { familyService } from '../../services/familyService.js';
+import { familyService, cleanInviteCode } from '../../services/familyService.js';
 import { dataProvider } from '../../services/dataProvider.js';
 import { UserPreferences } from '../../types/user.js';
 import { MealMode } from '../../types/menu.js';
@@ -30,9 +30,11 @@ Page({
     family: null as FamilySpace | null,
     joinCodeInput: '',
     newFamilyNameInput: '',
-    isCreatingFamily: false
+    isCreatingFamily: false,
+    isJoiningFamily: false
   },
   isSubmittingCreate: false,
+  isSubmittingJoin: false,
 
   onShow() {
     const app = getApp<any>();
@@ -72,9 +74,12 @@ Page({
   },
 
   handleJoinCodeInput(e: any) {
+    const raw = e?.detail?.value || '';
+    const cleaned = cleanInviteCode(raw);
     this.setData({
-      joinCodeInput: (e?.detail?.value || '').trim()
+      joinCodeInput: cleaned
     });
+    return cleaned;
   },
 
   handleFamilyNameInput(e: any) {
@@ -139,33 +144,44 @@ Page({
   },
 
   async handleJoinFamily() {
-    const code = this.data.joinCodeInput;
+    if (this.isSubmittingJoin || this.data.isJoiningFamily) return;
+
+    const raw = this.data.joinCodeInput;
+    const code = cleanInviteCode(raw);
     if (!code || code.length !== 6) {
-      wx.showToast({ title: '请输入6位有效口令', icon: 'none' });
+      wx.showToast({ title: '请输入6位有效数字口令', icon: 'none' });
       return;
     }
 
-    wx.showLoading({ title: '正在加入...' });
-    const res = await familyService.joinFamily(code);
-    wx.hideLoading();
+    this.isSubmittingJoin = true;
+    this.setData({ isJoiningFamily: true });
 
-    if (res.success && res.family) {
-      this.setData({
-        family: res.family,
-        currentUser: familyService.getCurrentUser(),
-        joinCodeInput: ''
-      });
-      wx.showToast({ title: '成功加入家庭厨房！', icon: 'success' });
-      // 同步家庭共享历史与自选私房菜
-      historyService.syncCloudHistory().catch(() => {});
-      dataProvider.syncCloudCustomDishes().catch(() => {});
-    } else {
-      wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
+    try {
+      wx.showLoading({ title: '正在加入...' });
+      const res = await familyService.joinFamily(code);
+      wx.hideLoading();
+
+      if (res.success && res.family) {
+        this.setData({
+          family: res.family,
+          currentUser: familyService.getCurrentUser(),
+          joinCodeInput: ''
+        });
+        wx.showToast({ title: '成功加入家庭厨房！', icon: 'success' });
+        // 同步家庭共享历史与自选私房菜
+        historyService.syncCloudHistory().catch(() => {});
+        dataProvider.syncCloudCustomDishes().catch(() => {});
+      } else {
+        wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
+      }
+    } finally {
+      this.isSubmittingJoin = false;
+      this.setData({ isJoiningFamily: false });
     }
   },
 
   handleCopyInviteCode() {
-    const code = this.data.family?.inviteCode;
+    const code = String(this.data.family?.inviteCode || '').trim();
     if (!code) return;
     wx.setClipboardData({
       data: code,

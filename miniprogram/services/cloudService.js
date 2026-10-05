@@ -27,7 +27,7 @@ class LocalCloudMockDatabase {
             const code = String(Math.floor(100000 + Math.random() * 900000));
             let isDuplicate = false;
             for (const fam of this.families.values()) {
-                if (fam.inviteCode === code && fam.inviteExpiredAt > now) {
+                if ((fam.inviteCode === code || String(fam.inviteCode) === code) && fam.inviteExpiredAt > now) {
                     isDuplicate = true;
                     break;
                 }
@@ -85,6 +85,39 @@ class LocalCloudMockDatabase {
         this.families.clear();
         this.mealHistory.clear();
         this.customDishes.clear();
+        this.persist();
+    }
+    syncFamilyFromCloud(family, userOpenid, role) {
+        if (!family)
+            return;
+        const famId = family.id || family._id;
+        const safeFamily = {
+            id: famId,
+            name: family.name,
+            creatorOpenid: family.creatorOpenid,
+            members: family.members || [],
+            memberOpenids: family.memberOpenids || [],
+            inviteCode: String(family.inviteCode),
+            inviteExpiredAt: family.inviteExpiredAt,
+            createdAt: family.createdAt || Date.now(),
+            updatedAt: family.updatedAt || Date.now()
+        };
+        this.families.set(famId, safeFamily);
+        if (userOpenid) {
+            let user = this.users.get(`user_${userOpenid}`);
+            if (!user) {
+                user = {
+                    _id: `user_${userOpenid}`,
+                    openid: userOpenid,
+                    nickName: '家人',
+                    createdAt: Date.now()
+                };
+            }
+            user.familyId = famId;
+            user.role = role || (family.creatorOpenid === userOpenid ? 'creator' : 'member');
+            user.updatedAt = Date.now();
+            this.users.set(`user_${userOpenid}`, user);
+        }
         this.persist();
     }
     handleUserAuth(data) {
@@ -147,9 +180,13 @@ class LocalCloudMockDatabase {
                 if (user.familyId && this.families.has(user.familyId)) {
                     this.leaveFamilyInternal(openid, user.familyId);
                 }
-                const familyId = `fam_${now}_${Math.random().toString(36).slice(2, 6)}`;
-                const inviteCode = this.generateUniqueInviteCode();
-                const inviteExpiredAt = now + 24 * 60 * 60 * 1000;
+                const familyId = data.familyId || `fam_${now}_${Math.random().toString(36).slice(2, 6)}`;
+                const inviteCode = (data.inviteCode && String(data.inviteCode).trim().length === 6)
+                    ? String(data.inviteCode).trim()
+                    : this.generateUniqueInviteCode();
+                const inviteExpiredAt = (data.inviteExpiredAt && Number(data.inviteExpiredAt) > now)
+                    ? Number(data.inviteExpiredAt)
+                    : (now + 24 * 60 * 60 * 1000);
                 const newFamily = {
                     id: familyId,
                     name: familyName,
@@ -216,7 +253,9 @@ class LocalCloudMockDatabase {
                 }
                 let targetFamily = null;
                 for (const fam of this.families.values()) {
-                    if (fam.inviteCode === inviteCode) {
+                    if (String(fam.inviteCode) === inviteCode ||
+                        fam.inviteCode === inviteCode ||
+                        fam.inviteCode === Number(inviteCode)) {
                         targetFamily = fam;
                         break;
                     }
@@ -589,6 +628,11 @@ export class CloudService {
                 if (res && res.result) {
                     const result = res.result;
                     if (result.success) {
+                        // 同步云端家庭数据至本地 Mock 状态机，保障单机状态与云端强一致
+                        if (name === 'familyManage' && (data?.action === 'createFamily' || data?.action === 'joinFamily') && result.family) {
+                            const role = data?.action === 'createFamily' ? 'creator' : 'member';
+                            this.mockDb.syncFamilyFromCloud(result.family, data?.mockOpenid, role);
+                        }
                         return result;
                     }
                     // 核心容灾防御：若线上已发布的云端代码未部署最新补丁，返回了底层保留字段冲突或参数异常 (-501007)
@@ -611,6 +655,16 @@ export class CloudService {
                             ...fallbackRes,
                             isLocalFallback: true
                         };
+                    }
+                    // 核心互通增强：若云端提示未找到口令，但本地 Mock 库中存在该家庭（例如同机多身份测试或房主在降级模式下创建）
+                    if (name === 'familyManage' && data?.action === 'joinFamily' && (result.error?.includes('未找到') || result.error?.includes('不存在'))) {
+                        const localFallback = this.invokeLocalMock(name, data);
+                        if (localFallback.success) {
+                            return {
+                                ...localFallback,
+                                isLocalFallback: true
+                            };
+                        }
                     }
                     return result;
                 }
@@ -645,6 +699,55 @@ export class CloudService {
         }
         // 本地高可用模式 (离线、无微信环境或降级模式)
         const localRes = this.invokeLocalMock(name, data);
+        // 核心跨机穿透增强：当用户在降级模式下加入家庭时，本地 mock 找不到目标家庭（因为目标家庭是由真机云端创建的），
+        // 尝试向真实云端穿透探测一次，避免用户永远卡在单机隔离桶中无法加入家人创建的云端厨房
+        if (name === 'familyManage' &&
+            data?.action === 'joinFamily' &&
+            !localRes.success &&
+            typeof wx !== 'undefined' &&
+            wx.cloud &&
+            typeof wx.cloud.callFunction === 'function' &&
+            !this.forceMock) {
+            try {
+                const cloudTryRes = await wx.cloud.callFunction({ name, data });
+                if (cloudTryRes?.result && cloudTryRes.result.success) {
+                    const resResult = cloudTryRes.result;
+                    // 云端加入成功，自动恢复云端可用状态并同步回本地
+                    this.isCloudAvailable = true;
+                    if (resResult.family) {
+                        this.mockDb.syncFamilyFromCloud(resResult.family, data.mockOpenid, 'member');
+                    }
+                    return resResult;
+                }
+            }
+            catch (probeErr) {
+                // 穿透探测若失败，保持原始本地错误
+            }
+        }
+        // 核心降级创建互通：当房主此前在本地创建了家庭，联网静默补全注册 (_syncToCloud) 时，主动向真实云端尝试注册
+        // 确保真实云开发可用时口令实时写入云端，家人凭口令可立即加入
+        if (name === 'familyManage' &&
+            data?.action === 'createFamily' &&
+            data?._syncToCloud &&
+            typeof wx !== 'undefined' &&
+            wx.cloud &&
+            typeof wx.cloud.callFunction === 'function' &&
+            !this.forceMock) {
+            try {
+                const cloudTryRes = await wx.cloud.callFunction({ name, data });
+                if (cloudTryRes?.result && cloudTryRes.result.success) {
+                    const resResult = cloudTryRes.result;
+                    this.isCloudAvailable = true;
+                    if (resResult.family) {
+                        this.mockDb.syncFamilyFromCloud(resResult.family, data.mockOpenid, 'creator');
+                    }
+                    return resResult;
+                }
+            }
+            catch (probeErr) {
+                // 离线时保持本地 mock
+            }
+        }
         return {
             ...localRes,
             isLocalFallback: true

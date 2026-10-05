@@ -62,6 +62,24 @@ async function generateUniqueInviteCode() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
+/**
+ * 规范化 6 位家庭邀请口令：过滤空白、符号，兼容全角数字与复制带前后缀的文本
+ */
+function normalizeInviteCode(input) {
+  if (!input) return '';
+  let str = String(input).trim();
+  // 全角数字转换为半角 (０-９ -> 0-9)
+  str = str.replace(/[\uFF10-\uFF19]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+  // 提取纯数字
+  const digits = str.replace(/\D/g, '');
+  if (digits.length === 6) return digits;
+  if (digits.length > 6) {
+    const match = str.match(/\b\d{6}\b/) || str.match(/\d{6}/);
+    if (match) return match[0];
+  }
+  return digits.slice(0, 6);
+}
+
 const JOIN_RATE_LIMIT = {
   MAX_FAILURES: 5,
   WINDOW_MS: 15 * 60 * 1000 // 15分钟窗口
@@ -72,11 +90,14 @@ const JOIN_RATE_LIMIT = {
  */
 function isNotFoundError(err) {
   if (!err) return false;
-  const msg = String(err.message || err || '').toLowerCase();
+  const code = err?.errCode ?? err?.code;
+  if (code === -502005 || String(code) === '-502005') return true;
+  const msg = String(err?.errMsg || err?.message || (typeof err === 'object' ? JSON.stringify(err) : err) || '').toLowerCase();
   return (
     msg.includes('does not exist') ||
     msg.includes('not exist') ||
-    err.errCode === -502005
+    msg.includes('not found') ||
+    msg.includes('-502005')
   );
 }
 
@@ -205,9 +226,24 @@ exports.main = async (event, context) => {
         if (!nickSec.pass) return { success: false, error: nickSec.error };
 
         // 口令与 familyId 在事务外预先生成 (防并发碰撞与事务内网络等待)
-        const familyId = `fam_${now}_${Math.random().toString(36).slice(2, 6)}`;
-        const inviteCode = await generateUniqueInviteCode();
-        const inviteExpiredAt = now + 24 * 60 * 60 * 1000; // 24小时过期
+        const familyId = event.familyId || `fam_${now}_${Math.random().toString(36).slice(2, 6)}`;
+        let inviteCode = (event.inviteCode && String(event.inviteCode).trim().length === 6)
+          ? String(event.inviteCode).trim()
+          : null;
+        if (inviteCode) {
+          const dupRes = await db.collection('families').where({
+            inviteCode,
+            inviteExpiredAt: _.gt(now)
+          }).get().catch(() => null);
+          if (dupRes && dupRes.data && dupRes.data.length > 0 && dupRes.data[0]._id !== familyId && dupRes.data[0].id !== familyId) {
+            inviteCode = await generateUniqueInviteCode();
+          }
+        } else {
+          inviteCode = await generateUniqueInviteCode();
+        }
+        const inviteExpiredAt = (event.inviteExpiredAt && Number(event.inviteExpiredAt) > now)
+          ? Number(event.inviteExpiredAt)
+          : (now + 24 * 60 * 60 * 1000); // 24小时过期
 
         return await db.runTransaction(async transaction => {
           const userDocRef = transaction.collection('users').doc(`user_${openid}`);
@@ -314,6 +350,7 @@ exports.main = async (event, context) => {
 
           return {
             success: true,
+            openid,
             family: {
               id: familyId,
               _id: familyId,
@@ -333,8 +370,8 @@ exports.main = async (event, context) => {
           return { success: false, error: rateLimitCheck.error };
         }
 
-        const inviteCode = String(event.inviteCode || '').trim();
-        if (!inviteCode || inviteCode.length !== 6) {
+        const cleanCode = normalizeInviteCode(event.inviteCode);
+        if (!cleanCode || cleanCode.length !== 6) {
           await recordJoinFailure(openid, now);
           return { success: false, error: '请输入正确的6位家庭邀请口令' };
         }
@@ -343,23 +380,43 @@ exports.main = async (event, context) => {
         const nickSec = await checkTextSecurity(memberNickName, openid);
         if (!nickSec.pass) return { success: false, error: nickSec.error };
 
-        // 1. 查询有效且未过期的邀请码
-        const queryRes = await db.collection('families').where({
-          inviteCode,
-          inviteExpiredAt: _.gt(now)
-        }).get();
+        // 1. 查询该邀请口令对应的所有家庭 (支持字符串与数值型双重兼容)
+        const codeStr = String(cleanCode);
+        const codeNum = Number(cleanCode);
 
-        if (!queryRes.data || queryRes.data.length === 0) {
-          await recordJoinFailure(openid, now);
-          // 区分是过期还是根本不存在
-          const anyRes = await db.collection('families').where({ inviteCode }).get().catch(() => null);
-          if (anyRes && anyRes.data && anyRes.data.length > 0) {
-            return { success: false, error: '该邀请口令已失效（有效期24小时），请让房主重新刷新口令' };
+        let matchedFamilies = [];
+        const strRes = await db.collection('families').where({ inviteCode: codeStr }).get().catch(() => null);
+        if (strRes && strRes.data && strRes.data.length > 0) {
+          matchedFamilies = matchedFamilies.concat(strRes.data);
+        }
+
+        if (!isNaN(codeNum)) {
+          const numRes = await db.collection('families').where({ inviteCode: codeNum }).get().catch(() => null);
+          if (numRes && numRes.data && numRes.data.length > 0) {
+            for (const doc of numRes.data) {
+              const docId = doc._id || doc.id;
+              if (!matchedFamilies.some(m => (m._id || m.id) === docId)) {
+                matchedFamilies.push(doc);
+              }
+            }
           }
+        }
+
+        if (matchedFamilies.length === 0) {
+          await recordJoinFailure(openid, now);
           return { success: false, error: '未找到该邀请口令对应的家庭厨房' };
         }
 
-        const targetFamilyId = queryRes.data[0]._id;
+        // 筛选未过期家庭 (按更新时间倒序优先取最新)
+        matchedFamilies.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+        const activeFamily = matchedFamilies.find(f => !f.inviteExpiredAt || Number(f.inviteExpiredAt) > now);
+
+        if (!activeFamily) {
+          await recordJoinFailure(openid, now);
+          return { success: false, error: '该邀请口令已失效（有效期24小时），请让房主重新刷新口令' };
+        }
+
+        const targetFamilyId = activeFamily._id || activeFamily.id;
 
         // 2. 进入原子数据库事务锁定文档并校验 4 人并发上限
         try {
@@ -382,15 +439,27 @@ exports.main = async (event, context) => {
             const family = famDoc.data;
 
             // 校验 1: 口令是否已过期 (24 小时有效)
-            if (now > family.inviteExpiredAt) {
+            if (family.inviteExpiredAt && Number(family.inviteExpiredAt) <= now) {
               await transaction.rollback('该邀请口令已失效（有效期24小时），请让房主重新刷新口令').catch(() => {});
               throw new Error('该邀请口令已失效（有效期24小时），请让房主重新刷新口令');
             }
 
             // 校验 2: 是否已经在该家庭中
-            if (family.memberOpenids && family.memberOpenids.includes(openid)) {
+            const isAlreadyMember = (family.memberOpenids && family.memberOpenids.includes(openid)) ||
+              (family.members && family.members.some(m => m.openid === openid));
+            if (isAlreadyMember) {
+              // 确保用户档案同步归属
+              await transaction.collection('users').doc(`user_${openid}`).update({
+                data: {
+                  familyId: targetFamilyId,
+                  role: family.creatorOpenid === openid ? 'creator' : 'member',
+                  updatedAt: now
+                }
+              }).catch(() => {});
+
               return {
                 success: true,
+                openid,
                 family: {
                   id: family._id || targetFamilyId,
                   _id: family._id || targetFamilyId,
@@ -401,7 +470,8 @@ exports.main = async (event, context) => {
             }
 
             // 校验 3: 严格并发防超员，上限 4 人 (易错点 2 防御)
-            if ((family.memberOpenids || []).length >= 4) {
+            const memberCount = Math.max((family.memberOpenids || []).length, (family.members || []).length);
+            if (memberCount >= 4) {
               await transaction.rollback('该家庭厨房成员已满（上限4人），无法继续加入').catch(() => {});
               throw new Error('该家庭厨房成员已满（上限4人），无法继续加入');
             }
@@ -469,7 +539,7 @@ exports.main = async (event, context) => {
             };
 
             const updatedMembers = [...(family.members || []), newMember];
-            const updatedOpenids = [...(family.memberOpenids || []), openid];
+            const updatedOpenids = Array.from(new Set([...(family.memberOpenids || []), openid]));
 
             await transaction.collection('families').doc(targetFamilyId).update({
               data: {
@@ -496,6 +566,7 @@ exports.main = async (event, context) => {
 
             return {
               success: true,
+              openid,
               family: {
                 id: targetFamilyId,
                 _id: targetFamilyId,

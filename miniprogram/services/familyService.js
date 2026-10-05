@@ -1,6 +1,26 @@
 import { cloudService } from './cloudService.js';
 const STORAGE_KEY_USER = 'current_user_profile';
 const STORAGE_KEY_FAMILY = 'current_family_space';
+/**
+ * 规范化 6 位家庭邀请口令：过滤空白、符号，兼容全角数字与复制带前后缀的文本
+ */
+export function cleanInviteCode(input) {
+    if (!input)
+        return '';
+    let str = String(input).trim();
+    // 全角数字转换为半角 (０-９ -> 0-9)
+    str = str.replace(/[\uFF10-\uFF19]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+    // 提取纯数字
+    const digits = str.replace(/\D/g, '');
+    if (digits.length === 6)
+        return digits;
+    if (digits.length > 6) {
+        const match = str.match(/\b\d{6}\b/) || str.match(/\d{6}/);
+        if (match)
+            return match[0];
+    }
+    return digits.slice(0, 6);
+}
 class FamilyService {
     constructor() {
         this.currentUser = {
@@ -108,7 +128,31 @@ class FamilyService {
                 this.currentFamily = res.family;
             }
             else if (!this.currentUser.familyId) {
-                this.currentFamily = null;
+                // 若云端未关联家庭，但本地存在此前离线或降级创建的家庭，且当前用户是房主
+                if (this.currentFamily && (this.currentFamily.creatorOpenid === this.currentUser.openid || this.currentUser.role === 'creator')) {
+                    // 自动向云端静默补全注册，确保云端具备该邀请码供家人加入
+                    cloudService.callFunction('familyManage', {
+                        action: 'createFamily',
+                        _syncToCloud: true,
+                        mockOpenid: this.currentUser.openid,
+                        familyId: this.currentFamily.id || this.currentFamily._id,
+                        name: this.currentFamily.name,
+                        inviteCode: this.currentFamily.inviteCode,
+                        inviteExpiredAt: this.currentFamily.inviteExpiredAt,
+                        nickName: this.currentUser.nickName,
+                        avatarUrl: this.currentUser.avatarUrl
+                    }).then(syncRes => {
+                        if (syncRes.success && syncRes.family) {
+                            this.currentFamily = syncRes.family;
+                            this.currentUser.familyId = syncRes.family.id || syncRes.family._id;
+                            this.currentUser.role = 'creator';
+                            this.persist();
+                        }
+                    }).catch(() => { });
+                }
+                else {
+                    this.currentFamily = null;
+                }
             }
             this.persist();
         }
@@ -128,6 +172,9 @@ class FamilyService {
         });
         if (res.success && res.family) {
             this.currentFamily = res.family;
+            if (res.openid) {
+                this.currentUser.openid = res.openid;
+            }
             this.currentUser.familyId = res.family.id || res.family._id;
             this.currentUser.role = 'creator';
             this.currentUser.nickName = callerNick;
@@ -140,7 +187,7 @@ class FamilyService {
      * 2. 口令加入家庭 (云端事务，上限 4 人，一人一家庭互斥)
      */
     async joinFamily(inviteCode, nickName) {
-        const code = inviteCode.trim();
+        const code = cleanInviteCode(inviteCode);
         if (!code || code.length !== 6) {
             return { success: false, error: '请输入正确的6位数字邀请码' };
         }
@@ -154,6 +201,9 @@ class FamilyService {
         });
         if (res.success && res.family) {
             this.currentFamily = res.family;
+            if (res.openid) {
+                this.currentUser.openid = res.openid;
+            }
             this.currentUser.familyId = res.family.id || res.family._id;
             this.currentUser.role = 'member';
             this.currentUser.nickName = callerNick;

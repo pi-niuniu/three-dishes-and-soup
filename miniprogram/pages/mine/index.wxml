@@ -26,13 +26,15 @@
           <view class="join-row">
             <input 
               class="join-code-input" 
-              type="number" 
-              maxlength="6" 
+              type="text" 
+              maxlength="100" 
               placeholder="输入 6 位家庭邀请口令" 
               value="{{ joinCodeInput }}" 
               bindinput="handleJoinCodeInput" 
+              bindblur="handleJoinCodeInput" 
+              bindconfirm="handleJoinFamily" 
             />
-            <button class="btn-join-fam" bindtap="handleJoinFamily">加入厨房</button>
+            <button class="btn-join-fam" bindtap="handleJoinFamily" disabled="{{ isJoiningFamily }}">加入厨房</button>
           </view>
         </view>
       </view>
