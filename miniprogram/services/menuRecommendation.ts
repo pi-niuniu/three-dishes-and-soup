@@ -379,7 +379,7 @@ export class MenuRecommendationEngine {
     const prefScore = this.calculatePreferenceScore(dish, preferences);
     
     // 动态保底：如果历史记录已很满，对惩罚做平滑补偿
-    const rawPenalty = this.calculateHistoryPenalty(dish.id, history);
+    const rawPenalty = this.calculateHistoryPenalty(dish.id, history, dish.name);
     const historyPenalty = 1.0 - (1.0 - rawPenalty) * relaxRate;
 
     const favoriteBoost = preferences.favoriteDishIds?.includes(dish.id) ? 1.2 : 1.0;
@@ -392,13 +392,12 @@ export class MenuRecommendationEngine {
     }
 
     const baseScore =
-      (seasonScore * 0.30) +
-      (prefScore * 0.20) +
-      (historyPenalty * 0.25) +
-      (difficultyScore * 0.10) +
+      (seasonScore * 0.35) +
+      (prefScore * 0.25) +
+      (difficultyScore * 0.15) +
       (dish.tags.includes('大厨拿手') ? 0.15 : 0.05);
 
-    return baseScore * favoriteBoost * stirFriesBoost * jitter;
+    return baseScore * historyPenalty * favoriteBoost * stirFriesBoost * jitter;
   }
 
   public calculateSeasonScore(dish: Dish, currentMonth: number): number {
@@ -413,7 +412,7 @@ export class MenuRecommendationEngine {
     return Math.min(score, 1.0);
   }
 
-  public calculateHistoryPenalty(dishId: string, history: MealHistoryRecord[]): number {
+  public calculateHistoryPenalty(dishId: string, history: MealHistoryRecord[], dishName?: string): number {
     if (!history || history.length === 0) return 1.0;
     const now = Date.now();
     let minDaysAgo = 999;
@@ -421,15 +420,17 @@ export class MenuRecommendationEngine {
       const ids = Array.isArray(record?.dishIds)
         ? record.dishIds
         : (Array.isArray(record?.dishes) ? record.dishes.map(d => d.id).filter(Boolean) : []);
-      if (ids.includes(dishId)) {
+      const matchById = ids.includes(dishId);
+      const matchByName = Boolean(dishName && record?.dishNames && record.dishNames.includes(dishName));
+      if (matchById || matchByName) {
         const daysAgo = Math.floor((now - record.timestamp) / (1000 * 60 * 60 * 24));
         if (daysAgo < minDaysAgo) {
           minDaysAgo = daysAgo;
         }
       }
     }
-    if (minDaysAgo <= 3) return 0.1;
-    if (minDaysAgo <= 7) return 0.4;
+    if (minDaysAgo <= 3) return 0.05;
+    if (minDaysAgo <= 7) return 0.3;
     if (minDaysAgo <= 14) return 0.7;
     return 1.0;
   }

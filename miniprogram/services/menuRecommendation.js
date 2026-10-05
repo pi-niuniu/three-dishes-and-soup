@@ -289,7 +289,7 @@ export class MenuRecommendationEngine {
         const seasonScore = this.calculateSeasonScore(dish, currentMonth);
         const prefScore = this.calculatePreferenceScore(dish, preferences);
         // 动态保底：如果历史记录已很满，对惩罚做平滑补偿
-        const rawPenalty = this.calculateHistoryPenalty(dish.id, history);
+        const rawPenalty = this.calculateHistoryPenalty(dish.id, history, dish.name);
         const historyPenalty = 1.0 - (1.0 - rawPenalty) * relaxRate;
         const favoriteBoost = preferences.favoriteDishIds?.includes(dish.id) ? 1.2 : 1.0;
         const difficultyScore = dish.difficulty === 1 ? 1.1 : (dish.difficulty === 2 ? 1.0 : 0.9);
@@ -298,12 +298,11 @@ export class MenuRecommendationEngine {
         if (mode === 'three_stir_fries' && (dish.cookingMethod === 'stir_fry' || dish.cookingMethod === 'clear_fry')) {
             stirFriesBoost = 1.3;
         }
-        const baseScore = (seasonScore * 0.30) +
-            (prefScore * 0.20) +
-            (historyPenalty * 0.25) +
-            (difficultyScore * 0.10) +
+        const baseScore = (seasonScore * 0.35) +
+            (prefScore * 0.25) +
+            (difficultyScore * 0.15) +
             (dish.tags.includes('大厨拿手') ? 0.15 : 0.05);
-        return baseScore * favoriteBoost * stirFriesBoost * jitter;
+        return baseScore * historyPenalty * favoriteBoost * stirFriesBoost * jitter;
     }
     calculateSeasonScore(dish, currentMonth) {
         if (dish.bestMonths.includes(currentMonth))
@@ -318,7 +317,7 @@ export class MenuRecommendationEngine {
             score += 0.2;
         return Math.min(score, 1.0);
     }
-    calculateHistoryPenalty(dishId, history) {
+    calculateHistoryPenalty(dishId, history, dishName) {
         if (!history || history.length === 0)
             return 1.0;
         const now = Date.now();
@@ -327,7 +326,9 @@ export class MenuRecommendationEngine {
             const ids = Array.isArray(record?.dishIds)
                 ? record.dishIds
                 : (Array.isArray(record?.dishes) ? record.dishes.map(d => d.id).filter(Boolean) : []);
-            if (ids.includes(dishId)) {
+            const matchById = ids.includes(dishId);
+            const matchByName = Boolean(dishName && record?.dishNames && record.dishNames.includes(dishName));
+            if (matchById || matchByName) {
                 const daysAgo = Math.floor((now - record.timestamp) / (1000 * 60 * 60 * 24));
                 if (daysAgo < minDaysAgo) {
                     minDaysAgo = daysAgo;
@@ -335,9 +336,9 @@ export class MenuRecommendationEngine {
             }
         }
         if (minDaysAgo <= 3)
-            return 0.1;
+            return 0.05;
         if (minDaysAgo <= 7)
-            return 0.4;
+            return 0.3;
         if (minDaysAgo <= 14)
             return 0.7;
         return 1.0;
