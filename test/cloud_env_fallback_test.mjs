@@ -146,9 +146,11 @@ assert.equal(registeredMinePage.formatErrorTip(''), '操作失败，请重试');
 assert.equal(registeredMinePage.formatErrorTip(null), '操作失败，请重试');
 assert.equal(registeredMinePage.formatErrorTip(undefined), '操作失败，请重试');
 assert.equal(registeredMinePage.formatErrorTip('document.set:fail -501007 invalid parameters. 不能指定 _id'), '数据服务同步异常，请稍后重试');
+assert.equal(registeredMinePage.formatErrorTip('document.update:fail -501007 invalid parameters. 不能更新保留字段 _openid'), '数据服务同步异常，请稍后重试');
 assert.equal(registeredMinePage.formatErrorTip({ errCode: -501007, errMsg: 'document.set:fail' }), '数据服务同步异常，请稍后重试', '对象型错误严禁抛 TypeError');
 assert.equal(registeredMinePage.formatErrorTip({ errMsg: 'Environment not found (-601034)' }), '云开发环境未就绪，已切换为本地模式');
 assert.equal(registeredMinePage.formatErrorTip('cloud.callFunction:fail timeout'), '服务连接异常，请重试');
+assert.equal(cloudService.checkCloudAvailability(), false, '-501007 熔断后系统必须标记云可用性为 false 避免后续无效网络往返');
 console.log('✅ 验证项 4.4: formatErrorTip 针对对象、字符串、null 等所有类型防崩溃鲁棒性验证通过！');
 
 // 6. 场景 D: 验证全项目版本号 100% 强一致性 (全部锁定 V2.11)

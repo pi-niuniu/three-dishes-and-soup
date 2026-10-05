@@ -97,8 +97,11 @@ Page({
     if (
       errStr.includes('-501007') ||
       errStr.includes('document.set:fail') ||
+      errStr.includes('document.update:fail') ||
       errStr.includes('invalid parameters') ||
-      errStr.includes('不能指定 _id')
+      errStr.includes('不能指定') ||
+      errStr.includes('保留字段') ||
+      errStr.includes('cannot update _id')
     ) {
       return '数据服务同步异常，请稍后重试';
     }
@@ -180,7 +183,7 @@ Page({
       this.setData({ family: familyService.getCurrentFamily() });
       wx.showToast({ title: '已生成新口令（24h有效）', icon: 'none' });
     } else {
-      wx.showToast({ title: res.error || '刷新失败', icon: 'none' });
+      wx.showToast({ title: this.formatErrorTip(res.error || '刷新失败'), icon: 'none' });
     }
   },
 
@@ -209,7 +212,7 @@ Page({
             });
             wx.showToast({ title: '已退出家庭厨房', icon: 'none' });
           } else {
-            wx.showToast({ title: leaveRes.error || '退出失败', icon: 'none' });
+            wx.showToast({ title: this.formatErrorTip(leaveRes.error || '退出失败'), icon: 'none' });
           }
         }
       }

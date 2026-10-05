@@ -150,9 +150,12 @@ class LocalCloudMockDatabase {
 
         let user = this.users.get(`user_${openid}`) || {
           _id: `user_${openid}`,
-          _openid: openid,
+          openid,
           nickName,
-          familyId: null
+          familyId: null,
+          role: null,
+          createdAt: now,
+          updatedAt: now
         };
 
         // 如果用户在旧家庭中，先退出
@@ -199,11 +202,14 @@ class LocalCloudMockDatabase {
         const MAX_FAILURES = 5;
         let user = this.users.get(`user_${openid}`) || {
           _id: `user_${openid}`,
-          _openid: openid,
+          openid,
           nickName: data.nickName || '家人',
           familyId: null,
+          role: null,
           joinFailCount: 0,
-          joinFailLastTime: 0
+          joinFailLastTime: 0,
+          createdAt: now,
+          updatedAt: now
         };
 
         if ((user.joinFailCount || 0) >= MAX_FAILURES && (now - (user.joinFailLastTime || 0)) <= WINDOW_MS) {
@@ -348,8 +354,14 @@ class LocalCloudMockDatabase {
       this.families.delete(familyId);
     } else {
       if (family.creatorOpenid === openid) {
-        family.creatorOpenid = family.members[0].openid;
+        const nextCreatorOpenid = family.members[0].openid;
+        family.creatorOpenid = nextCreatorOpenid;
         family.members[0].role = 'creator';
+        const nextUser = this.users.get(`user_${nextCreatorOpenid}`);
+        if (nextUser) {
+          nextUser.role = 'creator';
+          nextUser.updatedAt = Date.now();
+        }
       }
       family.updatedAt = Date.now();
     }
@@ -620,8 +632,10 @@ export class CloudService {
       return (
         str.includes('-501007') ||
         str.includes('document.set:fail') ||
+        str.includes('document.update:fail') ||
         str.includes('invalid parameters') ||
-        str.includes('不能指定 _id') ||
+        str.includes('不能指定') ||
+        str.includes('保留字段') ||
         str.includes('cannot update _id')
       );
     };
@@ -654,6 +668,7 @@ export class CloudService {
           // 自动熔断降级至本地高可用容灾模式，确保用户业务（如创建厨房）绝不中断
           if (this.isReservedFieldOrParamError(null, result)) {
             console.warn(`[CloudService] 云函数 ${name} 线上返回底层数据库参数/保留字段冲突 (-501007)，自动降级至本地高可用容灾模式`);
+            this.isCloudAvailable = false;
             const fallbackRes = this.invokeLocalMock(name, data);
             return {
               ...fallbackRes,
@@ -693,6 +708,7 @@ export class CloudService {
         // 核心容灾防御：若底层保留字段冲突或参数异常 (-501007)，自动降级至本地高可用容灾模式
         if (this.isReservedFieldOrParamError(err)) {
           console.warn(`[CloudService] 云函数 ${name} 抛出底层保留字段冲突 (-501007)，自动降级至本地高可用容灾模式`);
+          this.isCloudAvailable = false;
           const fallbackRes = this.invokeLocalMock(name, data);
           return {
             ...fallbackRes,
