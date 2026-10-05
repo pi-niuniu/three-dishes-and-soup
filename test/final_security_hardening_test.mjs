@@ -131,7 +131,9 @@ assert(familyManageSource.includes('退出原有家庭失败，中断创建新�
 assert(familyManageSource.includes('checkJoinRateLimit'), '必须在加入家庭时调用 checkJoinRateLimit 防暴力枚举');
 assert(familyManageSource.includes('recordJoinFailure'), '必须记录口令失败尝试 recordJoinFailure');
 assert(!familyManageSource.includes('_id: `user_${openid}`'), 'familyManage 中 users.doc().set() 严禁包含冗余 _id 字段');
-console.log('✅ familyManage 源码中退出旧家庭失败中断、防刷限频与 _id 剔除逻辑核验通过！');
+assert(!familyManageSource.includes('doc(familyId).set({ data: newFamily })'), 'familyManage 中 families.doc().set() 严禁直接传入包含 _id 的 newFamily');
+assert(!familyManageSource.includes('_openid: openid'), 'familyManage 中 doc().set() 严禁包含保留字段 _openid');
+console.log('✅ familyManage 源码中退出旧家庭失败中断、防刷限频与 _id / _openid 保留字段剔除逻辑核验通过！');
 
 // 2.2 防刷限频计数验证：连续 5 次错误邀请码后锁定 (测试真实云函数)
 const realAttackerOpenid = 'openid_real_attacker';

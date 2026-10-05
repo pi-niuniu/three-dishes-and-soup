@@ -73,13 +73,22 @@ Page({
     formatErrorTip(err) {
         if (!err)
             return '操作失败，请重试';
-        if (err.includes('-601034') || err.includes('Environment not found')) {
+        const errStr = typeof err === 'string'
+            ? err
+            : String(err?.errMsg || err?.message || (typeof err === 'object' ? JSON.stringify(err) : err) || '');
+        if (errStr.includes('-601034') || errStr.includes('Environment not found')) {
             return '云开发环境未就绪，已切换为本地模式';
         }
-        if (err.includes('cloud.callFunction:fail')) {
+        if (errStr.includes('cloud.callFunction:fail')) {
             return '服务连接异常，请重试';
         }
-        return err;
+        if (errStr.includes('-501007') ||
+            errStr.includes('document.set:fail') ||
+            errStr.includes('invalid parameters') ||
+            errStr.includes('不能指定 _id')) {
+            return '数据服务同步异常，请稍后重试';
+        }
+        return errStr;
     },
     async handleCreateFamily() {
         if (this.isSubmittingCreate || this.data.isCreatingFamily)

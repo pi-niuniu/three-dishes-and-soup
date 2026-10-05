@@ -11,7 +11,7 @@ const projectRoot = path.resolve(__dirname, '..');
 // 1. 读取 package.json 获取版本号
 const pkgPath = path.join(projectRoot, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-const version = process.env.npm_config_app_version || pkg.version || '2.05';
+const version = process.env.npm_config_app_version || pkg.version || '2.11';
 
 // 2. 检查 project.config.json 是否存在
 const projectConfigPath = path.join(projectRoot, 'project.config.json');
@@ -88,11 +88,10 @@ if (estimatedUploadBytes > 2048 * 1024) {
 }
 console.log(`✅ 体积预算校验安全通过！裕量: ${(2048 - estimatedUploadBytes / 1024).toFixed(1)} KB。\n`);
 
-// 6. 解析上传描述
-const defaultDesc = `发布 V${version} 版本：紧急修复线上云开发 -601034 报错，实现本地高可用无缝容灾降级、底层错误温和化清洗与云环境合规初始化`;
-const desc = process.argv.slice(2).join(' ') || defaultDesc;
+// 6. 解析上传描述与定位微信开发者工具 CLI
+const defaultDesc = `发布 V${version} 版本：彻底修复云开发 -501007 保留字段冲突，实现本地高可用无缝熔断降级与数据一致性加固`;
+const desc = process.argv.slice(2).filter(arg => !arg.startsWith('--')).join(' ') || defaultDesc;
 
-// 7. 定位微信开发者工具 CLI
 const cliCandidates = [
   '/Applications/wechatwebdevtools.app/Contents/MacOS/cli',
   '/Applications/微信开发者工具.app/Contents/MacOS/cli'
@@ -116,13 +115,20 @@ if (!cliPath) {
   process.exit(1);
 }
 
+const cmd = `"${cliPath}" upload --project "${projectRoot}" -v "${version}" -d "${desc}"`;
+
+// 7. 质检/预检模式 (--dry-run / --check)
+if (process.argv.includes('--dry-run') || process.argv.includes('--check')) {
+  console.log(`📋 拟执行上传命令:\n   ${cmd}\n`);
+  console.log(`🏁 静态资产完整性与打包体积预算校验全部 100% 通过（--dry-run 质检模式生效，安全退出，未执行远端上传）。\n`);
+  process.exit(0);
+}
+
 console.log(`🚀 准备上传微信小程序开发版本:`);
 console.log(`   - 项目根目录: ${projectRoot}`);
 console.log(`   - 版本号: ${version}`);
 console.log(`   - 描述信息: ${desc}`);
 console.log(`   - CLI 路径: ${cliPath}\n`);
-
-const cmd = `"${cliPath}" upload --project "${projectRoot}" -v "${version}" -d "${desc}"`;
 
 try {
   execSync(cmd, { stdio: 'inherit' });

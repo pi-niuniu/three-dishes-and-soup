@@ -45,7 +45,7 @@
   "compileType": "miniprogram",
   "libVersion": "3.3.4",
   "appid": "wx9c6a049ca34de9fe",
-  "projectname": "four-seasons-three-meals-v2.10",
+  "projectname": "four-seasons-three-meals-v2.11",
   "version": "2.11",
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",

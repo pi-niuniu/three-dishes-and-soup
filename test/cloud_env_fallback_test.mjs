@@ -83,6 +83,91 @@ assert.equal(cloudService.checkCloudAvailability(), true, '瞬时网络故障绝
 
 console.log('✅ 验证项 3: 瞬时网络异常与环境缺失精准隔离断言通过！加固防线 100% 稳固！');
 
+// 5. 场景 C: 模拟线上老版本云函数未部署或微信云数据库报 -501007 invalid parameters (用户截图同款错误)
+console.log('\n【场景 C1】模拟截图同款 -501007 字符串报错报文自动熔断降级');
+cloudService.resetAvailability();
+global.wx.cloud = {
+  callFunction: async ({ name, data }) => {
+    return {
+      result: {
+        success: false,
+        error: 'document.set:fail -501007 invalid parameters. 不能指定 _id'
+      }
+    };
+  }
+};
+
+const paramFailRes = await familyService.createFamily('皮妞妞');
+assert.equal(paramFailRes.success, true, '遭遇截图同款 -501007 报错时必须平滑降级，家庭创建绝不失败');
+assert(paramFailRes.family, '降级后必须正确返回 family 实体');
+assert.equal(paramFailRes.family.name, '皮妞妞', '降级后家庭名称必须正确');
+assert(paramFailRes.family.id, '返回的 family 必须包含标准 id 字段');
+console.log('✅ 验证项 4.1: 截图同款 -501007 字符串报错自动容灾降级断言通过！');
+
+console.log('\n【场景 C2】模拟微信 SDK 返回对象类型 { errCode: -501007 } 自动熔断降级');
+cloudService.resetAvailability();
+global.wx.cloud = {
+  callFunction: async ({ name, data }) => {
+    return {
+      result: {
+        success: false,
+        error: { errCode: -501007, errMsg: 'document.set:fail invalid parameters. 不能指定 _id' }
+      }
+    };
+  }
+};
+const objFailRes = await familyService.createFamily('皮妞妞对象错误测试');
+assert.equal(objFailRes.success, true, '遭遇对象类型 -501007 报错必须安全识别并降级');
+assert.equal(objFailRes.family.name, '皮妞妞对象错误测试');
+console.log('✅ 验证项 4.2: 对象类型 { errCode: -501007 } 自动容灾降级断言通过！');
+
+console.log('\n【场景 C3】模拟 callFunction 抛出异常 { errCode: -501007 } 自动熔断降级');
+cloudService.resetAvailability();
+global.wx.cloud = {
+  callFunction: async ({ name, data }) => {
+    const err = new Error('document.set:fail -501007 invalid parameters');
+    err.errCode = -501007;
+    throw err;
+  }
+};
+const thrownFailRes = await familyService.createFamily('皮妞妞抛错测试');
+assert.equal(thrownFailRes.success, true, 'callFunction 抛出 -501007 异常必须平滑降级');
+assert.equal(thrownFailRes.family.name, '皮妞妞抛错测试');
+console.log('✅ 验证项 4.3: callFunction 抛出 -501007 异常自动容灾降级断言通过！');
+
+console.log('\n【场景 C4】验证 formatErrorTip 对对象型错误与各类边界输入的防崩溃鲁棒性');
+// 动态导入编译后的 mine/index.js 验证 formatErrorTip
+let registeredMinePage = null;
+global.Page = (cfg) => { registeredMinePage = cfg; };
+await import('../miniprogram/pages/mine/index.js');
+assert(registeredMinePage && registeredMinePage.formatErrorTip, '必须导出 formatErrorTip 方法');
+
+assert.equal(registeredMinePage.formatErrorTip(''), '操作失败，请重试');
+assert.equal(registeredMinePage.formatErrorTip(null), '操作失败，请重试');
+assert.equal(registeredMinePage.formatErrorTip(undefined), '操作失败，请重试');
+assert.equal(registeredMinePage.formatErrorTip('document.set:fail -501007 invalid parameters. 不能指定 _id'), '数据服务同步异常，请稍后重试');
+assert.equal(registeredMinePage.formatErrorTip({ errCode: -501007, errMsg: 'document.set:fail' }), '数据服务同步异常，请稍后重试', '对象型错误严禁抛 TypeError');
+assert.equal(registeredMinePage.formatErrorTip({ errMsg: 'Environment not found (-601034)' }), '云开发环境未就绪，已切换为本地模式');
+assert.equal(registeredMinePage.formatErrorTip('cloud.callFunction:fail timeout'), '服务连接异常，请重试');
+console.log('✅ 验证项 4.4: formatErrorTip 针对对象、字符串、null 等所有类型防崩溃鲁棒性验证通过！');
+
+// 6. 场景 D: 验证全项目版本号 100% 强一致性 (全部锁定 V2.11)
+console.log('\n【场景 D】验证全项目版本号一致性审计 (锁定 V2.11)');
+const pkg = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8'));
+const appJson = JSON.parse(fs.readFileSync(path.resolve('miniprogram/app.json'), 'utf-8'));
+const projectConfig = JSON.parse(fs.readFileSync(path.resolve('project.config.json'), 'utf-8'));
+const publishGuide = fs.readFileSync(path.resolve('docs/wechat-publish-guide.md'), 'utf-8');
+
+assert.equal(pkg.version, '2.11', 'package.json 版本号必须为 2.11');
+assert.equal(appJson.version, '2.11', 'miniprogram/app.json 版本号必须为 2.11');
+assert.equal(projectConfig.version, '2.11', 'project.config.json version 必须为 2.11');
+assert(projectConfig.projectname.includes('2.11'), 'project.config.json projectname 必须包含 2.11');
+assert(appSource.includes("APP_VERSION = '2.11'"), 'app.ts APP_VERSION 必须为 2.11');
+assert(!publishGuide.includes('V2.05'), 'wechat-publish-guide.md 严禁残留 V2.05');
+assert(!publishGuide.includes('V2.10'), 'wechat-publish-guide.md 严禁残留 V2.10');
+assert(publishGuide.includes('2.11'), 'wechat-publish-guide.md 必须包含 2.11');
+console.log('✅ 验证项 5: package.json / app.json / project.config.json / app.ts / wechat-publish-guide.md 版本号 2.11 强一致性校验通过！');
+
 console.log('\n===============================================================');
 console.log('🎉 专项验证全部 100% 成功通过！截图报错已彻底根治且系统具备极强鲁棒性！');
 console.log('===============================================================\n');

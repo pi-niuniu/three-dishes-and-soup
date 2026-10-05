@@ -155,9 +155,14 @@ async function recordJoinFailure(openid, now) {
       } else {
         await userDocRef.set({
           data: {
-            _openid: openid,
+            openid,
+            nickName: '家人',
+            familyId: null,
+            role: null,
             joinFailCount: newCount,
-            joinFailLastTime: now
+            joinFailLastTime: now,
+            createdAt: now,
+            updatedAt: now
           }
         });
       }
@@ -220,7 +225,7 @@ exports.main = async (event, context) => {
             }
           }
           if (!user) {
-            user = { _openid: openid, nickName: nickName || '房主' };
+            user = { openid, nickName: nickName || '房主' };
           }
 
           // 如果用户已在旧家庭中，先处理退出旧家庭（失败直接中断抛错，严防一人跨两家）
@@ -271,8 +276,8 @@ exports.main = async (event, context) => {
             }
           }
 
-          const newFamily = {
-            _id: familyId,
+          const familyData = {
+            id: familyId,
             name: familyName,
             creatorOpenid: openid,
             members: [
@@ -291,23 +296,29 @@ exports.main = async (event, context) => {
             updatedAt: now
           };
 
-          await transaction.collection('families').doc(familyId).set({ data: newFamily });
+          // 剔除冗余 _id 字段，避免微信云开发报 document.set:fail -501007 invalid parameters. 不能指定 _id 错误
+          await transaction.collection('families').doc(familyId).set({ data: familyData });
 
-          // 更新用户档案 (剔除冗余 _id 字段，避免老版本云开发 SDK 报 cannot update _id 错误)
+          // 更新用户档案 (剔除冗余 _id 与保留字段 _openid，保留原始 createdAt，避免微信云开发报 document.set:fail -501007 invalid parameters 错误)
           await transaction.collection('users').doc(`user_${openid}`).set({
             data: {
-              _openid: openid,
+              openid,
               nickName: nickName || user.nickName || '房主',
               avatarUrl: event.avatarUrl || user.avatarUrl || '',
               familyId,
               role: 'creator',
+              createdAt: (user && user.createdAt) || now,
               updatedAt: now
             }
           });
 
           return {
             success: true,
-            family: newFamily
+            family: {
+              id: familyId,
+              _id: familyId,
+              ...familyData
+            }
           };
         });
       }
@@ -380,7 +391,11 @@ exports.main = async (event, context) => {
             if (family.memberOpenids && family.memberOpenids.includes(openid)) {
               return {
                 success: true,
-                family,
+                family: {
+                  id: family._id || targetFamilyId,
+                  _id: family._id || targetFamilyId,
+                  ...family
+                },
                 message: '您已经在该家庭厨房中'
               };
             }
@@ -464,16 +479,17 @@ exports.main = async (event, context) => {
               }
             });
 
-            // 更新用户档案并重置防刷计数 (剔除冗余 _id 字段，避免老版本云开发 SDK 报 cannot update _id 错误)
+            // 更新用户档案并重置防刷计数 (剔除冗余 _id 与保留字段 _openid，保留原始 createdAt，避免微信云开发报 document.set:fail -501007 invalid parameters 错误)
             await transaction.collection('users').doc(`user_${openid}`).set({
               data: {
-                _openid: openid,
+                openid,
                 nickName: newMember.nickName,
                 avatarUrl: newMember.avatarUrl,
                 familyId: targetFamilyId,
                 role: 'member',
                 joinFailCount: 0,
                 joinFailLastTime: 0,
+                createdAt: userDoc?.data?.createdAt || now,
                 updatedAt: now
               }
             });
@@ -481,6 +497,8 @@ exports.main = async (event, context) => {
             return {
               success: true,
               family: {
+                id: targetFamilyId,
+                _id: targetFamilyId,
                 ...family,
                 members: updatedMembers,
                 memberOpenids: updatedOpenids,
@@ -621,7 +639,11 @@ exports.main = async (event, context) => {
 
         return {
           success: true,
-          family
+          family: {
+            id: family._id || familyId,
+            _id: family._id || familyId,
+            ...family
+          }
         };
       }
 

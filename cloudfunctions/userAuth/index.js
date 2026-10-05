@@ -33,9 +33,8 @@ exports.main = async (event, context) => {
       user = res.data;
     } catch (e) {
       // 用户首次访问，自动创建档案
-      const newUser = {
-        _id: `user_${openid}`,
-        _openid: openid,
+      const userData = {
+        openid,
         nickName: event.nickName || '家人',
         avatarUrl: event.avatarUrl || '',
         familyId: null,
@@ -43,8 +42,8 @@ exports.main = async (event, context) => {
         createdAt: now,
         updatedAt: now
       };
-      await db.collection('users').add({ data: newUser });
-      user = newUser;
+      await userDocRef.set({ data: userData });
+      user = { _id: `user_${openid}`, ...userData };
     }
 
     // 更新昵称/头像
@@ -61,7 +60,13 @@ exports.main = async (event, context) => {
     if (user.familyId) {
       try {
         const famRes = await db.collection('families').doc(user.familyId).get();
-        family = famRes.data;
+        if (famRes && famRes.data) {
+          family = {
+            id: famRes.data._id || user.familyId,
+            _id: famRes.data._id || user.familyId,
+            ...famRes.data
+          };
+        }
       } catch (err) {
         console.warn('获取用户所属家庭失败或家庭已解散', err);
         // 如果家庭已被解散，重置用户的 familyId

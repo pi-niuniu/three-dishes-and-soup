@@ -25,7 +25,7 @@ global.wx = {
 const appInstance = {
   globalData: {
     currentMenu: null,
-    version: '2.10'
+    version: '2.11'
   }
 };
 global.getApp = () => appInstance;
@@ -44,7 +44,7 @@ console.log('====== 开始微信小程序 7 大核心页面原生 JS 运行时�
 currentPageName = 'app';
 await import('../miniprogram/app.js');
 console.log('✅ app.js 成功执行 onLaunch，无异常');
-console.log('《四季三餐·好好吃饭》小程序 V2.04 启动中...');
+console.log('《四季三餐·好好吃饭》小程序 V2.11 启动中...');
 
 // 辅助页面创建函数
 function instantiatePage(name) {
@@ -138,7 +138,7 @@ const minePage = instantiatePage('pages/mine/index');
 minePage.onShow();
 console.log(`✅ Tab 4 [我的] (pages/mine) 渲染成功: 当前模式=${minePage.data.preferences.defaultMode}, 辣度=${minePage.data.preferences.spicyLevel}`);
 assert(minePage.data.availableModes.length === 4, '可用模式应为 4 种');
-assert.equal(minePage.data.version, '2.10', '“我的”页面必须展示 V2.10 版本号');
+assert.equal(minePage.data.version, '2.11', '“我的”页面必须展示 V2.11 版本号');
 
 // 5. 子页面 1: pages/menu/result/index (菜单结果)
 currentPageName = 'pages/menu/result/index';

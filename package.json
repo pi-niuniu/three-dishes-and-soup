@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "upload": "node scripts/upload.mjs",
+    "deploy:functions": "node scripts/deploy_functions.mjs",
     "test": "node test/recommendation_test.mjs && node test/e2e_full_lifecycle_test.mjs && node test/pages_runtime_test.mjs && node test/image_resilience_test.mjs && node test/family_sharing_custom_dishes_test.mjs && node test/security_hardening_audit_test.mjs && node test/e2e_family_custom_full_flow_test.mjs && node test/final_security_hardening_test.mjs && node test/cloud_env_fallback_test.mjs",
     "test:algo": "node test/recommendation_test.mjs",
     "test:e2e": "node test/e2e_full_lifecycle_test.mjs",

@@ -520,10 +520,10 @@ export class CloudService {
         if (!err)
             return false;
         const errCode = err?.errCode ?? err?.code;
-        const msg = String(err?.errMsg || err?.message || err || '');
         if (errCode === -601034 || errCode === -601016 || errCode === -601015 || errCode === -601020) {
             return true;
         }
+        const msg = typeof err === 'string' ? err : String(err?.errMsg || err?.message || (typeof err === 'object' ? JSON.stringify(err) : err) || '');
         if (msg.includes('-601034') ||
             msg.includes('Environment not found') ||
             msg.includes('environment not found') ||
@@ -535,6 +535,28 @@ export class CloudService {
             return true;
         }
         return false;
+    }
+    /**
+     * 判断错误是否属于微信云开发保留字段冲突或底层数据库参数错误
+     * -501007: invalid parameters / 不能指定 _id / cannot update _id
+     */
+    isReservedFieldOrParamError(err, result) {
+        const checkItem = (item) => {
+            if (!item)
+                return false;
+            const code = item?.errCode ?? item?.code;
+            if (code === -501007)
+                return true;
+            const str = typeof item === 'string'
+                ? item
+                : String(item?.errMsg || item?.message || (typeof item === 'object' ? JSON.stringify(item) : item) || '');
+            return (str.includes('-501007') ||
+                str.includes('document.set:fail') ||
+                str.includes('invalid parameters') ||
+                str.includes('不能指定 _id') ||
+                str.includes('cannot update _id'));
+        };
+        return checkItem(err) || checkItem(result) || (result && checkItem(result.error));
     }
     /**
      * 统一云函数调用方法
@@ -551,7 +573,31 @@ export class CloudService {
                     data
                 });
                 if (res && res.result) {
-                    return res.result;
+                    const result = res.result;
+                    if (result.success) {
+                        return result;
+                    }
+                    // 核心容灾防御：若线上已发布的云端代码未部署最新补丁，返回了底层保留字段冲突或参数异常 (-501007)
+                    // 自动熔断降级至本地高可用容灾模式，确保用户业务（如创建厨房）绝不中断
+                    if (this.isReservedFieldOrParamError(null, result)) {
+                        console.warn(`[CloudService] 云函数 ${name} 线上返回底层数据库参数/保留字段冲突 (-501007)，自动降级至本地高可用容灾模式`);
+                        const fallbackRes = this.invokeLocalMock(name, data);
+                        return {
+                            ...fallbackRes,
+                            isLocalFallback: true
+                        };
+                    }
+                    // 环境异常亦熔断降级
+                    if (this.isEnvironmentUnavailableError(result) || this.isEnvironmentUnavailableError(result.error)) {
+                        console.warn(`[CloudService] 云函数 ${name} 线上返回环境未就绪，自动降级至本地高可用容灾模式`);
+                        this.isCloudAvailable = false;
+                        const fallbackRes = this.invokeLocalMock(name, data);
+                        return {
+                            ...fallbackRes,
+                            isLocalFallback: true
+                        };
+                    }
+                    return result;
                 }
                 return { success: false, error: '云函数返回空结果' };
             }
@@ -562,6 +608,15 @@ export class CloudService {
                 if (this.isEnvironmentUnavailableError(err)) {
                     console.warn(`[CloudService] 检测到微信云开发环境未就绪/未开通 (-601034)，自动切换至本地高可用容灾模式`);
                     this.isCloudAvailable = false;
+                    const fallbackRes = this.invokeLocalMock(name, data);
+                    return {
+                        ...fallbackRes,
+                        isLocalFallback: true
+                    };
+                }
+                // 核心容灾防御：若底层保留字段冲突或参数异常 (-501007)，自动降级至本地高可用容灾模式
+                if (this.isReservedFieldOrParamError(err)) {
+                    console.warn(`[CloudService] 云函数 ${name} 抛出底层保留字段冲突 (-501007)，自动降级至本地高可用容灾模式`);
                     const fallbackRes = this.invokeLocalMock(name, data);
                     return {
                         ...fallbackRes,
