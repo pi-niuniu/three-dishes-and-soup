@@ -664,21 +664,15 @@ export class CloudService {
     const checkItem = (item: any): boolean => {
       if (!item) return false;
       const code = item?.errCode ?? item?.code;
-      if (code === -501007) return true;
-
       const str = typeof item === 'string'
         ? item
         : String(item?.errMsg || item?.message || (typeof item === 'object' ? JSON.stringify(item) : item) || '');
 
-      return (
-        str.includes('-501007') ||
-        str.includes('document.set:fail') ||
-        str.includes('document.update:fail') ||
-        str.includes('invalid parameters') ||
-        str.includes('不能指定') ||
-        str.includes('保留字段') ||
-        str.includes('cannot update _id')
-      );
+      const is501007 = code === -501007 || str.includes('-501007');
+      const isReservedKeyword = str.includes('不能指定') || str.includes('保留字段') || str.includes('cannot update _id');
+
+      // 仅当明确具备 -501007 或保留字段核心关键字时才判定为冲突，绝不泛化拦截通用报错
+      return (is501007 && (isReservedKeyword || str.includes('invalid parameters'))) || isReservedKeyword;
     };
 
     return checkItem(err) || checkItem(result) || (result && checkItem(result.error));

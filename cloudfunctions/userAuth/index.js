@@ -6,10 +6,28 @@ cloud.init({
 
 const db = cloud.database();
 
+let collectionsChecked = false;
+async function ensureCollections() {
+  if (collectionsChecked) return;
+  const collections = ['users', 'families', 'dishes', 'meals'];
+  for (const name of collections) {
+    try {
+      if (typeof db.createCollection === 'function') {
+        await db.createCollection(name);
+      }
+    } catch (e) {
+      // 忽略已存在或无权限错误
+    }
+  }
+  collectionsChecked = true;
+}
+
 /**
  * userAuth 云函数：用户静默鉴权与档案获取
  */
 exports.main = async (event, context) => {
+  await ensureCollections();
+
   const wxContext = cloud.getWXContext();
   let openid = wxContext && wxContext.OPENID;
 

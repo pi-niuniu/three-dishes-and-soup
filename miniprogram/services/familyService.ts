@@ -125,12 +125,15 @@ class FamilyService {
     });
 
     if (res.success && res.user) {
+      const prevRole = this.currentUser.role;
+      const prevFamily = this.currentFamily;
+
       this.currentUser = {
         openid: res.openid || this.currentUser.openid,
         nickName: res.user.nickName || this.currentUser.nickName,
         avatarUrl: res.user.avatarUrl || '',
         familyId: res.user.familyId || null,
-        role: res.user.role || null,
+        role: res.user.role || (res.family ? (res.family.creatorOpenid === (res.openid || this.currentUser.openid) ? 'creator' : 'member') : null) || prevRole || null,
         createdAt: res.user.createdAt || Date.now(),
         updatedAt: res.user.updatedAt || Date.now()
       };
@@ -138,20 +141,23 @@ class FamilyService {
         this.currentFamily = res.family;
       } else if (!this.currentUser.familyId) {
         // 若云端未关联家庭，但本地存在此前离线或降级创建的家庭，且当前用户是房主
-        if (this.currentFamily && (this.currentFamily.creatorOpenid === this.currentUser.openid || this.currentUser.role === 'creator')) {
+        const isCreator = prevRole === 'creator' || (prevFamily && (prevFamily.creatorOpenid === this.currentUser.openid || prevFamily.creatorOpenid === 'wx_user_default' || prevFamily.creatorOpenid === 'mock_openid_default'));
+        if (prevFamily && isCreator) {
+          this.currentFamily = prevFamily;
+          this.currentUser.role = 'creator';
           // 自动向云端静默补全注册，确保云端具备该邀请码供家人加入
           cloudService.callFunction('familyManage', {
             action: 'createFamily',
             _syncToCloud: true,
             mockOpenid: this.currentUser.openid,
-            familyId: this.currentFamily.id || (this.currentFamily as any)._id,
-            name: this.currentFamily.name,
-            inviteCode: this.currentFamily.inviteCode,
-            inviteExpiredAt: this.currentFamily.inviteExpiredAt,
+            familyId: prevFamily.id || (prevFamily as any)._id,
+            name: prevFamily.name,
+            inviteCode: prevFamily.inviteCode,
+            inviteExpiredAt: prevFamily.inviteExpiredAt,
             nickName: this.currentUser.nickName,
             avatarUrl: this.currentUser.avatarUrl
           }).then(syncRes => {
-            if (syncRes.success && syncRes.family) {
+            if (syncRes.success && syncRes.family && !syncRes.isLocalFallback) {
               this.currentFamily = syncRes.family;
               this.currentUser.familyId = syncRes.family.id || syncRes.family._id;
               this.currentUser.role = 'creator';

@@ -193,7 +193,25 @@ async function recordJoinFailure(openid, now) {
   }
 }
 
+let collectionsChecked = false;
+async function ensureCollections() {
+  if (collectionsChecked) return;
+  const collections = ['users', 'families', 'dishes', 'meals'];
+  for (const name of collections) {
+    try {
+      if (typeof db.createCollection === 'function') {
+        await db.createCollection(name);
+      }
+    } catch (e) {
+      // 忽略已存在或无权限错误
+    }
+  }
+  collectionsChecked = true;
+}
+
 exports.main = async (event, context) => {
+  await ensureCollections();
+
   const wxContext = cloud.getWXContext();
   let openid = wxContext && wxContext.OPENID;
 
@@ -385,21 +403,42 @@ exports.main = async (event, context) => {
         const codeNum = Number(cleanCode);
 
         let matchedFamilies = [];
-        const strRes = await db.collection('families').where({ inviteCode: codeStr }).get().catch(() => null);
-        if (strRes && strRes.data && strRes.data.length > 0) {
-          matchedFamilies = matchedFamilies.concat(strRes.data);
+        let queryError = null;
+
+        try {
+          const strRes = await db.collection('families').where({ inviteCode: codeStr }).get();
+          if (strRes && strRes.data && strRes.data.length > 0) {
+            matchedFamilies = matchedFamilies.concat(strRes.data);
+          }
+        } catch (err) {
+          console.warn('[familyManage] 字符串口令查询异常:', err);
+          queryError = err;
         }
 
         if (!isNaN(codeNum)) {
-          const numRes = await db.collection('families').where({ inviteCode: codeNum }).get().catch(() => null);
-          if (numRes && numRes.data && numRes.data.length > 0) {
-            for (const doc of numRes.data) {
-              const docId = doc._id || doc.id;
-              if (!matchedFamilies.some(m => (m._id || m.id) === docId)) {
-                matchedFamilies.push(doc);
+          try {
+            const numRes = await db.collection('families').where({ inviteCode: codeNum }).get();
+            if (numRes && numRes.data && numRes.data.length > 0) {
+              for (const doc of numRes.data) {
+                const docId = doc._id || doc.id;
+                if (!matchedFamilies.some(m => (m._id || m.id) === docId)) {
+                  matchedFamilies.push(doc);
+                }
               }
             }
+          } catch (err) {
+            console.warn('[familyManage] 数值口令查询异常:', err);
+            queryError = queryError || err;
           }
+        }
+
+        // 如果底层数据库报错且未匹配到任何家庭，返回系统繁忙，不计入恶意失败限频
+        if (queryError && matchedFamilies.length === 0) {
+          const errMsg = String(queryError?.errMsg || queryError?.message || queryError);
+          if (errMsg.includes('collection not exist') || errMsg.includes('-502005')) {
+            return { success: false, error: '家庭数据库尚未初始化，请房主先重新创建厨房' };
+          }
+          return { success: false, error: '云端查询服务异常，请稍后重试' };
         }
 
         if (matchedFamilies.length === 0) {
