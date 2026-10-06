@@ -30,6 +30,7 @@ export interface FamilySpace {
   inviteExpiredAt: number;         // 邀请码过期时间戳 (24 小时有效)
   createdAt: number;
   updatedAt: number;
+  syncedToCloud?: boolean;         // 客户端标记：已由真实云端确认（旧版本降级创建的家庭无此标记）
 }
 
 /**

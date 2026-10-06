@@ -1,7 +1,7 @@
 import { dataProvider } from './services/dataProvider.js';
 import { preferenceService } from './services/preferenceService.js';
 import { familyService } from './services/familyService.js';
-export const APP_VERSION = '2.11';
+export const APP_VERSION = '2.12';
 /**
  * 微信云开发环境 ID 配置
  * 若您在微信开发者工具或微信公众平台开通了云开发，可在此填写具体环境 ID (如 'cloud1-xxx')；

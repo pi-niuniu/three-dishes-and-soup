@@ -1,0 +1,378 @@
+.result-container {
+  padding-bottom: 220rpx;
+}
+
+.result-header {
+  margin-bottom: 24rpx;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.mode-tag {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1E2320;
+  letter-spacing: 0.8rpx;
+}
+
+.portion-badge {
+  font-size: 22rpx;
+  color: #B26A20;
+  background-color: #FBF0DF;
+  padding: 6rpx 18rpx;
+  border-radius: 16rpx;
+  font-weight: 500;
+}
+
+.cook-time {
+  font-size: 24rpx;
+  color: #7D827E;
+  letter-spacing: 0.4rpx;
+}
+
+/* 槽位卡片 */
+.slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.slot-card {
+  position: relative;
+  transition: all 0.2s ease;
+  border-left: 8rpx solid #2C5E43;
+}
+
+.slot-locked {
+  background-color: #FFF9F4;
+  border-left-color: #E6683B;
+}
+
+.card-main-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.dish-thumb-wrap {
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #F4EFE6;
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.06);
+}
+
+.dish-card-thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.thumb-lock-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(230, 104, 59, 0.82);
+  color: #FFFFFF;
+  font-size: 22rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1rpx;
+  backdrop-filter: blur(2px);
+}
+
+.thumb-emoji-badge {
+  position: absolute;
+  bottom: 6rpx;
+  right: 6rpx;
+  font-size: 20rpx;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.08);
+}
+
+.dish-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dish-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.dish-name {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1E2320;
+  letter-spacing: 1rpx;
+}
+
+.role-badge-sub {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+}
+
+.lock-indicator {
+  font-size: 20rpx;
+  color: #E6683B;
+  background-color: #FDF1EA;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+}
+
+.dish-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.role-tag {
+  font-size: 22rpx;
+  color: #2C5E43;
+  background-color: #EAF3EC;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+  font-weight: 500;
+}
+
+.taste-tag {
+  font-size: 22rpx;
+  color: #7D827E;
+  background-color: #F4EFE6;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+}
+
+.time-tag {
+  font-size: 20rpx;
+  color: #A0A5A1;
+  padding: 4rpx 10rpx;
+}
+
+/* 操作按钮行 */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F4EFE6;
+}
+
+.action-btn {
+  font-size: 24rpx;
+  color: #555A56;
+  background-color: #FAF8F5;
+  border: 1rpx solid #F4EFE6;
+  padding: 10rpx 22rpx;
+  border-radius: 28rpx;
+}
+
+.btn-locked-active {
+  background-color: #FDF1EA;
+  color: #E6683B;
+  border-color: #E6683B;
+  font-weight: 600;
+}
+
+.btn-custom {
+  color: #2C5E43;
+  background-color: #EAF3EC;
+  border-color: #CCE2D3;
+}
+
+/* 底部操作栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  padding: 24rpx 36rpx calc(24rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 20rpx;
+  z-index: 100;
+}
+
+.btn-reroll {
+  flex: 1;
+  background-color: #FAF8F5;
+  color: #555A56;
+  border: 2rpx solid #F4EFE6;
+  border-radius: 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  padding: 22rpx 0;
+}
+
+.btn-confirm {
+  flex: 1.3;
+  margin: 0;
+  font-size: 30rpx;
+}
+
+/* Modal 弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx 36rpx calc(32rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  max-height: 80vh;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2D312E;
+}
+
+.close-icon {
+  font-size: 36rpx;
+  color: #8C918D;
+  padding: 10rpx;
+}
+
+.modal-tabs {
+  display: flex;
+  border-bottom: 2rpx solid #F4EFE6;
+  margin-bottom: 24rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+  color: #7D827E;
+  position: relative;
+}
+
+.tab-active {
+  color: #2C5E43;
+  font-weight: 700;
+}
+
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -2rpx;
+  left: 25%;
+  width: 50%;
+  height: 4rpx;
+  background-color: #2C5E43;
+  border-radius: 2rpx;
+}
+
+.library-scroll {
+  max-height: 480rpx;
+}
+
+.library-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.library-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background-color: #FAF8F5;
+  border: 1rpx solid #EAE6DE;
+  border-radius: 16rpx;
+  padding: 14rpx;
+}
+
+.lib-dish-thumb {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background-color: #F4EFE6;
+}
+
+.lib-dish-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.lib-dish-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2D312E;
+  margin-bottom: 4rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lib-dish-desc {
+  font-size: 20rpx;
+  color: #8C918D;
+}
+
+.input-pane {
+  padding: 20rpx 0;
+}
+
+.input-tip {
+  font-size: 26rpx;
+  color: #7D827E;
+  margin-bottom: 16rpx;
+}
+
+.custom-input {
+  background-color: #FAF8F5;
+  border: 2rpx solid #E2DED6;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  margin-bottom: 32rpx;
+}
+
+.submit-custom-btn {
+  width: 100%;
+}

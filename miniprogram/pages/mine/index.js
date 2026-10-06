@@ -4,7 +4,7 @@ import { familyService, cleanInviteCode } from '../../services/familyService.js'
 import { dataProvider } from '../../services/dataProvider.js';
 Page({
     data: {
-        version: '2.11',
+        version: '2.12',
         preferences: {},
         dislikedMap: {},
         spicyLevels: [
@@ -26,7 +26,9 @@ Page({
         joinCodeInput: '',
         newFamilyNameInput: '',
         isCreatingFamily: false,
-        isJoiningFamily: false
+        isJoiningFamily: false,
+        familySyncWarning: '',
+        isRetryingSync: false
     },
     isSubmittingCreate: false,
     isSubmittingJoin: false,
@@ -59,7 +61,8 @@ Page({
         const fam = familyService.getCurrentFamily();
         this.setData({
             currentUser: user,
-            family: fam
+            family: fam,
+            familySyncWarning: fam ? (familyService.getCloudSyncError() || '') : ''
         });
     },
     handleJoinCodeInput(e) {
@@ -82,7 +85,7 @@ Page({
             ? err
             : String(err?.errMsg || err?.message || (typeof err === 'object' ? JSON.stringify(err) : err) || '');
         if (errStr.includes('-601034') || errStr.includes('Environment not found')) {
-            return '云开发环境未就绪，已切换为本地模式';
+            return '云开发环境未就绪，请检查云环境配置后重试';
         }
         if (errStr.includes('cloud.callFunction:fail')) {
             return '服务连接异常，请重试';
@@ -161,6 +164,26 @@ Page({
         finally {
             this.isSubmittingJoin = false;
             this.setData({ isJoiningFamily: false });
+        }
+    },
+    async handleRetryCloudSync() {
+        if (this.data.isRetryingSync)
+            return;
+        this.setData({ isRetryingSync: true });
+        try {
+            wx.showLoading({ title: '同步到云端...' });
+            const res = await familyService.retryCloudSync();
+            wx.hideLoading();
+            this.loadFamilyState();
+            if (res.success) {
+                wx.showToast({ title: '已同步，家人可凭口令加入', icon: 'none' });
+            }
+            else {
+                wx.showToast({ title: this.formatErrorTip(res.error), icon: 'none' });
+            }
+        }
+        finally {
+            this.setData({ isRetryingSync: false });
         }
     },
     handleCopyInviteCode() {

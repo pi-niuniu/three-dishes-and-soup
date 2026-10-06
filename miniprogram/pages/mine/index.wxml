@@ -64,6 +64,12 @@
           </block>
         </view>
 
+        <!-- 口令未同步到云端提示 (家庭只存在本机时家人无法加入) -->
+        <view wx:if="{{ familySyncWarning }}" class="sync-warning" bindtap="handleRetryCloudSync">
+          <text class="sync-warning-text">⚠️ {{ familySyncWarning }}</text>
+          <text class="sync-warning-action">{{ isRetryingSync ? '同步中...' : '重新同步' }}</text>
+        </view>
+
         <!-- 邀请码与复制口令 -->
         <view class="invite-banner">
           <view class="invite-left">

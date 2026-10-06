@@ -1,0 +1,117 @@
+page, view, text, button, input, textarea {
+  font-family: -apple-system, "SF Pro Rounded", "PingFang SC", "Hiragino Sans GB", "Yuanti SC", "STHeiti", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.6rpx;
+}
+
+page {
+  background-color: #FFFDF7;
+  color: #232724;
+  box-sizing: border-box;
+}
+
+/* 布局辅助 */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 32rpx 36rpx;
+  box-sizing: border-box;
+}
+
+/* 通用白底圆角Q萌微立体卡片 */
+.card {
+  background-color: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(215, 185, 145, 0.14);
+  border: 2rpx solid #F4EFE6;
+}
+
+/* 核心强调主按钮 (熟柿暖橙 #E6683B) */
+.btn-primary {
+  background: linear-gradient(135deg, #FF7D52 0%, #E6683B 100%);
+  color: #FFFFFF;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  border-radius: 52rpx;
+  padding: 24rpx 0;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(230, 104, 59, 0.35);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  opacity: 0.92;
+}
+
+/* 次要罗勒绿按钮 (罗勒绿 #2C5E43) */
+.btn-secondary {
+  background: linear-gradient(135deg, #3B7B58 0%, #2C5E43 100%);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 1.5rpx;
+  border-radius: 44rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  box-shadow: 0 6rpx 20rpx rgba(44, 94, 67, 0.28);
+}
+
+/* 空心按钮 */
+.btn-outline {
+  background-color: #FFFDF7;
+  color: #2C5E43;
+  border: 2rpx solid #2C5E43;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 40rpx;
+  padding: 16rpx 32rpx;
+  text-align: center;
+}
+
+/* 胶囊标签 */
+.tag-season {
+  display: inline-block;
+  background-color: #FDF1EA;
+  color: #E6683B;
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.tag-meat {
+  display: inline-block;
+  background-color: #FDF0EC;
+  color: #C0432E;
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.tag-veg {
+  display: inline-block;
+  background-color: #EAF3EC;
+  color: #2C5E43;
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.tag-soup {
+  display: inline-block;
+  background-color: #EDF3FB;
+  color: #2B69B2;
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}

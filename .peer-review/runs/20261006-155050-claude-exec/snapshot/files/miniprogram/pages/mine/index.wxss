@@ -1,0 +1,379 @@
+.family-card {
+  padding: 32rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
+  border: 2rpx solid #F4EFE6;
+  margin-bottom: 24rpx;
+}
+
+.fam-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.fam-icon {
+  font-size: 56rpx;
+  width: 88rpx;
+  height: 88rpx;
+  background: #FFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.fam-title-wrap {
+  flex: 1;
+}
+
+.fam-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2D312E;
+  margin-bottom: 6rpx;
+}
+
+.fam-sub {
+  font-size: 22rpx;
+  color: #8C918D;
+}
+
+.fam-badge {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #2C5E43;
+  background: #E8F2EC;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+}
+
+.fam-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.create-row, .join-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.fam-name-input, .join-code-input {
+  flex: 1;
+  background: #FFF;
+  border: 2rpx solid #EFEAE0;
+  border-radius: 16rpx;
+  padding: 12rpx 20rpx;
+  font-size: 26rpx;
+  color: #2D312E;
+}
+
+.btn-create-fam, .btn-join-fam {
+  background: #2C5E43;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 0 24rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 16rpx;
+  margin: 0;
+}
+
+.btn-join-fam {
+  background: #E6683B;
+}
+
+.divider-text {
+  text-align: center;
+  font-size: 20rpx;
+  color: #B5B9B6;
+  margin: 4rpx 0;
+}
+
+/* 成员头像网格 */
+.members-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.member-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.member-avatar {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: #FFF;
+  border: 2rpx solid #EFEAE0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.member-name {
+  font-size: 20rpx;
+  color: #555A56;
+  margin-top: 8rpx;
+  max-width: 90rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-tag {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  background: #E6683B;
+  color: #FFF;
+  font-size: 16rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 8rpx;
+}
+
+/* 邀请码条幅 */
+.invite-banner {
+  background: #FFFDF8;
+  border: 2rpx dashed #E6DFD3;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.invite-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.invite-label {
+  font-size: 20rpx;
+  color: #8C918D;
+}
+
+.invite-code {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2C5E43;
+  letter-spacing: 4rpx;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.btn-copy-code, .btn-refresh-code {
+  font-size: 22rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 12rpx;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.btn-copy-code {
+  background: #2C5E43;
+  color: #FFF;
+}
+
+.btn-refresh-code {
+  background: #FAF8F5;
+  color: #8C918D;
+  border: 1rpx solid #EFEAE0;
+}
+
+.fam-bottom-bar {
+  text-align: right;
+  padding-top: 8rpx;
+}
+
+.fam-leave-btn {
+  font-size: 22rpx;
+  color: #C0C4C1;
+  text-decoration: underline;
+}
+
+.user-card {
+  padding: 36rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
+  border: 2rpx solid #F4EFE6;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.user-avatar {
+  font-size: 64rpx;
+  background-color: #F4EFE6;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2D312E;
+  margin-bottom: 6rpx;
+}
+
+.user-sub {
+  font-size: 24rpx;
+  color: #8C918D;
+}
+
+.setting-card {
+  margin-bottom: 24rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #555A56;
+  margin-bottom: 20rpx;
+}
+
+/* 辣度选项 */
+.spicy-options {
+  display: flex;
+  gap: 16rpx;
+}
+
+.spicy-pill {
+  flex: 1;
+  text-align: center;
+  background-color: #FAF8F5;
+  border: 2rpx solid #F4EFE6;
+  border-radius: 20rpx;
+  padding: 16rpx 0;
+  font-size: 26rpx;
+  color: #555A56;
+  transition: all 0.2s;
+}
+
+.pill-active {
+  background-color: #FFF8F2;
+  border-color: #E6683B;
+  color: #E6683B;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.15);
+}
+
+/* 忌口标签 */
+.disliked-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.avoid-chip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background-color: #FAF8F5;
+  border: 1rpx solid #F4EFE6;
+  padding: 12rpx 24rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #555A56;
+}
+
+.avoid-active {
+  background-color: #FDF0ED;
+  border-color: #E6683B;
+  color: #E6683B;
+  font-weight: 600;
+}
+
+.avoid-mark {
+  font-size: 22rpx;
+}
+
+/* 模式网格 */
+.mode-select-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.mode-pill {
+  text-align: center;
+  background-color: #FAF8F5;
+  border: 2rpx solid #F4EFE6;
+  border-radius: 20rpx;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #555A56;
+  transition: all 0.2s;
+}
+
+.mode-pill.pill-active {
+  background-color: #FFF8F2;
+  border-color: #E6683B;
+  color: #E6683B;
+  font-weight: 700;
+  box-shadow: 0 4rpx 12rpx rgba(230, 104, 59, 0.15);
+}
+
+/* 管理行 */
+.manage-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.row-label {
+  font-size: 28rpx;
+  color: #E6683B;
+}
+
+.row-arrow {
+  font-size: 36rpx;
+  color: #C0C4C1;
+}
+
+/* 版本与页脚声明 */
+.version-footer {
+  margin-top: 48rpx;
+  margin-bottom: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.version-text {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #8C918D;
+  letter-spacing: 1rpx;
+}
+
+.version-sub {
+  font-size: 20rpx;
+  color: #B5B9B6;
+  letter-spacing: 0.5rpx;
+}
+

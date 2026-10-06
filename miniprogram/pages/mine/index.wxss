@@ -143,6 +143,32 @@
   border-radius: 8rpx;
 }
 
+/* 口令未同步云端提示 */
+.sync-warning {
+  background: #FFF4EE;
+  border: 2rpx solid #F5C9B3;
+  border-radius: 16rpx;
+  padding: 14rpx 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.sync-warning-text {
+  flex: 1;
+  font-size: 22rpx;
+  color: #C0562B;
+  margin-right: 16rpx;
+}
+
+.sync-warning-action {
+  font-size: 22rpx;
+  color: #E6683B;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* 邀请码条幅 */
 .invite-banner {
   background: #FFFDF8;

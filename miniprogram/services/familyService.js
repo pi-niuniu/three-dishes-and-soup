@@ -35,6 +35,10 @@ class FamilyService {
         this.currentFamily = null;
         this.listeners = new Set();
         this.initialized = false;
+        // 创建/加入/退出等写操作序号，用于丢弃写操作期间发出的过期鉴权响应
+        this.mutationSeq = 0;
+        this.authSeq = 0;
+        this.cloudSyncError = null;
         this.restoreFromStorage();
     }
     init() {
@@ -106,68 +110,135 @@ class FamilyService {
         this.persist();
     }
     /**
+     * 云端补传失败时的提示（房主界面展示，避免口令只存在本机却毫无感知）
+     */
+    getCloudSyncError() {
+        return this.cloudSyncError;
+    }
+    getFamilyId(family) {
+        if (!family)
+            return null;
+        return family.id || family._id || null;
+    }
+    /**
+     * 旧版本降级模式下只建在本机的家庭：房主本人创建、只有房主一人、从未被云端确认过
+     */
+    isLegacyLocalOnlyFamily(family, prevRole, openid) {
+        if (!family || family.syncedToCloud)
+            return false;
+        const isCreator = prevRole === 'creator' ||
+            [openid, 'wx_user_default', 'mock_openid_default'].includes(family.creatorOpenid);
+        return isCreator && (family.memberOpenids || []).length <= 1;
+    }
+    /**
      * 静默登录与鉴权同步
      */
     async syncUserAuth() {
+        const authSeq = ++this.authSeq;
+        const mutationSeqAtStart = this.mutationSeq;
         const res = await cloudService.callFunction('userAuth', {
             mockOpenid: this.currentUser.openid,
             nickName: this.currentUser.nickName,
             avatarUrl: this.currentUser.avatarUrl
         });
-        if (res.success && res.user) {
-            const prevRole = this.currentUser.role;
-            const prevFamily = this.currentFamily;
-            this.currentUser = {
-                openid: res.openid || this.currentUser.openid,
-                nickName: res.user.nickName || this.currentUser.nickName,
-                avatarUrl: res.user.avatarUrl || '',
-                familyId: res.user.familyId || null,
-                role: res.user.role || (res.family ? (res.family.creatorOpenid === (res.openid || this.currentUser.openid) ? 'creator' : 'member') : null) || prevRole || null,
-                createdAt: res.user.createdAt || Date.now(),
-                updatedAt: res.user.updatedAt || Date.now()
-            };
-            if (res.family) {
-                this.currentFamily = res.family;
-            }
-            else if (!this.currentUser.familyId) {
-                // 若云端未关联家庭，但本地存在此前离线或降级创建的家庭，且当前用户是房主
-                const isCreator = prevRole === 'creator' || (prevFamily && (prevFamily.creatorOpenid === this.currentUser.openid || prevFamily.creatorOpenid === 'wx_user_default' || prevFamily.creatorOpenid === 'mock_openid_default'));
-                if (prevFamily && isCreator) {
-                    this.currentFamily = prevFamily;
-                    this.currentUser.role = 'creator';
-                    // 自动向云端静默补全注册，确保云端具备该邀请码供家人加入
-                    cloudService.callFunction('familyManage', {
-                        action: 'createFamily',
-                        _syncToCloud: true,
-                        mockOpenid: this.currentUser.openid,
-                        familyId: prevFamily.id || prevFamily._id,
-                        name: prevFamily.name,
-                        inviteCode: prevFamily.inviteCode,
-                        inviteExpiredAt: prevFamily.inviteExpiredAt,
-                        nickName: this.currentUser.nickName,
-                        avatarUrl: this.currentUser.avatarUrl
-                    }).then(syncRes => {
-                        if (syncRes.success && syncRes.family && !syncRes.isLocalFallback) {
-                            this.currentFamily = syncRes.family;
-                            this.currentUser.familyId = syncRes.family.id || syncRes.family._id;
-                            this.currentUser.role = 'creator';
-                            this.persist();
-                        }
-                    }).catch(() => { });
-                }
-                else {
-                    this.currentFamily = null;
-                }
-            }
-            this.persist();
+        // 请求期间发生过创建/加入/退出，或已有更新的鉴权请求：丢弃这次过期响应，防止把刚加入的家庭清掉
+        if (authSeq !== this.authSeq || mutationSeqAtStart !== this.mutationSeq) {
+            return this.currentUser;
         }
+        if (!res.success || !res.user) {
+            return this.currentUser;
+        }
+        const openid = res.openid || this.currentUser.openid;
+        const prevRole = this.currentUser.role;
+        const prevFamily = this.currentFamily;
+        const fromCloud = !res.isLocalFallback;
+        this.currentUser = {
+            openid,
+            nickName: res.user.nickName || this.currentUser.nickName,
+            avatarUrl: res.user.avatarUrl || '',
+            familyId: res.user.familyId || null,
+            role: res.user.role || (res.family ? (res.family.creatorOpenid === openid ? 'creator' : 'member') : null),
+            createdAt: res.user.createdAt || Date.now(),
+            updatedAt: res.user.updatedAt || Date.now()
+        };
+        if (res.family) {
+            this.currentFamily = fromCloud ? { ...res.family, syncedToCloud: true } : res.family;
+            this.cloudSyncError = null;
+        }
+        else if (this.currentUser.familyId) {
+            // 云端仍有归属但本次未拉到家庭详情（瞬时异常）：保留本地缓存
+            if (prevFamily && this.getFamilyId(prevFamily) === this.currentUser.familyId) {
+                this.currentFamily = prevFamily;
+                this.currentUser.role = this.currentUser.role || prevRole;
+            }
+            else {
+                this.currentFamily = null;
+            }
+        }
+        else if (fromCloud && this.isLegacyLocalOnlyFamily(prevFamily, prevRole, openid)) {
+            // 云端没有该家庭，但本机有旧版本降级模式创建的家庭：补传云端，确保家人凭口令可加入
+            this.currentFamily = prevFamily;
+            this.currentUser.familyId = this.getFamilyId(prevFamily);
+            this.currentUser.role = 'creator';
+            this.persist();
+            await this.pushLocalFamilyToCloud(prevFamily);
+            return this.currentUser;
+        }
+        else {
+            this.currentFamily = null;
+            this.cloudSyncError = null;
+        }
+        this.persist();
         return this.currentUser;
+    }
+    /**
+     * 将本机家庭补传到云端（沿用原 familyId 与口令，云端口令冲突时会换新口令）
+     */
+    async pushLocalFamilyToCloud(family) {
+        const mutationSeqAtStart = this.mutationSeq;
+        const res = await cloudService.callFunction('familyManage', {
+            action: 'createFamily',
+            _syncToCloud: true,
+            mockOpenid: this.currentUser.openid,
+            familyId: this.getFamilyId(family),
+            name: family.name,
+            inviteCode: family.inviteCode,
+            inviteExpiredAt: family.inviteExpiredAt,
+            nickName: this.currentUser.nickName,
+            avatarUrl: this.currentUser.avatarUrl
+        });
+        if (mutationSeqAtStart !== this.mutationSeq)
+            return false;
+        if (res.success && res.family && !res.isLocalFallback) {
+            const openid = res.openid || this.currentUser.openid;
+            this.currentFamily = { ...res.family, syncedToCloud: true };
+            this.currentUser.openid = openid;
+            this.currentUser.familyId = this.getFamilyId(res.family);
+            this.currentUser.role = res.family.creatorOpenid === openid ? 'creator' : 'member';
+            this.cloudSyncError = null;
+            this.persist();
+            return true;
+        }
+        this.cloudSyncError = `口令未同步到云端，家人暂时无法加入（${res.error || '云端未响应'}）`;
+        this.persist();
+        return false;
+    }
+    /**
+     * 手动重试把当前家庭同步到云端
+     */
+    async retryCloudSync() {
+        if (!this.currentFamily) {
+            return { success: false, error: '尚未加入家庭' };
+        }
+        const ok = await this.pushLocalFamilyToCloud(this.currentFamily);
+        return ok ? { success: true } : { success: false, error: this.cloudSyncError || '同步失败' };
     }
     /**
      * 1. 创建家庭空间
      */
     async createFamily(name = '温馨小家食堂', nickName) {
         const callerNick = nickName || this.currentUser.nickName || '房主';
+        this.mutationSeq++;
         const res = await cloudService.callFunction('familyManage', {
             action: 'createFamily',
             mockOpenid: this.currentUser.openid,
@@ -175,16 +246,18 @@ class FamilyService {
             nickName: callerNick,
             avatarUrl: this.currentUser.avatarUrl
         });
+        this.mutationSeq++;
         if (res.success && res.family) {
-            this.currentFamily = res.family;
+            this.currentFamily = res.isLocalFallback ? res.family : { ...res.family, syncedToCloud: true };
             if (res.openid) {
                 this.currentUser.openid = res.openid;
             }
-            this.currentUser.familyId = res.family.id || res.family._id;
+            this.currentUser.familyId = this.getFamilyId(res.family);
             this.currentUser.role = 'creator';
             this.currentUser.nickName = callerNick;
+            this.cloudSyncError = null;
             this.persist();
-            return { success: true, family: res.family };
+            return { success: true, family: this.currentFamily };
         }
         return { success: false, error: res.error || '创建家庭空间失败' };
     }
@@ -197,6 +270,7 @@ class FamilyService {
             return { success: false, error: '请输入正确的6位数字邀请码' };
         }
         const callerNick = nickName || this.currentUser.nickName || '家人';
+        this.mutationSeq++;
         const res = await cloudService.callFunction('familyManage', {
             action: 'joinFamily',
             mockOpenid: this.currentUser.openid,
@@ -204,16 +278,17 @@ class FamilyService {
             nickName: callerNick,
             avatarUrl: this.currentUser.avatarUrl
         });
+        this.mutationSeq++;
         if (res.success && res.family) {
-            this.currentFamily = res.family;
-            if (res.openid) {
-                this.currentUser.openid = res.openid;
-            }
-            this.currentUser.familyId = res.family.id || res.family._id;
-            this.currentUser.role = 'member';
+            const openid = res.openid || this.currentUser.openid;
+            this.currentFamily = res.isLocalFallback ? res.family : { ...res.family, syncedToCloud: true };
+            this.currentUser.openid = openid;
+            this.currentUser.familyId = this.getFamilyId(res.family);
+            this.currentUser.role = res.family.creatorOpenid === openid ? 'creator' : 'member';
             this.currentUser.nickName = callerNick;
+            this.cloudSyncError = null;
             this.persist();
-            return { success: true, family: res.family };
+            return { success: true, family: this.currentFamily };
         }
         return { success: false, error: res.error || '加入家庭空间失败' };
     }
@@ -221,14 +296,17 @@ class FamilyService {
      * 3. 退出 / 解散家庭
      */
     async leaveFamily() {
+        this.mutationSeq++;
         const res = await cloudService.callFunction('familyManage', {
             action: 'leaveFamily',
             mockOpenid: this.currentUser.openid
         });
+        this.mutationSeq++;
         if (res.success) {
             this.currentUser.familyId = null;
             this.currentUser.role = null;
             this.currentFamily = null;
+            this.cloudSyncError = null;
             this.persist();
             return { success: true };
         }
@@ -251,6 +329,13 @@ class FamilyService {
             this.currentFamily.inviteExpiredAt = res.inviteExpiredAt;
             this.persist();
             return { success: true, inviteCode: res.inviteCode };
+        }
+        // 云端查无此家庭：说明家庭只存在本机，标记待同步并提示房主
+        if (res.errorType === 'FAMILY_NOT_IN_CLOUD' && !res.isLocalFallback) {
+            this.currentFamily.syncedToCloud = false;
+            this.cloudSyncError = '云端未找到该家庭，口令无法使用，请点击重新同步到云端';
+            this.persist();
+            return { success: false, error: this.cloudSyncError };
         }
         return { success: false, error: res.error || '刷新邀请码失败' };
     }

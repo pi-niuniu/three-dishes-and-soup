@@ -11,7 +11,7 @@ const projectRoot = path.resolve(__dirname, '..');
 // 1. 读取 package.json 获取版本号
 const pkgPath = path.join(projectRoot, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-const version = process.env.npm_config_app_version || pkg.version || '2.11';
+const version = process.env.npm_config_app_version || pkg.version || '2.12';
 
 // 2. 检查 project.config.json 是否存在
 const projectConfigPath = path.join(projectRoot, 'project.config.json');
@@ -89,7 +89,7 @@ if (estimatedUploadBytes > 2048 * 1024) {
 console.log(`✅ 体积预算校验安全通过！裕量: ${(2048 - estimatedUploadBytes / 1024).toFixed(1)} KB。\n`);
 
 // 6. 解析上传描述与定位微信开发者工具 CLI
-const defaultDesc = `发布 V${version} 版本：彻底修复云开发 -501007 保留字段冲突，实现本地高可用无缝熔断降级与数据一致性加固`;
+const defaultDesc = `发布 V${version} 版本：彻底修复家庭厨房口令加入与云端数据同步问题，支持集合自愈与精准容灾`;
 const desc = process.argv.slice(2).filter(arg => !arg.startsWith('--')).join(' ') || defaultDesc;
 
 const cliCandidates = [

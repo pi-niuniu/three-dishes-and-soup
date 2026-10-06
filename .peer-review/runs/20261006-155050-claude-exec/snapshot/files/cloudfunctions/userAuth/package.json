@@ -1,0 +1,9 @@
+{
+  "name": "userAuth",
+  "version": "1.0.0",
+  "description": "微信云函数: 用户静默鉴权与档案维护",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

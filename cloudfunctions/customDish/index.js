@@ -40,7 +40,39 @@ function matchEmoji(name, category) {
   return CATEGORY_DEFAULT_CONFIG[category]?.icon || '🍽️';
 }
 
+// users/families 为家庭核心集合，meal_history/custom_dishes 为就餐历史与私房菜实际使用的集合
+const REQUIRED_COLLECTIONS = ['users', 'families', 'dishes', 'meals', 'meal_history', 'custom_dishes'];
+let collectionsReady = false;
+
+/**
+ * 集合自愈创建：新环境未手动建表时自动创建，createCollection 报错时用 count() 确认是否已存在；
+ * 任一集合未确认就绪则下次调用继续重试
+ */
+async function ensureCollections() {
+  if (collectionsReady) return;
+  if (typeof db.createCollection !== 'function') {
+    collectionsReady = true;
+    return;
+  }
+  let allReady = true;
+  for (const name of REQUIRED_COLLECTIONS) {
+    try {
+      await db.createCollection(name);
+    } catch (createErr) {
+      try {
+        await db.collection(name).count();
+      } catch (probeErr) {
+        allReady = false;
+        console.error(`[customDish] 集合 ${name} 自愈创建失败:`, createErr, probeErr);
+      }
+    }
+  }
+  collectionsReady = allReady;
+}
+
 exports.main = async (event, context) => {
+  await ensureCollections();
+
   const wxContext = cloud.getWXContext();
   let openid = wxContext && wxContext.OPENID;
 

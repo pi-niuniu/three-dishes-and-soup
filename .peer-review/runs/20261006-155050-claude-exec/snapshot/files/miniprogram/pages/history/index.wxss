@@ -1,0 +1,149 @@
+.history-intro {
+  background-color: #F4EFE6;
+  border: 2rpx solid #EAE3D5;
+}
+
+.intro-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6rpx;
+}
+
+.intro-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #E6683B;
+}
+
+.sync-badge {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+}
+
+.sync-synced {
+  background-color: #E8F2EC;
+  color: #2C5E43;
+}
+
+.sync-local {
+  background-color: #EAE3D5;
+  color: #8C918D;
+}
+
+.intro-desc {
+  font-size: 24rpx;
+  color: #6D736E;
+  line-height: 1.5;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.record-card {
+  padding: 24rpx 28rpx;
+}
+
+.record-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding-bottom: 12rpx;
+  border-bottom: 1rpx solid #F4EFE6;
+}
+
+.record-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.record-date {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2D312E;
+}
+
+.meal-type-badge {
+  font-size: 20rpx;
+  color: #E6683B;
+  background-color: #FFF2ED;
+  border: 1rpx solid #FDDDD0;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+.record-top-right {
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+}
+
+.record-confirmer {
+  color: #8C918D;
+  margin-right: 6rpx;
+}
+
+.record-mode {
+  font-size: 22rpx;
+  color: #2C5E43;
+  background-color: #EAF3EC;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+}
+
+.record-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.dish-tag-chip {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background-color: #FAF8F5;
+  border: 1rpx solid #F4EFE6;
+  font-size: 26rpx;
+  color: #2D312E;
+  padding: 6rpx 16rpx 6rpx 8rpx;
+  border-radius: 16rpx;
+}
+
+.chip-thumb {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 10rpx;
+  background-color: #F4EFE6;
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  font-size: 72rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #555A56;
+  margin-bottom: 8rpx;
+}
+
+.empty-sub {
+  font-size: 24rpx;
+  color: #8C918D;
+}

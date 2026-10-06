@@ -1,0 +1,51 @@
+{
+  "run_id": "20261006-140817-claude-review",
+  "agent": "claude",
+  "kind": "review",
+  "mode": "read",
+  "root": "/Users/zhuangxiji/Desktop/CC/一日三餐",
+  "request_source": "/Users/zhuangxiji/Desktop/CC/一日三餐/.peer-review/requests/20261006-140800-claude-review.md",
+  "quote": "",
+  "add_dirs": [
+    "/Users/zhuangxiji/.gemini/antigravity/brain/44a141e0-093f-440d-8073-20101a993a68/.user_uploaded"
+  ],
+  "created": "2026-10-06T14:08:17",
+  "auth": {
+    "category": "subscription",
+    "desc": "authMethod=claude.ai / pro"
+  },
+  "args": [
+    "/Users/zhuangxiji/.local/bin/claude",
+    "-p",
+    "你是被 Antigravity 调用的 Claude，本次任务类型：审阅（只读）。请先完整阅读任务说明文件 .peer-review/runs/20261006-140817-claude-review/request.md，按其中要求完成，并严格按文件末尾的“回复格式”用中文回复。只读：不要创建、修改或删除任何文件，不要运行会改变系统状态的命令。",
+    "--tools",
+    "Read,Grep,Glob",
+    "--disallowedTools",
+    "mcp__*",
+    "--strict-mcp-config",
+    "--permission-prompts",
+    "none",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--max-turns",
+    "40",
+    "--safe-mode",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--add-dir",
+    "/Users/zhuangxiji/.gemini/antigravity/brain/44a141e0-093f-440d-8073-20101a993a68/.user_uploaded"
+  ],
+  "snapshot": null,
+  "timeout_minutes": 30,
+  "model_effort": {
+    "provider": "",
+    "agent": "claude",
+    "model": "",
+    "model_src": "程序默认",
+    "model_pass": false,
+    "effort": "",
+    "effort_src": "程序默认",
+    "effort_pass": false
+  }
+}

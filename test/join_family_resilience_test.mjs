@@ -239,12 +239,15 @@ assert.equal(grandsonJoinRes.family.name, '云端姥姥的小院');
 assert.equal(cloudService.checkCloudAvailability(), true, '穿透云端成功后，云端可用性标识应自动自愈恢复为 true');
 console.log('✅ 测试 5.1: 降级模式用户加入家人云端厨房时成功穿透并自动恢复云端可用性！');
 
-// 场景 5.3: 房主如果在本地离线创建了家庭，上线鉴权 syncUserAuth 时自动补全注册到云端
+// 场景 5.3: 旧版本降级模式下房主家庭只建在本机，上线鉴权 syncUserAuth 时自动补传云端
 cloudService.getMockDb().clearAll();
 familyService.setMockCurrentUser('openid_offline_mom', '妈妈');
-// 本地创建家庭
+// 模拟旧版本：强制本地模式创建（无 syncedToCloud 标记的孤岛家庭）
+cloudService.setForceMock(true);
 const localMomFam = await familyService.createFamily('离线妈妈的爱心食堂');
+cloudService.setForceMock(false);
 assert(localMomFam.success);
+assert.notEqual(localMomFam.family.syncedToCloud, true, '本地模式创建的家庭不得标记为已同步云端');
 const localMomCode = localMomFam.family.inviteCode;
 
 // 执行 syncUserAuth，验证是否自动向云端静默补全注册
@@ -259,7 +262,7 @@ global.wx.cloud.callFunction = async ({ name, data }) => {
       }
     };
   }
-  if (name === 'familyManage' && data.action === 'createFamily') {
+  if (name === 'familyManage') {
     return {
       result: await familyManageModule.default.main(data, {})
     };
@@ -268,8 +271,8 @@ global.wx.cloud.callFunction = async ({ name, data }) => {
 };
 
 await familyService.syncUserAuth();
-// 等待 promise 微任务执行
-await new Promise(r => setTimeout(r, 50));
+assert.equal(familyService.getCloudSyncError(), null, '补传成功后不应有同步告警');
+assert.equal(familyService.getCurrentFamily().syncedToCloud, true, '补传成功后家庭标记为已同步云端');
 
 // 验证云端现在已经有了妈妈的家庭并且 inviteCode 完全一致
 const queryMomCloudRes = await familyManageModule.default.main({
@@ -279,7 +282,36 @@ const queryMomCloudRes = await familyManageModule.default.main({
   nickName: '孩子'
 }, {});
 assert.equal(queryMomCloudRes.success, true, '房主本地离线家庭在 syncUserAuth 后已成功补全同步至云端，家人凭原口令可直接加入！');
-console.log('✅ 测试 5.2: 房主本地创建家庭在联网鉴权时自动补全云端注册，家人可凭同一口令顺利加入！\n');
+console.log('✅ 测试 5.2: 房主本地创建家庭在联网鉴权时自动补全云端注册，家人可凭同一口令顺利加入！');
+
+// 场景 5.4: 补传失败时必须在房主界面给出告警，而不是静默当作成功
+cloudService.setForceMock(true);
+familyService.setMockCurrentUser('openid_offline_dad', '爸爸');
+await familyService.createFamily('补传失败测试厨房');
+cloudService.setForceMock(false);
+global.wx.cloud.callFunction = async ({ name, data }) => {
+  if (name === 'userAuth') {
+    return { result: { success: true, openid: data.mockOpenid, user: { openid: data.mockOpenid, familyId: null, role: null }, family: null } };
+  }
+  return { result: { success: false, error: 'document.set:fail -501007 invalid parameters' } };
+};
+await familyService.syncUserAuth();
+assert(familyService.getCloudSyncError(), '补传云端失败时必须产生同步告警');
+assert(familyService.getCloudSyncError().includes('未同步到云端'), '告警需说明家人暂时无法加入');
+assert(familyService.getCurrentFamily(), '补传失败时保留本地家庭供房主重试');
+console.log('✅ 测试 5.3: 补传云端失败时房主可见“口令未同步到云端”告警，不再静默假成功！');
+
+// 场景 5.5: 真机上云端返回“未找到口令”，严禁偷偷改用本机模拟库加入本机孤岛家庭
+cloudService.getMockDb().clearAll();
+const islandRes = cloudService.getMockDb().handleFamilyManage({ action: 'createFamily', name: '本机孤岛', mockOpenid: 'openid_island_owner' });
+global.wx.cloud.callFunction = async ({ name, data }) => ({
+  result: { success: false, error: '未找到该邀请口令对应的家庭厨房' }
+});
+familyService.setMockCurrentUser('openid_island_joiner', '家人');
+const islandJoin = await familyService.joinFamily(islandRes.family.inviteCode);
+assert.equal(islandJoin.success, false, '云端未找到口令时必须如实失败，严禁加入本机孤岛家庭');
+assert.equal(familyService.getCurrentFamily(), null);
+console.log('✅ 测试 5.4: 云端查无口令时不再回落本机模拟库，杜绝“假加入”孤岛家庭！\n');
 
 // -------------------------------------------------------------
 // 【测试 6】复制口令类型防崩溃验证
@@ -339,6 +371,233 @@ assert.equal(mockPageContext.isSubmittingJoin, false, '完成后防重提交锁�
 familyService.joinFamily = originalJoinFamily;
 console.log('✅ 测试 7: handleJoinCodeInput 同步返回值与防并发点击锁验证通过！\n');
 
+// -------------------------------------------------------------
+// 【测试 8】口令查询底层异常与“无此口令”严格区分，底层异常不计入 5 次防刷锁定
+// -------------------------------------------------------------
+console.log('【场景 8】验证口令查询底层 DB 异常不计入防刷失败次数');
+const sdk = wxServerSdk.default;
+sdk.resetMemoryStore();
+const getJoinFailCount = async (openid) => {
+  try {
+    const doc = await db.collection('users').doc(`user_${openid}`).get();
+    return doc.data.joinFailCount || 0;
+  } catch (e) {
+    return 0;
+  }
+};
+
+const ownerRes = await familyManageModule.default.main({ action: 'createFamily', name: '防刷区分厨房', mockOpenid: 'openid_owner_8', nickName: '房主' }, {});
+assert(ownerRes.success);
+const realCode8 = ownerRes.family.inviteCode;
+
+// 8.1 families 查询持续超时 6 次：全部返回服务异常，且不计入失败次数，之后恢复可正常加入
+sdk._collectionHook = (colName) => {
+  if (colName !== 'families') return null;
+  return {
+    where: () => ({
+      get: async () => { throw new Error('ETIMEDOUT: database request timeout'); },
+      count: async () => { throw new Error('ETIMEDOUT: database request timeout'); }
+    }),
+    doc: (id) => ({ get: async () => { throw new Error('ETIMEDOUT: database request timeout'); } })
+  };
+};
+try {
+  for (let i = 0; i < 6; i++) {
+    const r = await familyManageModule.default.main({ action: 'joinFamily', inviteCode: realCode8, mockOpenid: 'openid_member_8', nickName: '家人' }, {});
+    assert.equal(r.success, false);
+    assert.equal(r.errorType, 'SERVICE_ERROR', '底层异常必须标记为服务异常');
+    assert(r.error.includes('服务异常'), '底层异常提示“云端查询服务异常”而非“未找到口令”');
+  }
+} finally {
+  sdk._collectionHook = null;
+}
+assert.equal(await getJoinFailCount('openid_member_8'), 0, '底层 DB 异常绝不计入防刷失败次数');
+const recovered8 = await familyManageModule.default.main({ action: 'joinFamily', inviteCode: realCode8, mockOpenid: 'openid_member_8', nickName: '家人' }, {});
+assert.equal(recovered8.success, true, '数据库恢复后家人必须能立即加入，不被误锁定');
+console.log('✅ 测试 8.1: 连续 6 次 DB 超时不计失败次数，恢复后家人立即加入成功！');
+
+// 8.2 真正无此口令：计入失败次数
+const wrong8 = await familyManageModule.default.main({ action: 'joinFamily', inviteCode: '000001', mockOpenid: 'openid_guess_8' }, {});
+assert.equal(wrong8.success, false);
+assert.equal(wrong8.errorType, 'CODE_NOT_FOUND');
+assert.equal(await getJoinFailCount('openid_guess_8'), 1, '确认查询为空才计入一次失败');
+console.log('✅ 测试 8.2: 真实“无此口令”计入防刷失败次数！\n');
+
+// -------------------------------------------------------------
+// 【测试 9】集合缺失 (-502005 collection not exists) 自愈建表且不计失败
+// -------------------------------------------------------------
+console.log('【场景 9】验证集合缺失时自愈创建且不计入防刷失败');
+const createdCollections = [];
+db.createCollection = async (name) => { createdCollections.push(name); };
+sdk._collectionHook = (colName) => {
+  if (colName !== 'families') return null;
+  const err = () => {
+    const e = new Error('errCode: -502005 database collection not exists | errMsg: [ResourceNotFound] Db or Table not exist: families');
+    e.errCode = -502005;
+    return e;
+  };
+  return {
+    where: () => ({ get: async () => { throw err(); }, count: async () => { throw err(); } }),
+    doc: () => ({ get: async () => { throw err(); } })
+  };
+};
+try {
+  const r9 = await familyManageModule.default.main({ action: 'joinFamily', inviteCode: '135790', mockOpenid: 'openid_member_9' }, {});
+  assert.equal(r9.success, false);
+  assert.equal(r9.errorType, 'SERVICE_ERROR', '集合缺失属于底层异常');
+  assert(r9.error.includes('房主'), '集合缺失时提示房主重新创建厨房');
+} finally {
+  sdk._collectionHook = null;
+  delete db.createCollection;
+}
+for (const name of ['users', 'families', 'dishes', 'meals']) {
+  assert(createdCollections.includes(name), `必须自愈创建集合 ${name}`);
+}
+assert.equal(await getJoinFailCount('openid_member_9'), 0, '集合缺失绝不计入防刷失败次数');
+console.log('✅ 测试 9: 集合缺失时自愈创建 users/families/dishes/meals，且不计失败次数！\n');
+
+// -------------------------------------------------------------
+// 【测试 10】补传 createFamily 严禁覆盖他人家庭；msgSecCheck 服务异常不阻断加入
+// -------------------------------------------------------------
+console.log('【场景 10】验证补传不覆盖他人家庭 & 内容检测服务异常不阻断加入');
+sdk.resetMemoryStore();
+const victim = await familyManageModule.default.main({ action: 'createFamily', name: '受害者厨房', mockOpenid: 'openid_victim', nickName: '受害者' }, {});
+const hijack = await familyManageModule.default.main({
+  action: 'createFamily',
+  _syncToCloud: true,
+  familyId: victim.family.id,
+  inviteCode: victim.family.inviteCode,
+  name: '伪造厨房',
+  mockOpenid: 'openid_attacker'
+}, {});
+assert.equal(hijack.success, true);
+assert.notEqual(hijack.family.id, victim.family.id, '补传指定他人 familyId 时必须换新 id');
+assert.notEqual(hijack.family.inviteCode, victim.family.inviteCode, '补传时口令冲突必须换新口令');
+const victimDoc = await db.collection('families').doc(victim.family.id).get();
+assert.equal(victimDoc.data.name, '受害者厨房', '他人家庭严禁被覆盖');
+
+// 重复补传本人家庭：幂等返回，不重复建家庭
+const resync = await familyManageModule.default.main({
+  action: 'createFamily', _syncToCloud: true, familyId: victim.family.id, inviteCode: victim.family.inviteCode, name: '受害者厨房', mockOpenid: 'openid_victim'
+}, {});
+assert.equal(resync.success, true);
+assert.equal(resync.family.id, victim.family.id, '重复补传本人家庭应幂等返回原家庭');
+assert.equal(resync.family.inviteCode, victim.family.inviteCode);
+
+// 非补传请求携带 familyId / inviteCode 一律忽略
+const forged = await familyManageModule.default.main({ action: 'createFamily', familyId: 'fam_forged_id', inviteCode: '111111', mockOpenid: 'openid_forger' }, {});
+assert.notEqual(forged.family.id, 'fam_forged_id', '非补传请求不得指定 familyId');
+
+const origMsgSecCheck = sdk.openapi.security.msgSecCheck;
+sdk.openapi.security.msgSecCheck = async () => { throw new Error('-604101 function has no permission to call this API'); };
+try {
+  const joinWithSecDown = await familyManageModule.default.main({ action: 'joinFamily', inviteCode: victim.family.inviteCode, mockOpenid: 'openid_sec_down', nickName: '女儿' }, {});
+  assert.equal(joinWithSecDown.success, true, 'msgSecCheck 服务异常（如 openapi 权限未部署）不得阻断家人加入');
+} finally {
+  sdk.openapi.security.msgSecCheck = origMsgSecCheck;
+}
+console.log('✅ 测试 10: 补传不覆盖他人家庭、重复补传幂等、内容检测服务异常不阻断加入！\n');
+
+// -------------------------------------------------------------
+// 【测试 11】userAuth：瞬时异常不得覆盖档案或清空家庭归属
+// -------------------------------------------------------------
+console.log('【场景 11】验证 userAuth 瞬时异常不清空家庭归属');
+const userAuthModule = await import('../cloudfunctions/userAuth/index.js');
+const authOk = await userAuthModule.default.main({ mockOpenid: 'openid_victim' }, {});
+assert.equal(authOk.success, true);
+assert.equal(authOk.family.id, victim.family.id);
+assert.equal(authOk.user.role, 'creator');
+
+let userSetCalled = false;
+sdk._collectionHook = (colName) => {
+  if (colName !== 'users') return null;
+  return {
+    doc: () => ({
+      get: async () => { throw new Error('ETIMEDOUT'); },
+      set: async () => { userSetCalled = true; return {}; },
+      update: async () => ({})
+    })
+  };
+};
+try {
+  const authTimeout = await userAuthModule.default.main({ mockOpenid: 'openid_victim' }, {});
+  assert.equal(authTimeout.success, false, '读取用户档案超时必须返回失败，严禁当作新用户重建档案');
+  assert.equal(userSetCalled, false, '读取超时严禁用空档案覆盖用户的家庭归属');
+} finally {
+  sdk._collectionHook = null;
+}
+
+sdk._collectionHook = (colName) => {
+  if (colName !== 'families') return null;
+  return { doc: () => ({ get: async () => { throw new Error('ETIMEDOUT'); } }) };
+};
+try {
+  const authFamTimeout = await userAuthModule.default.main({ mockOpenid: 'openid_victim' }, {});
+  assert.equal(authFamTimeout.success, true);
+  assert.equal(authFamTimeout.familyFetchError, true);
+  assert.equal(authFamTimeout.user.familyId, victim.family.id, '家庭读取瞬时异常时严禁清空用户家庭归属');
+} finally {
+  sdk._collectionHook = null;
+}
+const userDocAfter = await db.collection('users').doc('user_openid_victim').get();
+assert.equal(userDocAfter.data.familyId, victim.family.id, '云端用户档案的家庭归属必须保持');
+console.log('✅ 测试 11: userAuth 遇瞬时异常不重建档案、不清空家庭归属！\n');
+
+// -------------------------------------------------------------
+// 【测试 12】onShow 静默鉴权与加入并发：过期鉴权响应不得清掉刚加入的家庭
+// -------------------------------------------------------------
+console.log('【场景 12】验证过期 userAuth 响应不会覆盖刚加入的家庭');
+familyService.setMockCurrentUser('openid_race_kid', '孩子');
+let releaseAuth;
+const authGate = new Promise(r => { releaseAuth = r; });
+global.wx.cloud.callFunction = async ({ name, data }) => {
+  if (name === 'userAuth') {
+    await authGate; // 鉴权响应在加入成功之后才返回 (加入前的旧快照)
+    return { result: { success: true, openid: data.mockOpenid, user: { openid: data.mockOpenid, familyId: null, role: null }, family: null } };
+  }
+  return { result: await familyManageModule.default.main(data, {}) };
+};
+const staleAuth = familyService.syncUserAuth();
+const raceJoin = await familyService.joinFamily(victim.family.inviteCode);
+assert.equal(raceJoin.success, true);
+releaseAuth();
+await staleAuth;
+assert(familyService.getCurrentFamily(), '过期鉴权响应不得清掉刚加入的家庭');
+assert.equal(familyService.getCurrentFamily().id, victim.family.id);
+assert.equal(familyService.getCurrentUser().role, 'member');
+console.log('✅ 测试 12: 加入期间发出的过期鉴权响应被丢弃，刚加入的家庭不会被清掉！\n');
+
+// -------------------------------------------------------------
+// 【测试 13】真机端到端：房主创建 → 刷新口令 → 家人加入 → 双方鉴权同步互通
+// -------------------------------------------------------------
+console.log('【场景 13】验证房主与家人两台设备端到端互通');
+sdk.resetMemoryStore();
+global.wx.cloud.callFunction = async ({ name, data }) => {
+  if (name === 'familyManage') return { result: await familyManageModule.default.main(data, {}) };
+  if (name === 'userAuth') return { result: await userAuthModule.default.main(data, {}) };
+  return { result: { success: true } };
+};
+familyService.setMockCurrentUser('openid_e2e_owner', '房主');
+const e2eCreate = await familyService.createFamily('皮妞妞');
+assert.equal(e2eCreate.success, true);
+assert.equal(e2eCreate.family.syncedToCloud, true, '真机创建的家庭必须由云端确认');
+const e2eRefresh = await familyService.refreshInviteCode();
+assert.equal(e2eRefresh.success, true);
+const e2eCode = e2eRefresh.inviteCode;
+
+familyService.setMockCurrentUser('openid_e2e_member', '家人');
+const e2eJoin = await familyService.joinFamily(`口令：${e2eCode}，复制即可加入`);
+assert.equal(e2eJoin.success, true, '家人在另一台设备凭口令必须加入成功');
+assert.equal(e2eJoin.family.members.length, 2);
+await familyService.syncUserAuth();
+assert.equal(familyService.getCurrentFamily().id, e2eCreate.family.id, '家人鉴权同步后仍在同一家庭');
+
+familyService.setMockCurrentUser('openid_e2e_owner', '房主');
+await familyService.syncUserAuth();
+assert.equal(familyService.getCurrentUser().role, 'creator', '房主鉴权同步后角色保持 creator');
+assert.equal(familyService.getCurrentFamily().members.length, 2, '房主同步后可见家人已加入');
+console.log('✅ 测试 13: 创建 → 刷新口令 → 家人加入 → 双端鉴权同步全链路互通！\n');
+
 console.log('===============================================================');
-console.log('🎉 全部 7 大场景专项测试 100% 成功通过！加入家人厨房故障已彻底根除！');
+console.log('🎉 全部 13 大场景专项测试 100% 成功通过！加入家人厨房故障已彻底根除！');
 console.log('===============================================================\n');

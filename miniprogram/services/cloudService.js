@@ -2,10 +2,14 @@
  * 微信云开发服务网关 (CloudService)
  * 职责：
  * 1. 统一封装 wx.cloud.callFunction 调用
- * 2. 真实小程序环境下云函数报错严禁降级返回 Mock 假成功，一律返回失败交由离线队列重试
+ * 2. 真实小程序环境下云函数报错严禁降级返回 Mock 假成功，一律返回失败交由离线队列重试；家庭与鉴权云函数在真机上永不降级
  * 3. 在无微信环境（Node.js 单测）或强制模拟模式下，提供高保真本地 Mock 状态机仿真
  * 4. 严格保障 4 人上限、24小时邀请码、一人一家庭排他与同日多餐写入
  */
+/**
+ * 家庭与鉴权云函数：真机环境必须真实读写云数据库，严禁降级到本机模拟库造成数据孤岛
+ */
+const CLOUD_ONLY_FUNCTIONS = new Set(['familyManage', 'userAuth']);
 class LocalCloudMockDatabase {
     constructor() {
         this.users = new Map();
@@ -588,31 +592,29 @@ export class CloudService {
         return false;
     }
     /**
-     * 判断错误是否属于微信云开发保留字段冲突或底层数据库参数错误
-     * -501007: invalid parameters / 不能指定 _id / cannot update _id
+     * 当前是否运行在具备 wx.cloud 的真实小程序环境 (非单测、非强制模拟)
      */
-    isReservedFieldOrParamError(err, result) {
-        const checkItem = (item) => {
-            if (!item)
-                return false;
-            const code = item?.errCode ?? item?.code;
-            const str = typeof item === 'string'
-                ? item
-                : String(item?.errMsg || item?.message || (typeof item === 'object' ? JSON.stringify(item) : item) || '');
-            const is501007 = code === -501007 || str.includes('-501007');
-            const isReservedKeyword = str.includes('不能指定') || str.includes('保留字段') || str.includes('cannot update _id');
-            // 仅当明确具备 -501007 或保留字段核心关键字时才判定为冲突，绝不泛化拦截通用报错
-            return (is501007 && (isReservedKeyword || str.includes('invalid parameters'))) || isReservedKeyword;
-        };
-        return checkItem(err) || checkItem(result) || (result && checkItem(result.error));
+    hasRealCloud() {
+        return !this.forceMock && typeof wx !== 'undefined' && !!wx.cloud && typeof wx.cloud.callFunction === 'function';
+    }
+    toErrorText(err) {
+        if (!err)
+            return '';
+        if (typeof err === 'string')
+            return err;
+        return String(err?.errMsg || err?.message || (typeof err === 'object' ? JSON.stringify(err) : err) || '');
     }
     /**
      * 统一云函数调用方法
-     * 1. 真实微信小程序环境下：严禁网络报错后假成功降级返回 Mock！一律返回失败交由离线待同步队列重试。
-     * 2. 当检测到根本性环境缺失 (-601034 / 未开通云开发 / 云函数未部署)：自动熔断并平滑切换至本地高可用容灾模式。
-     * 3. 本地仿真 Mock 保证单机与离线环境完整可用。
+     * 1. 家庭与鉴权 (familyManage / userAuth)：真机上只走真实云端，任何错误原样返回，严禁降级到本机模拟库
+     *    （降级会让房主的家庭和口令只存在自己手机上，家人永远查不到）
+     * 2. 就餐历史 / 私房菜：环境根本性缺失 (-601034 / 云函数未部署) 时熔断切换本地模式；其余错误返回失败交由离线队列重试
+     * 3. 无微信环境（Node.js 单测）或强制模拟模式：使用本地仿真 Mock
      */
     async callFunction(name, data = {}) {
+        if (CLOUD_ONLY_FUNCTIONS.has(name) && this.hasRealCloud()) {
+            return this.callCloudOnly(name, data);
+        }
         const hasCloud = this.checkCloudAvailability();
         if (hasCloud) {
             try {
@@ -623,25 +625,9 @@ export class CloudService {
                 if (res && res.result) {
                     const result = res.result;
                     if (result.success) {
-                        // 同步云端家庭数据至本地 Mock 状态机，保障单机状态与云端强一致
-                        if (name === 'familyManage' && (data?.action === 'createFamily' || data?.action === 'joinFamily') && result.family) {
-                            const role = data?.action === 'createFamily' ? 'creator' : 'member';
-                            this.mockDb.syncFamilyFromCloud(result.family, data?.mockOpenid, role);
-                        }
                         return result;
                     }
-                    // 核心容灾防御：若线上已发布的云端代码未部署最新补丁，返回了底层保留字段冲突或参数异常 (-501007)
-                    // 自动熔断降级至本地高可用容灾模式，确保用户业务（如创建厨房）绝不中断
-                    if (this.isReservedFieldOrParamError(null, result)) {
-                        console.warn(`[CloudService] 云函数 ${name} 线上返回底层数据库参数/保留字段冲突 (-501007)，自动降级至本地高可用容灾模式`);
-                        this.isCloudAvailable = false;
-                        const fallbackRes = this.invokeLocalMock(name, data);
-                        return {
-                            ...fallbackRes,
-                            isLocalFallback: true
-                        };
-                    }
-                    // 环境异常亦熔断降级
+                    // 环境异常熔断降级
                     if (this.isEnvironmentUnavailableError(result) || this.isEnvironmentUnavailableError(result.error)) {
                         console.warn(`[CloudService] 云函数 ${name} 线上返回环境未就绪，自动降级至本地高可用容灾模式`);
                         this.isCloudAvailable = false;
@@ -651,36 +637,16 @@ export class CloudService {
                             isLocalFallback: true
                         };
                     }
-                    // 核心互通增强：若云端提示未找到口令，但本地 Mock 库中存在该家庭（例如同机多身份测试或房主在降级模式下创建）
-                    if (name === 'familyManage' && data?.action === 'joinFamily' && (result.error?.includes('未找到') || result.error?.includes('不存在'))) {
-                        const localFallback = this.invokeLocalMock(name, data);
-                        if (localFallback.success) {
-                            return {
-                                ...localFallback,
-                                isLocalFallback: true
-                            };
-                        }
-                    }
                     return result;
                 }
                 return { success: false, error: '云函数返回空结果' };
             }
             catch (err) {
-                const errMsg = err?.errMsg || err?.message || String(err);
+                const errMsg = this.toErrorText(err);
                 console.warn(`[CloudService] 云函数 ${name} 线上调用失败:`, errMsg);
                 // 核心容灾防御：若为环境未就绪 (-601034)，自动熔断并无缝降级为本地高可用模式
                 if (this.isEnvironmentUnavailableError(err)) {
                     console.warn(`[CloudService] 检测到微信云开发环境未就绪/未开通 (-601034)，自动切换至本地高可用容灾模式`);
-                    this.isCloudAvailable = false;
-                    const fallbackRes = this.invokeLocalMock(name, data);
-                    return {
-                        ...fallbackRes,
-                        isLocalFallback: true
-                    };
-                }
-                // 核心容灾防御：若底层保留字段冲突或参数异常 (-501007)，自动降级至本地高可用容灾模式
-                if (this.isReservedFieldOrParamError(err)) {
-                    console.warn(`[CloudService] 云函数 ${name} 抛出底层保留字段冲突 (-501007)，自动降级至本地高可用容灾模式`);
                     this.isCloudAvailable = false;
                     const fallbackRes = this.invokeLocalMock(name, data);
                     return {
@@ -694,59 +660,48 @@ export class CloudService {
         }
         // 本地高可用模式 (离线、无微信环境或降级模式)
         const localRes = this.invokeLocalMock(name, data);
-        // 核心跨机穿透增强：当用户在降级模式下加入家庭时，本地 mock 找不到目标家庭（因为目标家庭是由真机云端创建的），
-        // 尝试向真实云端穿透探测一次，避免用户永远卡在单机隔离桶中无法加入家人创建的云端厨房
-        if (name === 'familyManage' &&
-            data?.action === 'joinFamily' &&
-            !localRes.success &&
-            typeof wx !== 'undefined' &&
-            wx.cloud &&
-            typeof wx.cloud.callFunction === 'function' &&
-            !this.forceMock) {
-            try {
-                const cloudTryRes = await wx.cloud.callFunction({ name, data });
-                if (cloudTryRes?.result && cloudTryRes.result.success) {
-                    const resResult = cloudTryRes.result;
-                    // 云端加入成功，自动恢复云端可用状态并同步回本地
-                    this.isCloudAvailable = true;
-                    if (resResult.family) {
-                        this.mockDb.syncFamilyFromCloud(resResult.family, data.mockOpenid, 'member');
-                    }
-                    return resResult;
-                }
-            }
-            catch (probeErr) {
-                // 穿透探测若失败，保持原始本地错误
-            }
-        }
-        // 核心降级创建互通：当房主此前在本地创建了家庭，联网静默补全注册 (_syncToCloud) 时，主动向真实云端尝试注册
-        // 确保真实云开发可用时口令实时写入云端，家人凭口令可立即加入
-        if (name === 'familyManage' &&
-            data?.action === 'createFamily' &&
-            data?._syncToCloud &&
-            typeof wx !== 'undefined' &&
-            wx.cloud &&
-            typeof wx.cloud.callFunction === 'function' &&
-            !this.forceMock) {
-            try {
-                const cloudTryRes = await wx.cloud.callFunction({ name, data });
-                if (cloudTryRes?.result && cloudTryRes.result.success) {
-                    const resResult = cloudTryRes.result;
-                    this.isCloudAvailable = true;
-                    if (resResult.family) {
-                        this.mockDb.syncFamilyFromCloud(resResult.family, data.mockOpenid, 'creator');
-                    }
-                    return resResult;
-                }
-            }
-            catch (probeErr) {
-                // 离线时保持本地 mock
-            }
-        }
         return {
             ...localRes,
             isLocalFallback: true
         };
+    }
+    /**
+     * 家庭与鉴权云函数：只认真实云端结果，失败原样返回给业务层提示用户
+     */
+    async callCloudOnly(name, data) {
+        try {
+            const res = await wx.cloud.callFunction({ name, data });
+            const result = res?.result;
+            if (!result) {
+                return { success: false, error: `云函数 ${name} 返回空结果，请确认云函数已上传部署` };
+            }
+            if (result.success) {
+                // 云端调用成功即恢复云可用标识 (此前若因就餐历史等调用熔断，也可自愈)
+                this.isCloudAvailable = true;
+                if (name === 'familyManage' && (data?.action === 'createFamily' || data?.action === 'joinFamily') && result.family) {
+                    const family = result.family;
+                    const callerOpenid = result.openid || data?.mockOpenid;
+                    this.mockDb.syncFamilyFromCloud(family, callerOpenid, family.creatorOpenid === callerOpenid ? 'creator' : 'member');
+                }
+                return result;
+            }
+            return {
+                ...result,
+                error: this.toErrorText(result.error) || `云函数 ${name} 执行失败`
+            };
+        }
+        catch (err) {
+            const errMsg = this.toErrorText(err);
+            console.warn(`[CloudService] 云函数 ${name} 调用失败（家庭/鉴权不降级本地）:`, errMsg);
+            if (this.isEnvironmentUnavailableError(err)) {
+                return {
+                    success: false,
+                    errorType: 'CLOUD_ENV_UNAVAILABLE',
+                    error: `云开发环境未就绪或云函数 ${name} 未部署 (${errMsg})`
+                };
+            }
+            return { success: false, error: err?.message || errMsg || `云函数 ${name} 调用失败` };
+        }
     }
     /**
      * 本地 Mock 逻辑分发
