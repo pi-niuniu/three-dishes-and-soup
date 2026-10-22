@@ -1,9 +1,0 @@
-{
-  "name": "familyManage",
-  "version": "1.0.0",
-  "description": "微信云函数: 4人家庭事务控制、动态口令与一人一家庭互斥管理",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}
